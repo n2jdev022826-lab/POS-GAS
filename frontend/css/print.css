@@ -1,0 +1,94 @@
+/* ================= PAGE SETUP ================= */
+@page {
+  size: landscape;
+  margin: 10mm;
+}
+
+@media print {
+  /* ================= PRINT HEADER & FOOTER TABLES ================= */
+  .print-header-table thead {
+    display: table-header-group;
+  }
+  .print-footer-table tfoot {
+    display: table-footer-group;
+  }
+
+  .page-number::after {
+    content: "Page " counter(page);
+  }
+
+  /* hide other UI elements */
+  .sidebar,
+  .topbar,
+  .sales-controls,
+  .product-controls,
+  .customer-controls,
+  .supplier-controls,
+  .debt-controls,
+  .user-controls,
+  .collection-controls,
+  .receivable-controls,
+  .pagination-container,
+  .edit-btn,
+  .delete-btn,
+  .modal,
+  .undo-toast {
+    display: none !important;
+  }
+
+  body {
+    margin: 0;
+    background: white !important;
+  }
+
+  .main,
+  .sales-container {
+    padding: 0;
+  }
+  .table-wrapper {
+    max-height: none !important;
+    overflow: visible !important;
+    width: 100%;
+    box-shadow: none;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: auto;
+    font-size: 11px;
+  }
+  th,
+  td {
+    border: 1px solid black;
+    padding: 6px;
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  thead {
+    background: #2f7f7f !important;
+    color: white !important;
+    display: table-header-group;
+  }
+  tfoot {
+    display: table-footer-group;
+  }
+  tr {
+    page-break-inside: avoid;
+  }
+  tbody {
+    page-break-inside: auto;
+  }
+
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* hide action column */
+  th:last-child,
+  td:last-child {
+    display: none;
+  }
+}

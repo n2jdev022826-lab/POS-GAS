@@ -1,0 +1,362 @@
+/* ================= GLOBAL ================= */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Segoe UI", sans-serif;
+}
+
+html,
+body {
+  overflow-x: hidden;
+}
+
+body {
+  display: flex;
+  min-height: 100vh;
+  background: #f2f2f2;
+}
+
+/* ================= SIDEBAR ================= */
+
+.sidebar {
+  width: 260px;
+  min-height: 100vh;
+  background: linear-gradient(to bottom, #5fd1c2, #0f8f9a);
+  padding: 30px 20px;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: 0.3s;
+  flex-shrink: 0;
+}
+
+.menu {
+  list-style: none;
+}
+
+.menu li {
+  position: relative;
+  margin: 18px 0;
+  padding: 12px 20px;
+  cursor: pointer;
+  transition: 0.3s;
+  z-index: 1;
+}
+
+.menu li::before {
+  content: "";
+  position: absolute;
+  left: -50px;
+  top: 50%;
+  transform: translateY(-50%) scaleX(0);
+  width: calc(100% + 50px);
+  height: 55px;
+  background: white;
+  border-radius: 30px;
+  transition: transform 0.3s ease;
+  transform-origin: left;
+  z-index: -1;
+}
+
+.menu li:hover::before,
+.menu li.active::before {
+  transform: translateY(-50%) scaleX(1);
+}
+
+.menu li:hover {
+  color: #0f8f9a;
+  font-weight: 600;
+}
+.menu li.active {
+  filter: drop-shadow(2px 2px 2px #252525bb);
+  color: #0f8f9a;
+  font-weight: 600;
+}
+
+.logout {
+  color: #ffffff;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  filter: drop-shadow(2px 2px 2px #202020);
+}
+
+.logout:hover {
+  color: white;
+  background-color: #ff4c4c;
+  padding: 8px 16px;
+  border-radius: 20px;
+  transform: scale(1.05);
+}
+
+/* ================= MAIN ================= */
+
+.main {
+  flex: 1;
+  padding: 0 40px 25px 40px;
+  min-width: 0; /* VERY IMPORTANT for charts */
+}
+
+/* ================= TOPBAR ================= */
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 60px;
+
+  width: calc(100% + 80px);
+  margin-left: -40px;
+  margin-right: -40px;
+
+  margin-bottom: 20px;
+  padding: 0 20px;
+
+  background: white;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+  font-weight: 600;
+}
+
+/* Left side (date & time) */
+.topbar #datetime {
+  display: flex;
+  align-items: center;
+}
+
+/* Right side wrapper */
+.topbar .employee-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Employee name */
+.topbar .employee-name {
+  font-weight: 600;
+  color: #444;
+}
+
+/* Profile circle */
+.topbar #employee-profile {
+  width: 45px;
+  height: 45px;
+  background: #ffa3a3;
+  border-radius: 50%;
+  flex-shrink: 0;
+  filter: drop-shadow(2px 2px 2px #252525bb);
+}
+
+#datetime{
+  color: #0a4449;
+}
+
+/* ================= CARDS ================= */
+
+.cards {
+  display: flex;
+  gap: 30px;
+  margin-bottom: 40px;
+  flex-wrap: wrap;
+}
+
+.card {
+  flex: 1 1 250px;
+  background: white;
+  border-radius: 30px;
+  padding: 30px;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.card h3 {
+  color: #888;
+  margin-bottom: 15px;
+}
+
+.card h1 {
+  font-size: 40px;
+  color: #444;
+}
+
+/* ================= CHARTS ================= */
+
+.charts {
+  display: flex;
+  gap: 30px;
+  flex-wrap: wrap;
+  align-items: stretch;
+}
+
+.chart-box {
+  flex: 1 1 400px;
+  height: 60vh; /* Fluid instead of fixed 600px */
+  min-height: 400px;
+  background: white;
+  border-radius: 20px;
+  padding: 25px;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+  position: relative;
+  min-width: 0; /* CRITICAL for flex */
+  overflow: hidden; /* Prevent chart overflow */
+}
+
+.chart-box canvas {
+  width: 100% !important;
+  height: 90% !important;
+  display: block;
+}
+
+.chart-box h3 {
+  margin-bottom: 20px;
+  color: #333;
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media (max-width: 1200px) {
+  .sidebar {
+    width: 220px;
+  }
+
+  .chart-box {
+    height: 55vh;
+  }
+}
+
+@media (max-width: 992px) {
+  .sidebar {
+    width: 200px;
+  }
+
+  .cards {
+    flex-direction: column;
+  }
+
+  .charts {
+    flex-direction: column;
+  }
+
+  .chart-box {
+    height: 50vh;
+  }
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    width: 180px;
+    padding: 20px 10px;
+  }
+
+  .profile-circle {
+    width: 80px;
+    height: 80px;
+  }
+
+  .main {
+    padding: 20px;
+  }
+
+  .card h1 {
+    font-size: 30px;
+  }
+
+  .chart-box {
+    height: 45vh;
+    min-height: 350px;
+  }
+}
+
+@media (max-width: 480px) {
+  .sidebar {
+    width: 150px;
+  }
+
+  .profile-circle {
+    display: none;
+  }
+
+  .menu li {
+    font-size: 13px;
+    padding: 8px 10px;
+  }
+
+  .chart-box {
+    height: 40vh;
+    min-height: 300px;
+  }
+
+  .card {
+    padding: 20px;
+  }
+
+  .card h1 {
+    font-size: 26px;
+  }
+}
+
+/* ================= TOPBAR RESPONSIVE ================= */
+
+@media (max-width: 992px) {
+  .topbar {
+    width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+    border-radius: 10px;
+  }
+}
+
+@media (max-width: 768px) {
+  .topbar {
+    flex-direction: column;
+    align-items: flex-start;
+    height: auto;
+    padding: 15px 20px;
+    gap: 10px;
+  }
+
+  .topbar .employee-info {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .topbar #datetime {
+    font-size: 14px;
+  }
+}
+
+/* MENU LAYOUT WITH ICON */
+.menu li {
+  display: flex;
+  align-items: center;
+  gap: 14px; /* slightly more spacing */
+}
+
+/* ICON STYLE (THICKER EFFECT) */
+.menu-icon {
+  width: 25px;
+  height: 25px;
+  object-fit: contain;
+
+  /* base white + thickness */
+  filter: brightness(0) invert(1) drop-shadow(0 0 0 currentColor)
+    drop-shadow(0.6px 0 0 currentColor) drop-shadow(-0.6px 0 0 currentColor)
+    drop-shadow(0 0.6px 0 currentColor) drop-shadow(0 -0.6px 0 currentColor);
+
+  transition: all 0.3s ease;
+}
+
+/* ACTIVE + HOVER ICON COLOR (THICK + TEAL) */
+.menu li:hover .menu-icon,
+.menu li.active .menu-icon {
+  filter: brightness(0) saturate(100%) invert(39%) sepia(32%) saturate(1045%)
+    hue-rotate(135deg) brightness(95%) contrast(90%)
+    drop-shadow(0 0 0 currentColor) drop-shadow(0.6px 0 0 currentColor)
+    drop-shadow(-0.6px 0 0 currentColor) drop-shadow(0 0.6px 0 currentColor)
+    drop-shadow(0 -0.6px 0 currentColor);
+}

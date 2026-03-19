@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>403 Forbidden</title>
+    <link rel="stylesheet" href="/POS-GAS/frontend/css/403.css"/>
+  </head>
+  <body>
+    <img
+      src="/POS-GAS/frontend/assets/robot.png"
+      alt="403 Error Image"
+      class="error-image"
+    />
+    <h1>403 - FORBIDDEN</h1>
+    <p>You are not allowed to access this resource.</p>
+
+    <button onclick="goBack()">Go Back</button>
+
+    <script>
+      function goBack() {
+        document.body.style.opacity = "0";
+
+        setTimeout(() => {
+          if (window.history.length > 1) {
+            window.history.back();
+          } else {
+            window.location.href = "/POS-GAS/";
+          }
+        }, 500);
+      }
+    </script>
+  </body>
+</html>

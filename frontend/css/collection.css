@@ -1,0 +1,396 @@
+/* ================= GLOBAL ================= */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Segoe UI", sans-serif;
+}
+
+html,
+body {
+  overflow-x: hidden;
+}
+
+body {
+  display: flex;
+  min-height: 100vh;
+  background: #f2f2f2;
+}
+
+/* ================= SIDEBAR ================= */
+
+.sidebar {
+  width: 260px;
+  min-height: 100vh;
+  background: linear-gradient(to bottom, #5fd1c2, #0f8f9a);
+  padding: 30px 20px;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: 0.3s;
+  flex-shrink: 0;
+}
+
+.menu {
+  list-style: none;
+}
+
+.menu li {
+  position: relative;
+  margin: 18px 0;
+  padding: 12px 20px;
+  cursor: pointer;
+  transition: 0.3s;
+  z-index: 1;
+}
+
+.menu li::before {
+  content: "";
+  position: absolute;
+  left: -50px;
+  top: 50%;
+  transform: translateY(-50%) scaleX(0);
+  width: calc(100% + 50px);
+  height: 55px;
+  background: white;
+  border-radius: 30px;
+  transition: transform 0.3s ease;
+  transform-origin: left;
+  z-index: -1;
+}
+
+.menu li:hover::before,
+.menu li.active::before {
+  transform: translateY(-50%) scaleX(1);
+}
+
+.menu li:hover {
+  color: #0f8f9a;
+  font-weight: 600;
+}
+.menu li.active {
+  filter: drop-shadow(2px 2px 2px #252525bb);
+  color: #0f8f9a;
+  font-weight: 600;
+}
+
+.logout {
+  color: #ffffff;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  filter: drop-shadow(2px 2px 2px #202020);
+}
+
+.logout:hover {
+  color: white;
+  background-color: #ff4c4c;
+  padding: 8px 16px;
+  border-radius: 20px;
+  transform: scale(1.05);
+}
+
+/* ================= MAIN ================= */
+
+.main {
+  flex: 1;
+  padding: 0 40px 25px 40px;
+  min-width: 0; /* VERY IMPORTANT for charts */
+}
+
+/* ================= TOPBAR ================= */
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 60px;
+
+  width: calc(100% + 80px);
+  margin-left: -40px;
+  margin-right: -40px;
+
+  margin-bottom: 20px;
+  padding: 0 20px;
+
+  background: white;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+  font-weight: 600;
+}
+
+/* Left side (date & time) */
+.topbar #datetime {
+  display: flex;
+  align-items: center;
+}
+
+/* Right side wrapper */
+.topbar .employee-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Employee name */
+.topbar .employee-name {
+  font-weight: 600;
+  color: #444;
+}
+
+/* Profile circle */
+.topbar #employee-profile {
+  width: 45px;
+  height: 45px;
+  background: #ffa3a3;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* MENU LAYOUT WITH ICON */
+.menu li {
+  display: flex;
+  align-items: center;
+  gap: 14px; /* slightly more spacing */
+}
+
+/* ICON STYLE (THICKER EFFECT) */
+.menu-icon {
+  width: 25px;
+  height: 25px;
+  object-fit: contain;
+
+  /* base white + thickness */
+  filter: brightness(0) invert(1) drop-shadow(0 0 0 currentColor)
+    drop-shadow(0.6px 0 0 currentColor) drop-shadow(-0.6px 0 0 currentColor)
+    drop-shadow(0 0.6px 0 currentColor) drop-shadow(0 -0.6px 0 currentColor);
+
+  transition: all 0.3s ease;
+}
+
+/* ACTIVE + HOVER ICON COLOR (THICK + TEAL) */
+.menu li:hover .menu-icon,
+.menu li.active .menu-icon {
+  filter: brightness(0) saturate(100%) invert(39%) sepia(32%) saturate(1045%)
+    hue-rotate(135deg) brightness(95%) contrast(90%)
+    drop-shadow(0 0 0 currentColor) drop-shadow(0.6px 0 0 currentColor)
+    drop-shadow(-0.6px 0 0 currentColor) drop-shadow(0 0.6px 0 currentColor)
+    drop-shadow(0 -0.6px 0 currentColor);
+}
+
+/* ================= TABLE ================= */
+.collection-container {
+  padding: 20px;
+  width: 100%;
+}
+
+/* CONTROLS */
+.collection-controls {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.search-box {
+  flex: 1;
+}
+
+.search-box input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+#qtyInput {
+  width: 90px;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  text-align: center;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+/* BUTTONS */
+.btn {
+  padding: 12px 18px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.add-btn {
+  background: #4ecdc4;
+  color: white;
+}
+
+.print-btn {
+  background: #5f6caf;
+  color: white;
+}
+
+/* TABLE */
+.table-wrapper {
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;   /* enable vertical scroll */
+  overflow-x: hidden;
+  max-height: 65vh;
+  position: relative;
+  border-radius: 10px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 10px;
+}
+
+thead {
+   position: sticky;
+  background: #2f7f7f;
+  color: white;
+}
+
+thead th {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: #2f7f7f; /* MUST match thead background */
+}
+
+th, td {
+  padding: 12px;
+  text-align: center;
+  border-bottom: 1px solid #ddd;
+}
+
+tfoot {
+  background: #f4f4f4;
+  font-weight: bold;
+}
+
+tfoot td {
+  position: sticky;
+  bottom: 0;
+  background: #f4f4f4; /* same as your footer bg */
+  z-index: 100;
+  font-weight: bold;
+}
+
+/* ACTION BUTTON */
+.edit-btn {
+  background: #f0ad4e;
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  margin-right: 5px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.delete-btn {
+  background: crimson;
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* ================= PAGINATION ================= */
+
+.pagination-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 15px;
+}
+
+.pagination button {
+  padding: 6px 12px;
+  margin: 0 5px;
+  border: none;
+  border-radius: 6px;
+  background: #2f7f7f;
+  color: white;
+  cursor: pointer;
+}
+
+.pagination button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.limit-box select {
+  padding: 5px;
+  border-radius: 5px;
+}
+
+/* MODAL */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0,0,0,0.4);
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  width: 250px;
+  text-align: center;
+}
+
+.modal-actions {
+  margin-top: 10px;
+}
+
+.modal-actions button {
+  margin: 5px;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* BUTTONS */
+.edit-btn {
+  background: #f0ad4e;
+  color: white;
+  padding: 5px 8px;
+  border-radius: 5px;
+  border: none;
+}
+
+.delete-btn {
+  background: crimson;
+  color: white;
+  padding: 5px 8px;
+  border-radius: 5px;
+  border: none;
+}
+
+/* UNDO TOAST */
+.undo-toast {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #333;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 8px;
+  display: none;
+}
