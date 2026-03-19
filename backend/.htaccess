@@ -1,0 +1,4 @@
+RewriteEngine On
+
+# Block all direct browser access
+RewriteRule ^ - [F,L]

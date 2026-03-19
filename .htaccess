@@ -1,0 +1,42 @@
+RewriteEngine On
+RewriteBase /POS-GAS/
+
+# Hide .php extension
+RewriteCond %{REQUEST_FILENAME}.php -f
+RewriteRule ^(.*)$ $1.php [L]
+
+# Default page when visiting /POS-GAS
+DirectoryIndex frontend/view/index.php      
+
+# =========================
+# ERROR PAGES
+# =========================
+ErrorDocument 403 /POS-GAS/403.html
+ErrorDocument 404 /POS-GAS/404.html
+
+# =========================
+# HIDE INDEX
+# =========================
+RewriteRule ^index/?$ /POS-GAS/ [R=301,L]
+RewriteCond %{THE_REQUEST} \s/+(.*/)?index\.php[\s?] [NC]
+RewriteRule ^(.*/)?index\.php$ /POS-GAS/ [R=301,L]
+
+# =========================
+# HIDE .PHP
+# =========================
+RewriteCond %{THE_REQUEST} \.php [NC]
+RewriteRule ^(.*)\.php$ /POS-GAS/$1 [R=301,L]
+
+# =========================
+# LOAD SINGLE VIEWS
+# =========================
+RewriteCond %{DOCUMENT_ROOT}/POS-GAS/frontend/view/$1.php -f
+RewriteRule ^([^/]+)$ frontend/view/$1.php [L]
+
+# =========================
+# LOAD NESTED VIEWS (folder/file)
+# =========================
+RewriteCond %{DOCUMENT_ROOT}/POS-GAS/frontend/view/$1/$2.php -f
+RewriteRule ^([^/]+)/([^/]+)$ frontend/view/$1/$2.php [L]
+
+
