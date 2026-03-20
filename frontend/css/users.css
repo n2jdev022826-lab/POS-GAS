@@ -183,6 +183,7 @@ body {
   background: #ffa3a3;
   border-radius: 50%;
   flex-shrink: 0;
+    filter: drop-shadow(2px 2px 2px #252525bb);
 }
 
 .employee-img {

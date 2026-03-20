@@ -10,7 +10,7 @@ $conn = $db->connect();
 $products = [];
 
 $sql = "SELECT 
-product_id,
+id,
 product_code,
 product_name,
 generic_name,
@@ -205,18 +205,15 @@ $conn->close();
 
     <div class="main">
 
-        <div class="topbar">
+     <!-- TOP BAR -->
+    <div class="topbar">
+      <div id="datetime"></div>
 
-            <div id="datetime"></div>
-
-            <div class="employee-info">
-                <div class="employee-name">
-                    <?php echo htmlspecialchars($_SESSION['lname'] . ", " . $_SESSION['fname']); ?>
-                </div>
-                <div id="employee-profile"></div>
-            </div>
-
+      <div class="employee-info">
+        <div class="employee-name"><?php echo htmlspecialchars($_SESSION['lname'] . ", " . $_SESSION['fname']); ?></div>
+        <div id="employee-profile"><img src="/POS-GAS/frontend/assets/uploads/users/<?php echo htmlspecialchars(!empty($_SESSION['image']) ? $_SESSION['image'] : 'default.jpg'); ?>" class="employee-img"></div>
         </div>
+      </div>
 
         <!-- PRODUCT STATS -->
 

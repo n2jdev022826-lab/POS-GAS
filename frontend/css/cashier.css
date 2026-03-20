@@ -75,6 +75,13 @@ body {
   filter: drop-shadow(2px 2px 2px #252525bb);
 }
 
+.employee-img {
+    width: 45px;
+    height: 45px;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
 #datetime{
   color: #0a4449;
 }
