@@ -7,14 +7,55 @@ require_once "../../backend/middleware/auth.php";
 $db = new Database();
 $conn = $db->connect();
 
+/* ================= TOTAL SALES ================= */
+/* Fuel transactions + product sales */
+$totalSales = 0;
+
+$sqlSales = "
+SELECT 
+    (SELECT IFNULL(SUM(total_amount),0) FROM transactions WHERE is_deleted = 0) +
+    (SELECT IFNULL(SUM(total_amount),0) FROM product_sales WHERE is_deleted = 0)
+    AS total
+";
+
+$resultSales = $conn->query($sqlSales);
+if ($row = $resultSales->fetch_assoc()) {
+    $totalSales = $row['total'];
+}
+
+/* ================= TOTAL PRODUCTS ================= */
+$totalProducts = 0;
+
+$sqlProducts = "SELECT COUNT(*) as total FROM products WHERE is_deleted = 0";
+$resultProducts = $conn->query($sqlProducts);
+
+if ($row = $resultProducts->fetch_assoc()) {
+    $totalProducts = $row['total'];
+}
+
+/* ================= TOTAL CUSTOMERS ================= */
+/* No customers table → using users with role cashier */
+$totalCustomers = 0;
+
+$sqlCustomers = "SELECT COUNT(*) as total FROM users WHERE role = 'cashier' AND is_deleted = 0";
+$resultCustomers = $conn->query($sqlCustomers);
+
+if ($row = $resultCustomers->fetch_assoc()) {
+    $totalCustomers = $row['total'];
+}
+
 /* ================= WEEKLY SALES ================= */
+/* Combine transactions + product sales */
 $weeklySales = [0,0,0,0,0,0,0];
 
 $sqlWeekly = "
-SELECT DAYOFWEEK(sale_date) as day, SUM(total_amount) as total 
-FROM Sales 
-WHERE is_deleted = 0
-GROUP BY DAYOFWEEK(sale_date)
+SELECT DAYOFWEEK(created_at) as day, SUM(total_amount) as total 
+FROM (
+    SELECT created_at, total_amount FROM transactions WHERE is_deleted = 0
+    UNION ALL
+    SELECT created_at, total_amount FROM product_sales WHERE is_deleted = 0
+) AS combined_sales
+GROUP BY DAYOFWEEK(created_at)
 ";
 
 $resultWeekly = $conn->query($sqlWeekly);
@@ -24,16 +65,17 @@ while ($row = $resultWeekly->fetch_assoc()) {
     $weeklySales[$index] = (float)$row['total'];
 }
 
+/* ================= PIE CHART (TOTAL COST = price * stock) ================= */
 
-/* ================= PIE CHART (TOTAL COST PER CATEGORY) ================= */
 $categoryLabels = [];
 $categoryData = [];
 
 $sqlPie = "
 SELECT 
     category,
-    SUM(purchase_price * stock_quantity) AS total_cost
-FROM Products
+    SUM(price * stock) AS total_cost
+FROM products
+WHERE is_deleted = 0
 GROUP BY category
 ";
 
@@ -42,49 +84,6 @@ $resultPie = $conn->query($sqlPie);
 while ($row = $resultPie->fetch_assoc()) {
     $categoryLabels[] = $row['category'];
     $categoryData[] = (float)$row['total_cost'];
-}
-
-/* ================= DASHBOARD DATA ================= */
-
-// TOTAL SALES
-$totalSales = 0;
-$sqlSales = "SELECT SUM(total_amount) as total FROM Sales WHERE is_deleted = 0";
-$resultSales = $conn->query($sqlSales);
-if ($row = $resultSales->fetch_assoc()) {
-    $totalSales = $row['total'] ?? 0;
-}
-
-// TOTAL PRODUCTS
-$totalProducts = 0;
-$sqlProducts = "SELECT COUNT(*) as total FROM Products";
-$resultProducts = $conn->query($sqlProducts);
-if ($row = $resultProducts->fetch_assoc()) {
-    $totalProducts = $row['total'];
-}
-
-// TOTAL CUSTOMERS
-$totalCustomers = 0;
-$sqlCustomers = "SELECT COUNT(*) as total FROM Customers";
-$resultCustomers = $conn->query($sqlCustomers);
-if ($row = $resultCustomers->fetch_assoc()) {
-    $totalCustomers = $row['total'];
-}
-
-// WEEKLY SALES (Sun-Sat)
-$weeklySales = [0,0,0,0,0,0,0];
-
-$sqlWeekly = "
-SELECT DAYOFWEEK(sale_date) as day, SUM(total_amount) as total 
-FROM Sales 
-WHERE is_deleted = 0
-GROUP BY DAYOFWEEK(sale_date)
-";
-
-$resultWeekly = $conn->query($sqlWeekly);
-
-while ($row = $resultWeekly->fetch_assoc()) {
-    $index = $row['day'] - 1; // MySQL Sunday = 1
-    $weeklySales[$index] = (float)$row['total'];
 }
 
 $conn->close();
