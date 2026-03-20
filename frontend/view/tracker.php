@@ -13,7 +13,7 @@ require_once "../../backend/middleware/auth.php";
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>JAYLO MEDICAL CLINIC</title>
-  <link rel="stylesheet" href="/POS/FRONT-END/css/report.css">
+  <link rel="stylesheet" href="/POS/FRONT-END/css/track.css">
   <link rel="stylesheet" href="/POS/FRONT-END/css/print.css">
 </head>
 

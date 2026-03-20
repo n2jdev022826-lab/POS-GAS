@@ -23,7 +23,7 @@ body {
 .sidebar {
   width: 260px;
   min-height: 100vh;
-  background: linear-gradient(to bottom, #5fd1c2, #0f8f9a);
+  background: linear-gradient(to bottom, #FC5E39, #B80201);
   padding: 30px 20px;
   color: white;
   display: flex;
@@ -67,12 +67,12 @@ body {
 }
 
 .menu li:hover {
-  color: #0f8f9a;
+  color: #9A0303;
   font-weight: 600;
 }
 .menu li.active {
   filter: drop-shadow(2px 2px 2px #252525bb);
-  color: #0f8f9a;
+  color: #9A0303;
   font-weight: 600;
 }
 
@@ -93,6 +93,10 @@ body {
   padding: 8px 16px;
   border-radius: 20px;
   transform: scale(1.05);
+}
+
+#datetime{
+  color: #9A0303;
 }
 
 /* ================= MAIN ================= */
