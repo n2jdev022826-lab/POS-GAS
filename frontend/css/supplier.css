@@ -121,15 +121,16 @@ body {
   transition: all 0.3s ease;
 }
 
-/* ACTIVE + HOVER ICON COLOR (THICK + TEAL) */
+/* ACTIVE + HOVER ICON COLOR (THICK + DARK RED) */
 .menu li:hover .menu-icon,
 .menu li.active .menu-icon {
-  filter: brightness(0) saturate(100%) invert(39%) sepia(32%) saturate(1045%)
-    hue-rotate(135deg) brightness(95%) contrast(90%)
+  filter: brightness(0) saturate(100%) invert(12%) sepia(96%) saturate(7490%)
+    hue-rotate(2deg) brightness(92%) contrast(119%)
     drop-shadow(0 0 0 currentColor) drop-shadow(0.6px 0 0 currentColor)
     drop-shadow(-0.6px 0 0 currentColor) drop-shadow(0 0.6px 0 currentColor)
     drop-shadow(0 -0.6px 0 currentColor);
 }
+
 /* ================= MAIN ================= */
 
 .main {
