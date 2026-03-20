@@ -38,31 +38,35 @@ function showAlert(type, title, message, buttonText = "OK", callback = null) {
     clearTimeout(alertTimer);
   }
 
-  switch (type) {
-    case "success":
-      icon.innerHTML =
-        '<img src="/POS-GAS/frontend/assets/success.png" style="width:150px;">';
-      alertBtn.style.background = "#28a745";
-      break;
+ switch (type) {
+  case "success":
+    icon.innerHTML =
+      '<img src="/POS-GAS/frontend/assets/success.png" style="width:150px;">';
+    alertBtn.style.background = "#28a745";
+    alertTitle.style.color = "#28a745";
+    break;
 
-    case "error":
-      icon.innerHTML =
-        '<img src="/POS-GAS/frontend/assets/error.png" style="width:150px;">';
-      alertBtn.style.background = "#dc3545";
-      break;
+  case "error":
+    icon.innerHTML =
+      '<img src="/POS-GAS/frontend/assets/error.png" style="width:150px;">';
+    alertBtn.style.background = "#dc3545";
+    alertTitle.style.color = "#dc3545";
+    break;
 
-    case "warning":
-      icon.innerHTML =
-        '<img src="/POS-GAS/frontend/assets/warning.png" style="width:150px;">';
-      alertBtn.style.background = "#ffc107";
-      break;
+  case "warning":
+    icon.innerHTML =
+      '<img src="/POS-GAS/frontend/assets/warning.png" style="width:150px;">';
+    alertBtn.style.background = "#ffc107";
+    alertTitle.style.color = "#ffc107";
+    break;
 
-    case "info":
-      icon.innerHTML =
-        '<img src="/POS-GAS/frontend/assets/info.png" style="width:150px;">';
-      alertBtn.style.background = "#17a2b8";
-      break;
-  }
+  case "info":
+    icon.innerHTML =
+      '<img src="/POS-GAS/frontend/assets/info.png" style="width:150px;">';
+    alertBtn.style.background = "#17a2b8";
+    alertTitle.style.color = "#17a2b8";
+    break;
+}
 
   overlay.style.display = "flex";
 
