@@ -4,7 +4,7 @@ class Database
 {
 
     private $host = "localhost";
-    private $db = "pos_system";
+    private $db = "gas";
     private $user = "root";
     private $pass = "";
 

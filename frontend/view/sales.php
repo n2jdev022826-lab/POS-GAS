@@ -72,7 +72,7 @@ require_once "../../backend/middleware/auth.php";
 
       </ul>
     </div>
-        <div class="logout" onclick="window.location.href='session';">
+        <div class="logout" onclick="window.location.href='session.php';">
       <img src="/POS-GAS/frontend/assets/icons/logout-icon.png" class="menu-icon"> 
       LOG OUT
     </div>

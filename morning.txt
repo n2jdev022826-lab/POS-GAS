@@ -1,0 +1,781 @@
+create database gas;
+use gas;
+
+CREATE TABLE users (
+    id VARCHAR(255) PRIMARY KEY,
+    user_code VARCHAR(255) NOT NULL,
+    fname VARCHAR(100) NOT NULL,
+    middlename VARCHAR(100) NOT NULL,
+    lname VARCHAR(100) NOT NULL,
+    username VARCHAR(50) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    role VARCHAR(20) NOT NULL, -- 'admin' or 'cashier' 
+	address VARCHAR(255) NOT NULL,
+    phone VARCHAR(20) NOT NULL, 
+    email VARCHAR(100) NOT NULL,
+    date_of_birth DATE NOT NULL,
+    hire_date DATE NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+    created_by VARCHAR(255),
+    updated_by VARCHAR(255),
+    is_deleted INT DEFAULT 0,
+    deleted_by VARCHAR(255)
+
+);
+
+DELIMITER $$
+
+CREATE TRIGGER before_insert_users
+BEFORE INSERT ON users
+FOR EACH ROW
+BEGIN
+    DECLARE next_id INT;
+
+    SELECT IFNULL(MAX(CAST(SUBSTRING_INDEX(id, '-', -1) AS UNSIGNED)), 0) + 1
+    INTO next_id
+    FROM users;
+
+    SET NEW.user_code = CONCAT('USERCODE-', LPAD(next_id, 8, '0'));
+END$$
+
+DELIMITER ;
+
+
+
+
+drop table users;
+select * from users;
+
+
+INSERT INTO users (
+    id, fname, middlename, lname, username, password, role,
+    address, phone, email, date_of_birth, hire_date,
+    created_by, updated_by, is_deleted, deleted_by
+) VALUES
+('user-00000001', 'Juan', 'Santos', 'Dela Cruz', 'juandelacruz', 'hashed_pass_1', 'admin',
+ 'Digos City, Davao del Sur', '09171234567', 'juan.delacruz@example.com', '1990-05-15', '2020-01-10',
+ 'system', NULL, 0, NULL),
+
+('user-00000002', 'Maria', 'Lopez', 'Reyes', 'mariareyes', 'hashed_pass_2', 'admin',
+ 'Davao City, Philippines', '09181234567', 'maria.reyes@example.com', '1988-09-22', '2019-03-05',
+ 'system', NULL, 0, NULL),
+
+('user-00000003', 'Pedro', 'Garcia', 'Santos', 'pedrosantos', 'hashed_pass_3', 'cashier',
+ 'Sta. Cruz, Davao del Sur', '09191234567', 'pedro.santos@example.com', '1995-07-10', '2022-06-01',
+ 'user-00000001', NULL, 0, NULL),
+
+('user-00000004', 'Ana', 'Martinez', 'Cruz', 'anacruz', 'hashed_pass_4', 'cashier',
+ 'Matanao, Davao del Sur', '09201234567', 'ana.cruz@example.com', '1997-11-30', '2023-02-15',
+ 'user-00000001', NULL, 0, NULL),
+
+('user-00000005', 'Luis', 'Fernandez', 'Torres', 'luistorres', 'hashed_pass_5', 'cashier',
+ 'Padada, Davao del Sur', '09211234567', 'luis.torres@example.com', '1993-03-18', '2021-09-20',
+ 'user-00000002', NULL, 0, NULL);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-- Fuel Types
+CREATE TABLE fuels (
+    id VARCHAR(255) PRIMARY KEY,
+    fuel_code VARCHAR(255) NOT NULL,
+    name VARCHAR(50),
+    price_per_liter DECIMAL(10,2),
+    stock_liters DECIMAL(10,2),
+	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+    created_by VARCHAR(255),
+    updated_by VARCHAR(255),
+    is_deleted INT DEFAULT 0,
+    deleted_by VARCHAR(255),
+    
+    
+	FOREIGN KEY (created_by) 
+    REFERENCES users(id)
+    ON UPDATE CASCADE,
+
+    FOREIGN KEY (updated_by)
+    REFERENCES users(id)
+    ON UPDATE CASCADE
+);
+
+
+DELIMITER $$
+
+CREATE TRIGGER before_insert_fuels
+BEFORE INSERT ON fuels
+FOR EACH ROW
+BEGIN
+    DECLARE next_id INT;
+
+    -- Get next numeric value based on existing fuel_code
+    SELECT IFNULL(MAX(CAST(SUBSTRING_INDEX(fuel_code, '-', -1) AS UNSIGNED)), 0) + 1
+    INTO next_id
+    FROM fuels;
+
+    -- Generate fuel_code
+    SET NEW.fuel_code = CONCAT('FUEL-', LPAD(next_id, 8, '0'));
+END$$
+
+DELIMITER ;
+
+
+INSERT INTO fuels (
+    id, name, price_per_liter, stock_liters,
+    created_by, updated_by, is_deleted, deleted_by
+) VALUES
+('fuel-00000001', 'Diesel', 65.50, 5000.00, 'user-00000001', NULL, 0, NULL),
+('fuel-00000002', 'Unleaded', 70.25, 3000.00, 'user-00000001', NULL, 0, NULL),
+('fuel-00000003', 'Premium', 75.80, 2000.00, 'user-00000002', NULL, 0, NULL);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+drop table fuels;
+select * from fuels;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-- Pumps
+CREATE TABLE pumps (
+    id VARCHAR(255) PRIMARY KEY,
+    pump_code VARCHAR(255) NOT NULL,
+    pump_number INT,
+    fuel_id VARCHAR(255),
+    status VARCHAR(20),
+    FOREIGN KEY (fuel_id) REFERENCES fuels(id),
+	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+    created_by VARCHAR(255),
+    updated_by VARCHAR(255),
+    is_deleted INT DEFAULT 0,
+    deleted_by VARCHAR(255),
+    
+	FOREIGN KEY (created_by) 
+    REFERENCES users(id)
+    ON UPDATE CASCADE,
+
+    FOREIGN KEY (updated_by)
+    REFERENCES users(id)
+    ON UPDATE CASCADE
+);
+
+DELIMITER $$
+
+CREATE TRIGGER before_insert_pumps
+BEFORE INSERT ON pumps
+FOR EACH ROW
+BEGIN
+    DECLARE next_id INT;
+
+    -- Get next numeric value from existing pump_code
+    SELECT IFNULL(MAX(CAST(SUBSTRING_INDEX(pump_code, '-', -1) AS UNSIGNED)), 0) + 1
+    INTO next_id
+    FROM pumps;
+
+    -- Generate pump_code
+    SET NEW.pump_code = CONCAT('PUMP-', LPAD(next_id, 8, '0'));
+END$$
+
+DELIMITER ;
+
+
+INSERT INTO pumps (
+    id, pump_number, fuel_id, status,
+    created_by, updated_by, is_deleted, deleted_by
+) VALUES
+('pump-00000001', 1, 'fuel-00000001', 'active', 'user-00000001', NULL, 0, NULL),
+('pump-00000002', 2, 'fuel-00000002', 'active', 'user-00000001', NULL, 0, NULL),
+('pump-00000003', 3, 'fuel-00000001', 'maintenance', 'user-00000002', NULL, 0, NULL);
+
+
+
+drop table pumps;
+select * from pumps;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-- Transactions
+CREATE TABLE transactions (
+    id VARCHAR(255) PRIMARY KEY,
+    transaction_code VARCHAR(255),
+    pump_id VARCHAR(255),
+    liters DECIMAL(10,2),
+    total_amount DECIMAL(10,2),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (pump_id) REFERENCES pumps(id),
+    updated_at TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+    created_by VARCHAR(255),
+    updated_by VARCHAR(255),
+    is_deleted INT DEFAULT 0,
+    deleted_by VARCHAR(255),
+    
+    FOREIGN KEY (created_by) 
+    REFERENCES users(id)
+    ON UPDATE CASCADE,
+
+    FOREIGN KEY (updated_by)
+    REFERENCES users(id)
+    ON UPDATE CASCADE
+    
+    
+);
+
+DELIMITER $$
+
+CREATE TRIGGER before_insert_transactions
+BEFORE INSERT ON transactions
+FOR EACH ROW
+BEGIN
+    DECLARE next_id INT;
+
+    -- Get the next numeric part from existing transaction_code
+    SELECT IFNULL(MAX(CAST(SUBSTRING_INDEX(transaction_code, '-', -1) AS UNSIGNED)), 0) + 1
+    INTO next_id
+    FROM transactions;
+
+    -- Generate transaction_code
+    SET NEW.transaction_code = CONCAT('TRANS-', LPAD(next_id, 8, '0'));
+END$$
+
+DELIMITER ;
+
+INSERT INTO transactions (
+    id,pump_id, liters, total_amount, created_by, updated_by, is_deleted, deleted_by
+) VALUES
+('TRANSACTIONID-01','pump-00000001', 50.00, 3275.00, 'user-00000001', NULL, 0, NULL),
+('TRANSACTIONID-02','pump-00000002', 40.50, 2845.13, 'user-00000002', NULL, 0, NULL),
+('TRANSACTIONID-03','pump-00000001', 30.00, 1965.00, 'user-00000001', NULL, 0, NULL);
+
+select * from transactions;
+drop table transactions;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-- Inventory Logs
+CREATE TABLE inventory_logs (
+    id VARCHAR(255) PRIMARY KEY,
+    inventory_code VARCHAR(255) NOT NULL,
+    fuel_id VARCHAR (255),
+    change_liters DECIMAL(10,2),
+    type VARCHAR(20), -- 'delivery' or 'sale'
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (fuel_id) REFERENCES fuels(id),
+    updated_at TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+    created_by VARCHAR(255),
+    updated_by VARCHAR(255),
+    is_deleted INT DEFAULT 0,
+    deleted_by VARCHAR(255),
+    
+    
+    FOREIGN KEY (created_by) 
+    REFERENCES users(id)
+    ON UPDATE CASCADE,
+
+    FOREIGN KEY (updated_by)
+    REFERENCES users(id)
+    ON UPDATE CASCADE
+);
+
+
+DELIMITER $$
+
+CREATE TRIGGER before_insert_inventory_logs
+BEFORE INSERT ON inventory_logs
+FOR EACH ROW
+BEGIN
+    DECLARE next_id INT;
+
+    -- Get the next numeric value from existing inventory_code
+    SELECT IFNULL(MAX(CAST(SUBSTRING_INDEX(inventory_code, '-', -1) AS UNSIGNED)), 0) + 1
+    INTO next_id
+    FROM inventory_logs;
+
+    -- Generate inventory_code
+    SET NEW.inventory_code = CONCAT('INV-', LPAD(next_id, 8, '0'));
+END$$
+
+DELIMITER ;
+
+
+INSERT INTO inventory_logs (
+    id, fuel_id, change_liters, type, created_by
+) VALUES
+('log-00000001', 'fuel-00000001', 500.00, 'delivery', 'user-00000001'),
+('log-00000002', 'fuel-00000002', -50.00, 'sale', 'user-00000002'),
+('log-00000003', 'fuel-00000001', -100.00, 'sale', 'user-00000001');
+
+
+select * from inventory_logs;
+drop table inventory_logs;
+
+
+
+
+
+
+
+
+
+CREATE TABLE permissions (
+    permissions_id VARCHAR(255) PRIMARY KEY,
+    permissions_code VARCHAR(255) NOT NULL,
+    permissions_name VARCHAR(100) NOT NULL,
+    created_by VARCHAR(255) NOT NULL, 
+    updated_by VARCHAR(255),
+    deleted_by VARCHAR(255),
+    is_deleted INT DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
+    updated_at TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (created_by) REFERENCES users(id),
+    FOREIGN KEY (updated_by) REFERENCES users(id)
+);
+
+
+
+
+
+
+
+
+
+
+
+CREATE TABLE user_permissions (
+    user_permissions_id VARCHAR(255) PRIMARY KEY,
+    user_permissions_code VARCHAR(255) NOT NULL,
+    created_by VARCHAR(255) NOT NULL,
+    updated_by VARCHAR(255),
+    permission_for VARCHAR(255) NOT NULL,
+    permission_id VARCHAR(255) NOT NULL,
+    is_allowed TINYINT(1) DEFAULT 0,
+    updated_at TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+    deleted_by VARCHAR(255),
+    is_deleted INT DEFAULT 0,
+
+    FOREIGN KEY (created_by) REFERENCES users(id),
+    FOREIGN KEY (updated_by) REFERENCES users(id),
+    FOREIGN KEY (permission_for) REFERENCES users(id),
+    FOREIGN KEY (permission_id) REFERENCES permissions(permissions_id)
+);
+
+
+
+CREATE TABLE products (
+    id VARCHAR(255) PRIMARY KEY,
+    product_code VARCHAR(255) NOT NULL,
+    name VARCHAR(100),
+    price DECIMAL(10,2),
+    stock INT,
+    category VARCHAR(50), -- 'oil', 'tires', 'snacks', etc.
+	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+    created_by VARCHAR(255),
+    updated_by VARCHAR(255),
+    is_deleted INT DEFAULT 0,
+    deleted_by VARCHAR(255),
+    
+    
+	FOREIGN KEY (created_by) 
+    REFERENCES users(id)
+    ON UPDATE CASCADE,
+
+    FOREIGN KEY (updated_by)
+    REFERENCES users(id)
+    ON UPDATE CASCADE
+);
+
+
+DELIMITER $$
+
+CREATE TRIGGER before_insert_products
+BEFORE INSERT ON products
+FOR EACH ROW
+BEGIN
+    DECLARE next_id INT;
+
+    -- Get the next numeric part from existing product_code
+    SELECT IFNULL(MAX(CAST(SUBSTRING_INDEX(product_code, '-', -1) AS UNSIGNED)), 0) + 1
+    INTO next_id
+    FROM products;
+
+    -- Generate product_code
+    SET NEW.product_code = CONCAT('PROD-', LPAD(next_id, 8, '0'));
+END$$
+
+DELIMITER ;
+
+INSERT INTO products (id, name, price, stock, category, created_by)
+VALUES 
+('prod-00000001', 'Engine Oil 5W-30', 450.00, 50, 'oil', 'user-00000001'),
+('prod-00000002', 'Car Tire 16"', 3200.00, 20, 'tires', 'user-00000001'),
+('prod-00000003', 'Chocolate Bar', 50.00, 100, 'snacks', 'user-00000002');
+
+
+select * from products;
+
+
+
+
+
+
+
+
+CREATE TABLE Suppliers (
+    supplier_id  VARCHAR(255) PRIMARY KEY,
+    supplier_code VARCHAR (255) NOT NULL,
+    supplier_name VARCHAR(100) NOT NULL,            
+    contact_name VARCHAR(100),
+    phone VARCHAR(20),
+    email VARCHAR(100),
+    address TEXT,
+    created_by VARCHAR(255) NOT NULL,
+    updated_by VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+    deleted_by VARCHAR(255),
+    is_deleted INT DEFAULT 0, 
+
+        FOREIGN KEY (created_by) 
+    REFERENCES users(id)
+    ON UPDATE CASCADE,
+
+    FOREIGN KEY (updated_by)
+    REFERENCES users(id)
+    ON UPDATE CASCADE
+);
+
+
+DELIMITER $$
+
+CREATE TRIGGER before_insert_suppliers
+BEFORE INSERT ON Suppliers
+FOR EACH ROW
+BEGIN
+    DECLARE next_id INT;
+
+    SELECT IFNULL(MAX(CAST(SUBSTRING_INDEX(supplier_id, '-', -1) AS UNSIGNED)), 0) + 1
+    INTO next_id
+    FROM Suppliers;
+
+    SET NEW.supplier_code = CONCAT('SUPCODE-', LPAD(next_id, 8, '0'));
+END$$
+
+DELIMITER ;
+
+drop table suppliers;
+
+
+INSERT INTO Suppliers (
+    supplier_id, supplier_name, contact_name, phone, email, address,
+    created_by, updated_by, is_deleted, deleted_by
+) VALUES
+('supp-000001', 'PetroFuel Supply Inc.', 'Carlos Mendoza', '09171230001', 'carlos.mendoza@petrofuel.com',
+ 'Davao City, Philippines', 'user-00000001', NULL, 0, NULL),
+
+('supp-000002', 'Global Oil Distributors', 'Anna Reyes', '09181230002', 'anna.reyes@globaloil.com',
+ 'Tagum City, Philippines', 'user-00000001', NULL, 0, NULL),
+
+('supp-000003', 'Mindanao Fuel Traders', 'Jose Santos', '09191230003', 'jose.santos@mindanaofuel.com',
+ 'Digos City, Philippines', 'user-00000002', NULL, 0, NULL),
+
+('supp-000004', 'Prime Energy Solutions', 'Maria Lopez', '09201230004', 'maria.lopez@primeenergy.com',
+ 'General Santos City, Philippines', 'user-00000001', NULL, 0, NULL),
+
+('supp-000005', 'EcoFuel Supplies', 'Luis Torres', '09211230005', 'luis.torres@ecofuel.com',
+ 'Panabo City, Philippines', 'user-00000002', NULL, 0, NULL);
+
+
+select * from suppliers;
+
+
+
+
+
+
+
+
+
+
+
+
+
+CREATE TABLE Categories (
+    category_id  VARCHAR(255) PRIMARY KEY, 
+    category_code VARCHAR(255) NOT NULL,               
+    category_name VARCHAR(100) NOT NULL, 
+    description TEXT,
+    created_by VARCHAR(255) NOT NULL,
+    updated_by VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+    deleted_by VARCHAR(255),
+    is_deleted INT DEFAULT 0, 
+
+    FOREIGN KEY (created_by) 
+    REFERENCES users(id)
+    ON UPDATE CASCADE,
+
+    FOREIGN KEY (updated_by)
+    REFERENCES users(id)
+    ON UPDATE CASCADE
+
+
+
+);
+
+
+
+
+DELIMITER $$
+
+    CREATE TRIGGER before_insert_categories
+    BEFORE INSERT ON Categories
+    FOR EACH ROW
+    BEGIN
+        DECLARE next_id INT;
+
+        -- Generate the next numeric ID
+        SELECT IFNULL(MAX(CAST(SUBSTRING(category_id, 8) AS UNSIGNED)), 0) + 1
+        INTO next_id
+        FROM Categories;
+
+        -- Format category_id and category_code with leading zeros
+        SET NEW.category_code = CONCAT('CATCODE-', LPAD(next_id, 8, '0'));
+    END$$
+
+    DELIMITER ;
+    
+    
+    
+    INSERT INTO Categories (
+    category_id, category_name, description,
+    created_by, updated_by, is_deleted, deleted_by
+) VALUES
+('cat-000001', 'Fuel', 'All types of fuel products such as diesel and gasoline',
+ 'user-00000001', NULL, 0, NULL),
+
+('cat-000002', 'Lubricants', 'Engine oils and other lubrication products',
+ 'user-00000001', NULL, 0, NULL),
+
+('cat-000003', 'Tires', 'Vehicle tires and related products',
+ 'user-00000002', NULL, 0, NULL),
+
+('cat-000004', 'Snacks', 'Food items like chips, biscuits, and chocolates',
+ 'user-00000001', NULL, 0, NULL),
+
+('cat-000005', 'Beverages', 'Soft drinks, water, and energy drinks',
+ 'user-00000002', NULL, 0, NULL);
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ CREATE TABLE product_sales (
+    id VARCHAR(255) PRIMARY KEY,
+    product_sales_code VARCHAR(255) NOT NULL,
+    product_id VARCHAR(255),
+    quantity INT,
+    total_amount DECIMAL(10,2),
+    user_id VARCHAR(255),
+    FOREIGN KEY (product_id) REFERENCES products(id),
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    created_by VARCHAR(255) NOT NULL,
+    updated_by VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+    deleted_by VARCHAR(255),
+    is_deleted INT DEFAULT 0, 
+
+	FOREIGN KEY (created_by) 
+    REFERENCES users(id)
+    ON UPDATE CASCADE,
+
+    FOREIGN KEY (updated_by)
+    REFERENCES users(id)
+    ON UPDATE CASCADE
+);
+
+DELIMITER $$
+
+CREATE TRIGGER before_insert_product_sales
+BEFORE INSERT ON product_sales
+FOR EACH ROW
+BEGIN
+    DECLARE next_id INT;
+
+    -- Get next numeric value from existing product_sales_code
+    SELECT IFNULL(MAX(CAST(SUBSTRING_INDEX(product_sales_code, '-', -1) AS UNSIGNED)), 0) + 1
+    INTO next_id
+    FROM product_sales;
+
+    -- Generate product_sales_code
+    SET NEW.product_sales_code = CONCAT('PSALE-', LPAD(next_id, 8, '0'));
+END$$
+
+DELIMITER ;
+
+
+INSERT INTO product_sales (
+    id, product_id, quantity, total_amount, user_id, created_by
+) VALUES
+('ps-00000001', 'prod-00000001', 2, 900.00, 'user-00000001', 'user-00000001'),
+('ps-00000002', 'prod-00000003', 5, 250.00, 'user-00000002', 'user-00000002');
+
+
+select * from product_sales;
+
+
+
+
+
+
+
+
+CREATE TABLE product_inventory_logs (
+    id VARCHAR(255) PRIMARY KEY,
+    product_inventory_code VARCHAR(255) NOT NULL,
+    product_id VARCHAR(255),
+    change_quantity INT,
+    type VARCHAR(20), -- 'sale' or 'delivery'
+    FOREIGN KEY (product_id) REFERENCES products(id),
+    
+    created_by VARCHAR(255) NOT NULL,
+    updated_by VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+    deleted_by VARCHAR(255),
+    is_deleted INT DEFAULT 0, 
+
+    FOREIGN KEY (created_by) 
+    REFERENCES users(id)
+    ON UPDATE CASCADE,
+
+    FOREIGN KEY (updated_by)
+    REFERENCES users(id)
+    ON UPDATE CASCADE
+);
+
+DELIMITER $$
+
+CREATE TRIGGER before_insert_product_inventory_logs
+BEFORE INSERT ON product_inventory_logs
+FOR EACH ROW
+BEGIN
+    DECLARE next_id INT;
+
+    -- Get next numeric value from existing product_inventory_code
+    SELECT IFNULL(MAX(CAST(SUBSTRING_INDEX(product_inventory_code, '-', -1) AS UNSIGNED)), 0) + 1
+    INTO next_id
+    FROM product_inventory_logs;
+
+    -- Generate product_inventory_code
+    SET NEW.product_inventory_code = CONCAT('PINV-', LPAD(next_id, 8, '0'));
+END$$
+
+DELIMITER ;
+
+
+INSERT INTO product_inventory_logs (
+    id, product_id, change_quantity, type, created_by
+) VALUES
+('pinv-00000001', 'prod-00000001', -2, 'sale', 'user-00000001'),
+('pinv-00000002', 'prod-00000002', 10, 'delivery', 'user-00000001'),
+('pinv-00000003', 'prod-00000003', -5, 'sale', 'user-00000002');
+
+SELECT * FROM product_inventory_logs;
+ 
+
+
+
+
+
+
+select * from products;
+
+select * from fuels;
+
+
+
+
+
