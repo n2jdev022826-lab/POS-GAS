@@ -184,7 +184,7 @@ table {
 
 thead {
   position: sticky;
-  background: #2f7f7f;
+  background: #9A0303;
   color: white;
 }
 
@@ -192,7 +192,7 @@ thead th {
   position: sticky;
   top: 0;
   z-index: 10;
-  background: #2f7f7f; /* MUST match thead background */
+  background: #9A0303; /* MUST match thead background */
 }
 
 th {
