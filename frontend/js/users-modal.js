@@ -14,27 +14,62 @@ function closeUserModal() {
   document.body.classList.remove("modal-open");
 }
 
+// DISPLAY IMAGE PREVIEW IN MODAL
+document.getElementById("imageInput").addEventListener("change", function () {
+  const file = this.files[0];
+
+  if (file) {
+    const reader = new FileReader();
+
+    reader.onload = function (e) {
+      document.getElementById("imagePreview").style.backgroundImage = `url(${e.target.result})`;
+    };
+
+    reader.readAsDataURL(file);
+  }
+});
+
 // ADD USER FORM SUBMIT
 document.getElementById("addUserForm").addEventListener("submit", function (e) {
   e.preventDefault();
 
   const formData = new FormData(this);
 
-  fetch("/POS-GAS/api/users/create", {
+  fetch("http://localhost/POS-GAS/api/users/create.php", {
     method: "POST",
     body: formData,
   })
-    .then((res) => res.json())
+    .then((res) => res.text())
     .then((data) => {
-      alert(data.message);
+      console.log("RAW RESPONSE:", data);
 
-      if (data.status === "success") {
-        location.reload();
+      let json;
+
+      try {
+        json = JSON.parse(data);
+      } catch (e) {
+        console.error("JSON ERROR:", e);
+        showAlert("error", "Server Error", "Invalid response");
+        return;
+      }
+
+      console.log("Server Response:", json);
+
+      if (json.status === "success") {
+        showAlert("success", "Success", json.message);
+
+        // optional: auto reload after 2 seconds
+        setTimeout(() => {
+          location.reload();
+        }, 1000);
+
+      } else {
+        showAlert("error", "Failed", json.message);
       }
     })
     .catch((err) => {
-      console.error(err);
-      alert("Error saving user");
+      console.error("Fetch Error:", err);
+      showAlert("error", "Error", "Error saving user");
     });
 });
 

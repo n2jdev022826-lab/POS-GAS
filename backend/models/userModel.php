@@ -13,6 +13,14 @@ class UserModel
     public function create($data)
     {
 
+        $imageName = '';
+
+        if (isset($_FILES['image']) && $_FILES['image']['name']) {
+            $imageName = time() . '_' . $_FILES['image']['name'];
+            $target = "../../frontend/assets/uploads/users/" . $imageName;
+
+            move_uploaded_file($_FILES['image']['tmp_name'], $target);
+        }
 
         $passwordInput = $data['password'] ?? '';
         $password = password_hash($passwordInput, PASSWORD_DEFAULT);
@@ -30,13 +38,13 @@ class UserModel
         $hire_date = $data['hire_date'] ?? '';
 
         $sql = "INSERT INTO users
-        (fname,middlename,lname,username,sex,email,role,phone,address,date_of_birth,hire_date,password,created_at)
-        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,NOW())";
+(fname,middlename,lname,username,sex,email,role,phone,address,date_of_birth,hire_date,password,image,created_at)
+VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,NOW())";
 
         $stmt = $this->conn->prepare($sql);
 
         $stmt->bind_param(
-            "ssssssssssss",
+            "sssssssssssss",
             $firstname,
             $middlename,
             $lastname,
@@ -48,7 +56,8 @@ class UserModel
             $address,
             $birthdate,
             $hire_date,
-            $password
+            $password,
+            $imageName
         );
 
         return $stmt->execute();
@@ -58,7 +67,7 @@ class UserModel
     public function checkUsername($data)
     {
         $username = $data['username'] ?? '';
-        
+
 
         $sql = "SELECT * FROM users WHERE username = ?";
         $stmt = $this->conn->prepare($sql);
@@ -71,7 +80,7 @@ class UserModel
     public function checkPhone($data)
     {
         $phone = $data['phone'] ?? '';
-        
+
 
         $sql = "SELECT * FROM users WHERE phone = ?";
         $stmt = $this->conn->prepare($sql);
@@ -84,7 +93,7 @@ class UserModel
     public function checkEmail($data)
     {
         $email = $data['email'] ?? '';
-        
+
 
         $sql = "SELECT * FROM users WHERE email = ?";
         $stmt = $this->conn->prepare($sql);
@@ -93,7 +102,4 @@ class UserModel
         $stmt->store_result();
         return $stmt->num_rows > 0;
     }
-    
-
-    
 }

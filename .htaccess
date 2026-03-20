@@ -28,7 +28,7 @@ RewriteCond %{THE_REQUEST} \s/+(.*/)?index\.php[\s?] [NC]
 RewriteRule ^(.*/)?index\.php$ /POS-GAS/ [R=301,L]
 
 # =========================
-# HIDE .PHP (⚠️ THIS WAS BREAKING)
+# HIDE .PHP
 # =========================
 RewriteCond %{THE_REQUEST} \.php [NC]
 RewriteRule ^(.*)\.php$ /POS-GAS/$1 [R=301,L]

@@ -185,6 +185,13 @@ body {
   flex-shrink: 0;
 }
 
+.employee-img {
+    width: 45px;
+    height: 45px;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
 /* ================= TABLE ================= */
 .user-container {
   padding: 20px;
@@ -270,11 +277,18 @@ thead th {
 
 th,
 td {
-  padding: 12px;
+  padding: 10px;
   text-align: center;
   border-bottom: 1px solid #ddd;
 }
 
+#thfullname {
+   width: 300px !important;
+}
+
+#tdfullname {
+  width: 300px !important;
+}
 tfoot {
   background: #f4f4f4;
   font-weight: bold;
@@ -286,6 +300,13 @@ tfoot td {
   background: #f4f4f4; /* same as your footer bg */
   z-index: 100;
   font-weight: bold;
+}
+
+.user-img {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 50%;
 }
 
 /* ACTION BUTTON */
@@ -322,7 +343,7 @@ tfoot td {
   margin: 0 5px;
   border: none;
   border-radius: 6px;
-  background: #2f7f7f;
+  background: #9A0303;
   color: white;
   cursor: pointer;
 }
@@ -337,38 +358,6 @@ tfoot td {
   border-radius: 5px;
 }
 
-/* MODAL */
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: none;
-  justify-content: center;
-  align-items: center;
-  background: rgba(0, 0, 0, 0.4);
-}
-
-.modal-content {
-  background: white;
-  padding: 20px;
-  border-radius: 10px;
-  width: 250px;
-  text-align: center;
-}
-
-.modal-actions {
-  margin-top: 10px;
-}
-
-.modal-actions button {
-  margin: 5px;
-  padding: 8px 12px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-}
 
 /* BUTTONS */
 .edit-btn {
@@ -400,28 +389,67 @@ tfoot td {
 }
 
 /* ================= ADD USER MODAL ================= */
-
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: none;
-  justify-content: center;
-  align-items: center;
-  background: rgba(0, 0, 0, 0.4);
-  z-index: 1000;
+.modal-box.large {
+    width: 900px;
+    border-radius: 12px;
+    padding: 20px;
 }
 
-.modal-box {
-  background: white;
-  width: 500px;
-  padding: 25px;
-  border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-  animation: modalFade 0.2s ease;
+.modal-content {
+    display: flex;
+    gap: 30px;
 }
+
+/* LEFT IMAGE */
+.image-section {
+    width: 250px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.image-preview {
+    width: 220px;
+    height: 220px;
+    background: #eee;
+    border-radius: 10px;
+    margin: 10px 0;
+    background-size: cover;
+    background-position: center;
+}
+
+.upload-btn {
+    background: #44036c;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+/* RIGHT FORM */
+.form-section {
+    flex: 1;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.input-group input,
+.input-group select {
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+
 
 @keyframes modalFade {
   from {
@@ -442,7 +470,7 @@ tfoot td {
 }
 
 .modal-header h2 {
-  color: #2f7f7f;
+  color: #9A0303;
 }
 
 .close-modal {
@@ -481,10 +509,10 @@ tfoot td {
 }
 
 .modal-buttons {
-  margin-top: 20px;
   display: flex;
   justify-content: flex-end;
-  gap: 10px;
+  margin-top: -40px;
+  gap: 10;
 }
 
 .cancel-btn {
@@ -496,7 +524,7 @@ tfoot td {
 }
 
 .save-btn {
-  background: #2f7f7f;
+  background: #9A0303;
   color: white;
   padding: 8px 14px;
   border-radius: 6px;

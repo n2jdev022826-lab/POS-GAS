@@ -74,6 +74,7 @@ try {
     $_SESSION['fname'] = $user['fname'];
     $_SESSION['lname'] = $user['lname'];
     $_SESSION['role'] = $user['role'];
+    $_SESSION['image'] = $user['image'];
 
     // ✅ Log login (safe optional)
     $logSql = "INSERT INTO logs (action, commit) VALUES (?, ?)";
@@ -90,16 +91,16 @@ try {
     // ✅ Role-based redirect
     switch ($user['role']) {
         case 'admin':
-            $redirect = "/POS-GAS/frontend/view/dashboard.php";
+            $redirect = "dashboard.php";
             break;
         case 'staff':
-            $redirect = "/POS-GAS/frontend/view/testing.fuel.php";
+            $redirect = "testing.fuel.php";
             break;
         case 'cashier':
-            $redirect = "/POS-GAS/frontend/view/cashier/cashier.php";
+            $redirect = "cashier/cashier.php";
             break;
         default:
-            $redirect = "/POS-GAS/frontend/view/index.php";
+            $redirect = "index.php";
     }
 
     // ✅ Success response

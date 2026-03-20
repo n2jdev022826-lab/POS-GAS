@@ -15,17 +15,20 @@ $conn = $db->connect();
 $users = [];
 
 $sql = "SELECT 
-user_code,
-fname,
-middlename,
-lname,
-username,
-position,
-phone,
-email,
-address,
-hire_date,
-created_at
+    user_code,
+    fname,
+    middlename,
+    lname,
+    sex,
+    username,
+    role,
+    address,
+    phone,
+    email,
+    date_of_birth,
+    hire_date,
+    image,
+    created_at
 FROM users";
 
 $result = $conn->query($sql);
@@ -44,10 +47,11 @@ $conn->close();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JAYLO MEDICAL CLINIC</title>
+    <title>GAS STATION</title>
 
     <link rel="stylesheet" href="/POS-GAS/frontend/css/users.css">
     <link rel="stylesheet" href="/POS-GAS/frontend/css/print.css">
+    <link rel="stylesheet" href="/POS-GAS/frontend/css/alert.css">
 
 </head>
 
@@ -123,8 +127,9 @@ $conn->close();
             <div id="datetime"></div>
 
             <div class="employee-info">
-                <div class="employee-name"> <?php echo htmlspecialchars($_SESSION['lname']. ", " . $_SESSION['fname']); ?></div>
-                <div id="employee-profile"></div>
+                <div class="employee-name"> <?php echo htmlspecialchars($_SESSION['lname'] . ", " . $_SESSION['fname']); ?></div>
+                <div id="employee-profile">
+                <img src="/POS-GAS/frontend/assets/uploads/users/<?php echo htmlspecialchars(!empty($_SESSION['image']) ? $_SESSION['image'] : 'default.jpg'); ?>" class="employee-img"></div>
             </div>
         </div>
 
@@ -147,16 +152,18 @@ $conn->close();
 
                     <thead>
                         <tr>
-                            <th>User Code</th>
-                            <th>Full Name</th>
+                            <th>Profile</th>
+                            <th id="thusercode">User Code</th>
+                            <th id="thfullname">Full Name</th>
+                            <th id="thsex">Sex</th>
                             <th>Username</th>
-                            <th>Position</th>
-                            <th>Phone</th>
-                            <th>Email</th>
+                            <th>Role</th>
                             <th>Address</th>
+                            <th id="tdphone">Phone</th>
+                            <th>Email</th>
                             <th>Date Hired</th>
                             <th>Created At</th>
-                            <th>Action</th>
+                            <th id="thaction">Action</th>
                         </tr>
                     </thead>
 
@@ -164,7 +171,7 @@ $conn->close();
 
                     <tfoot>
                         <tr>
-                            <td colspan="10"></td>
+                            <td colspan="13"></td>
                         </tr>
                     </tfoot>
 
@@ -200,94 +207,123 @@ $conn->close();
 
     <div id="addUserModal" class="modal">
 
-        <div class="modal-box">
+    <div class="modal-box large">
 
-            <div class="modal-header">
-                <h2>Add User</h2>
-                <span class="close-modal" onclick="closeUserModal()">&times;</span>
+        <div class="modal-header">
+            <h2>ADD USER</h2>
+            <span class="close-modal" onclick="closeUserModal()">&times;</span>
+        </div>
+
+        <form id="addUserForm" enctype="multipart/form-data">
+
+            <div class="modal-content">
+
+                <!-- LEFT SIDE (IMAGE) -->
+                <div class="image-section">
+
+                    <label>USER IMAGE</label>
+
+                    <div class="image-preview" id="imagePreview"></div>
+
+                    <input type="file" name="image" id="imageInput" hidden>
+
+                    <button type="button" class="upload-btn" onclick="document.getElementById('imageInput').click()">
+                        UPLOAD
+                    </button>
+
+                </div>
+
+                <!-- RIGHT SIDE (FORM) -->
+                <div class="form-section">
+
+                    <div class="form-grid">
+
+                        <div class="input-group">
+                            <label>FIRST NAME</label>
+                            <input type="text" name="firstname" required>
+                        </div>
+
+                        <div class="input-group">
+                            <label>MIDDLE NAME</label>
+                            <input type="text" name="middlename">
+                        </div>
+
+                        <div class="input-group">
+                            <label>SURNAME</label>
+                            <input type="text" name="lastname" required>
+                        </div>
+
+                        <div class="input-group">
+                            <label>ROLE</label>
+                            <select name="role" required>
+                                <option value="">Select Role</option>
+                                <option value="admin">Admin</option>
+                                <option value="staff">Staff</option>
+                                <option value="cashier">Cashier</option>
+                            </select>
+                        </div>
+
+                        <div class="input-group">
+                            <label>CONTACT NO.</label>
+                            <input type="text" name="phone" required>
+                        </div>
+
+                        <div class="input-group">
+                            <label>SEX</label>
+                            <select name="sex" required>
+                                <option value="">Select</option>
+                                <option value="MALE">Male</option>
+                                <option value="FEMALE">Female</option>
+                            </select>
+                        </div>
+
+                        <div class="input-group">
+                            <label>ADDRESS</label>
+                            <input type="text" name="address" required>
+                        </div>
+
+                        <div class="input-group">
+                            <label>EMAIL</label>
+                            <input type="email" name="email" required>
+                        </div>
+
+                         <div class="input-group">
+                            <label>USERNAME</label>
+                            <input type="text" name="username" required>
+                        </div>
+
+                        <div class="input-group">
+                            <label>PASSWORD</label>
+                            <input type="password" name="password" required>
+                        </div>
+                        
+                        <div class="input-group">
+                            <label>HIRE DATE</label>
+                            <input type="date" name="hire_date">
+                        </div>
+
+                    </div>
+
+                    <div class="modal-buttons">
+                        <button type="submit" class="save-btn">+ SAVE</button>
+                    </div>
+
+                </div>
+
             </div>
 
-            <form id="addUserForm">
+        </form>
 
-                <div class="modal-grid">
-
-                    <div class="input-group">
-                        <label>First Name</label>
-                        <input type="text" required name="firstname">
-                    </div>
-
-                    <div class="input-group">
-                        <label>Middle Name</label>
-                        <input type="text" name="middlename">
-                    </div>
-
-                    <div class="input-group">
-                        <label>Last Name</label>
-                        <input type="text" required name="lastname">
-                    </div>
-
-                    <div class="input-group">
-                        <label>Username</label>
-                        <input type="text" required name="username">
-                    </div>
-
-                    <div class="input-group">
-                        <label>Email</label>
-                        <input type="email" required name="email">
-                    </div>
-
-                    <div class="input-group">
-                        <label>Role</label>
-                        <select name="role" required>
-                            <option value="">Select Role</option>
-                            <option value="admin">Admin</option>
-                            <option value="staff">Staff</option>
-                            <option value="cashier">Cashier</option>
-                        </select>
-                    </div>
-
-                    <div class="input-group">
-                        <label>Contact No.</label>
-                        <input type="text" required name="phone">
-                    </div>
-
-                    <div class="input-group">
-                        <label>Date Hired</label>
-                        <input type="date" name="hire_date">
-                    </div>
-
-                    <div class="input-group">
-                        <label>Address</label>
-                        <input type="text" name="address" required>
-                    </div>
-
-                    <div class="input-group">
-                        <label>Birth Date/label>
-                        <input type="date" name="birthdate" required>
-                    </div>
-
-                    <div class="input-group">
-                        <label>Password</label>
-                        <input type="password" required name="password">
-                    </div>
-
-                </div>
-
-                <div class="modal-buttons">
-                    <button type="button" class="cancel-btn" onclick="closeUserModal()">Cancel</button>
-                    <button type="submit" class="save-btn">Save User</button>
-                </div>
-
-            </form>
-
-        </div>
     </div>
+
+</div>
 
     <script src="/POS-GAS/frontend/js/date-time.js"></script>
     <script src="/POS-GAS/frontend/js/print.js"></script>
     <script src="/POS-GAS/frontend/js/search.js"></script>
     <script src="/POS-GAS/frontend/js/users-modal.js"></script>
-    
+    <script src="/POS-GAS/frontend/js/alert.js"></script>
+
 
     <script>
         const users = <?php echo json_encode($users); ?>;
@@ -307,7 +343,7 @@ $conn->close();
                     (user.fname && user.fname.toLowerCase().includes(searchQuery)) ||
                     (user.lname && user.lname.toLowerCase().includes(searchQuery)) ||
                     (user.username && user.username.toLowerCase().includes(searchQuery)) ||
-                    (user.position && user.position.toLowerCase().includes(searchQuery)) ||
+                    (user.role && user.role.toLowerCase().includes(searchQuery)) ||
                     (user.email && user.email.toLowerCase().includes(searchQuery))
                 );
 
@@ -317,38 +353,38 @@ $conn->close();
             filteredUsers.forEach(user => {
 
                 const row = `
-        <tr>
-            <td>${user.user_code}</td>
-            <td>${user.fname} ${user.middlename} ${user.lname}</td>
-            <td>${user.username}</td>
-            <td>${user.position}</td>
-            <td>${user.phone}</td>
-            <td>${user.email}</td>
-            <td>${user.address}</td>
-            <td>${user.hire_date}</td>
-            <td>${user.created_at}</td>
+<tr>
+   <td>
+    <img 
+        src="/POS-GAS/frontend/assets/uploads/users/${user.image || 'default.jpg'}" 
+        class="user-img"
+    >
+</td>
+    <td id="tdusercode">${user.user_code}</td>
+    <td id="tdfullname">${user.fname} ${user.middlename} ${user.lname}</td>
+    <td id="tdsex">${user.sex}</td>
+    <td>${user.username}</td>
+    <td>${user.role}</td>
+    <td>${user.address}</td>
+    <td id="tdphone">${user.phone}</td>
+    <td>${user.email}</td>
+    <td>${user.hire_date}</td>
+    <td>${user.created_at}</td>
+    <td class="action-buttons">
+        <button class="icon-btn edit-btn"
+        onclick="editUser('${user.user_code}')">
+            <img src="/POS-GAS/frontend/assets/icons/edit.png">
+            <span>EDIT</span>
+        </button>
 
-            <td class="action-buttons">
-
-                <button class="icon-btn edit-btn"
-                onclick="editUser('${user.user_code}')">
-
-                    <img src="/POS-GAS/frontend/assets/icons/edit.png" alt="Edit">
-                    <span>EDIT</span>
-                </button>
-
-                <button class="icon-btn delete-btn"
-                onclick="deleteUser('${user.user_code}')">
-
-                    <img src="/POS-GAS/frontend/assets/icons/delete.png" alt="Delete">
-                    <span>DELETE</span>
-                </button>
-
-            </td>
-
-        </tr>
-        `;
-
+        <button class="icon-btn delete-btn"
+        onclick="deleteUser('${user.user_code}')">
+            <img src="/POS-GAS/frontend/assets/icons/delete.png">
+            <span>DELETE</span>
+        </button>
+    </td>
+</tr>
+`;
                 tableBody.innerHTML += row;
 
             });
@@ -357,8 +393,6 @@ $conn->close();
 
         // INITIAL LOAD
         displayUsers();
-
-
     </script>
 </body>
 
