@@ -8,7 +8,7 @@ if (isset($_SESSION['user_id'])) {
             exit;
 
         case 'staff':
-            header("Location: sales.php");
+            header("Location: ../../frontend/view/testing.fuel.php");
             exit;
 
         case 'cashier':

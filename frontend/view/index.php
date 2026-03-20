@@ -9,7 +9,7 @@ require_once "../../backend/middleware/route.php";
 
 <head>
   <meta charset="UTF-8">
-  <title>JAYLO MEDICAL CLINIC</title>
+  <!-- <title>JAYLO MEDICAL CLINIC</title> -->
   <link rel="stylesheet" href="/POS-GAS/frontend/css/landing-page.css">
   <link rel="stylesheet" href="/POS-GAS/frontend/css/alert.css">
 </head>
@@ -22,10 +22,10 @@ require_once "../../backend/middleware/route.php";
     <div class="clinic-card">
       <div class="logo-box">
         <span>
-          <img src="/POS-GAS/frontend/assets/Jaylo.png" alt="Clinic Logo">
+          <!-- <img src="/POS-GAS/frontend/assets/Jaylo.png" alt="Clinic Logo"> -->
         </span>
       </div>
-      <h1>JAYLO MEDICAL CLINIC</h1>
+      <!-- <h1>JAYLO MEDICAL CLINIC</h1> -->
     </div>
 
     <!-- Right Card -->
@@ -54,7 +54,7 @@ require_once "../../backend/middleware/route.php";
       const form = event.target;
       const formData = new FormData(form);
 
-      fetch("/POS-GAS/api/auth/login", {
+      fetch("../../api/auth/login.php", {
           method: "POST",
           body: formData
         })
@@ -86,7 +86,11 @@ require_once "../../backend/middleware/route.php";
         })
         .catch(error => {
           console.error("Error", error);
-          alert("Something went wrong. Try Again");
+          showAlert(
+            "error",
+            "Login Failed",
+            "Something went wrong. Try Again"
+          );
         })
 
 
@@ -139,6 +143,8 @@ require_once "../../backend/middleware/route.php";
       }
     }
   </script>
+
+ 
 
 </body>
 

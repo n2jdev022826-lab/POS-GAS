@@ -9,7 +9,10 @@ require_once "../../config/database.php";
 $db = new Database();
 $conn = $db->connect();
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+
+try{
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = $_POST['username'] ?? '';
     $password = $_POST['password'] ?? '';
 
@@ -39,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // Set session variables
-    $_SESSION['user_id'] = $user['user_id'];
+    $_SESSION['user_id'] = $user['id'];
     $_SESSION['username'] = $user['username'];
     $_SESSION['fname'] = $user['fname'];
     $_SESSION['lname'] = $user['lname'];
@@ -60,7 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $redirect = "dashboard.php";
             break;
         case 'staff':
-            $redirect = "sales.php";
+            $redirect = "../../frontend/view/testing.fuel.php";
             break;
         case 'cashier':
             $redirect = "cashier/cashier.php";
@@ -73,5 +76,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         "status" => "success",
         "message" => "Welcome Back, " . $user['username'] . "!",
         "redirect" => $redirect
+    ]);
+}
+}catch(Exception $e){
+    echo json_encode([
+        "status" => "error",
+        "message" => "An error occurred: " . $e->getMessage()
     ]);
 }

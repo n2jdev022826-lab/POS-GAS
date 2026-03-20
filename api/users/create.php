@@ -12,4 +12,13 @@ $db = new Database();
 $conn = $db->connect();
 
 $controller = new UserController($conn);
-$controller->create();
+
+
+try {
+    $controller->create();
+} catch (Exception $e) {
+    echo json_encode([
+        "status" => "error",
+        "message" => "An error occurred: " . $e->getMessage()
+    ]);
+}

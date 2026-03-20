@@ -7,7 +7,7 @@ class UserController
 
     private $user;
 
-    public function __construct($db)
+    public function __construct($db) 
     {
         $this->user = new UserModel($db);
     }
@@ -17,13 +17,28 @@ class UserController
 
         $data = $_POST;
 
-        if($this->user->checkUser($data)){
+        if($this->user->checkUsername($data)){
                          echo json_encode([
             "status" => "error",
-            "message" => "User with this phone or email already exists"
+            "message" => "Username already taken"
         ]);
         return;
-        }else{
+        }else if($this->user->checkEmail($data)){
+            echo json_encode([
+                "status" => "error",
+                "message" => "Email number already taken"
+            ]);
+            return;
+        }
+            else if($this->user->checkPhone($data)){
+                echo json_encode([
+                    "status" => "error",
+                    "message" => "Phone number already taken"
+                ]);
+                return;
+            }
+        
+        else{
                                                                 
          if ($this->user->create($data)) {
 

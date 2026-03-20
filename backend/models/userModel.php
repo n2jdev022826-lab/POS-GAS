@@ -21,6 +21,7 @@ class UserModel
         $middlename = $data['middlename'] ?? '';
         $lastname = $data['lastname'] ?? '';
         $username = $data['username'] ?? '';
+        $sex = $data['sex'] ?? '';
         $email = $data['email'] ?? '';
         $role = $data['role'] ?? '';
         $phone = $data['phone'] ?? '';
@@ -29,17 +30,18 @@ class UserModel
         $hire_date = $data['hire_date'] ?? '';
 
         $sql = "INSERT INTO users
-        (fname,middlename,lname,username,email,role,phone,address,date_of_birth,hire_date,password,created_at)
-        VALUES (?,?,?,?,?,?,?,?,?,?,?,NOW())";
+        (fname,middlename,lname,username,sex,email,role,phone,address,date_of_birth,hire_date,password,created_at)
+        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,NOW())";
 
         $stmt = $this->conn->prepare($sql);
 
         $stmt->bind_param(
-            "sssssssssss",
+            "ssssssssssss",
             $firstname,
             $middlename,
             $lastname,
             $username,
+            $sex,
             $email,
             $role,
             $phone,
@@ -53,16 +55,45 @@ class UserModel
     }
 
 
-    public function checkUser($data)
+    public function checkUsername($data)
     {
-        $phone = $data['phone'] ?? '';
-        $email = $data['email'] ?? '';
+        $username = $data['username'] ?? '';
+        
 
-        $sql = "SELECT * FROM users WHERE phone = ? OR email = ?";
+        $sql = "SELECT * FROM users WHERE username = ?";
         $stmt = $this->conn->prepare($sql);
-        $stmt->bind_param("ss", $phone, $email);
+        $stmt->bind_param("s", $username);
         $stmt->execute();
         $stmt->store_result();
         return $stmt->num_rows > 0;
     }
+
+    public function checkPhone($data)
+    {
+        $phone = $data['phone'] ?? '';
+        
+
+        $sql = "SELECT * FROM users WHERE phone = ?";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("s", $phone);
+        $stmt->execute();
+        $stmt->store_result();
+        return $stmt->num_rows > 0;
+    }
+
+    public function checkEmail($data)
+    {
+        $email = $data['email'] ?? '';
+        
+
+        $sql = "SELECT * FROM users WHERE email = ?";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("s", $email);
+        $stmt->execute();
+        $stmt->store_result();
+        return $stmt->num_rows > 0;
+    }
+    
+
+    
 }
