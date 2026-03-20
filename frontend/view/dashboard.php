@@ -172,7 +172,7 @@ $conn->close();
 
       <div class="employee-info">
         <div class="employee-name"><?php echo htmlspecialchars($_SESSION['lname'] . ", " . $_SESSION['fname']); ?></div>
-        <div id="employee-profile"></div>
+        <div id="employee-profile"><img src="/POS-GAS/frontend/assets/uploads/users/<?php echo htmlspecialchars(!empty($_SESSION['image']) ? $_SESSION['image'] : 'default.jpg'); ?>" class="employee-img"></div>
       </div>
     </div>
 

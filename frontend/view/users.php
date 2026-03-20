@@ -29,7 +29,9 @@ $sql = "SELECT
     hire_date,
     image,
     created_at
-FROM users";
+FROM users
+WHERE is_deleted = 0";
+
 
 $result = $conn->query($sql);
 
@@ -221,7 +223,7 @@ $conn->close();
                 <!-- LEFT SIDE (IMAGE) -->
                 <div class="image-section">
 
-                    <label>USER IMAGE</label>
+                    <label id="imageLabel">USER IMAGE</label>
 
                     <div class="image-preview" id="imagePreview"></div>
 
@@ -302,10 +304,15 @@ $conn->close();
                             <input type="date" name="hire_date">
                         </div>
 
+
+                        <div class="modal-buttons">
+                        <button type="submit" class="save-btn">+ SAVE</button>
                     </div>
 
-                    <div class="modal-buttons">
-                        <button type="submit" class="save-btn">+ SAVE</button>
+                    </div>
+
+                                        <div class="modal-buttons">
+                        <button type="submit" class="cancel-btn"  onclick="closeUserModal()" >Cancel</button>
                     </div>
 
                 </div>

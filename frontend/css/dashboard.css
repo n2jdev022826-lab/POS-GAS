@@ -156,6 +156,13 @@ body {
   color: #9A0303;
 }
 
+.employee-img {
+    width: 45px;
+    height: 45px;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
 /* ================= CARDS ================= */
 
 .cards {

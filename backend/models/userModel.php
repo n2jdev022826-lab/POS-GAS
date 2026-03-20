@@ -102,4 +102,5 @@ VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,NOW())";
         $stmt->store_result();
         return $stmt->num_rows > 0;
     }
+
 }
