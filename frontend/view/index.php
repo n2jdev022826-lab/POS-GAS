@@ -9,7 +9,11 @@ require_once "../../backend/middleware/route.php";
 
 <head>
   <meta charset="UTF-8">
+<<<<<<< HEAD
   <!-- <title>JAYLO MEDICAL CLINIC</title> -->
+=======
+  <title>GAS STATION</title>
+>>>>>>> cd15f9baacad89574b7c94d5d103f610a8f965c7
   <link rel="stylesheet" href="/POS-GAS/frontend/css/landing-page.css">
   <link rel="stylesheet" href="/POS-GAS/frontend/css/alert.css">
 </head>
@@ -22,10 +26,10 @@ require_once "../../backend/middleware/route.php";
     <div class="clinic-card">
       <div class="logo-box">
         <span>
-          <!-- <img src="/POS-GAS/frontend/assets/Jaylo.png" alt="Clinic Logo"> -->
+          <img src="/POS-GAS/frontend/assets/Jaylo.png" alt="Clinic Logo">
         </span>
       </div>
-      <!-- <h1>JAYLO MEDICAL CLINIC</h1> -->
+      <h1>JAYLO MEDICAL CLINIC</h1>
     </div>
 
     <!-- Right Card -->
