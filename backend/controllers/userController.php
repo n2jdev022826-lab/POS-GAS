@@ -55,4 +55,51 @@ class UserController
         }
         }
     }
+
+    public function update()
+{
+    $data = $_POST;
+
+    if ($this->user->update($data)) {
+        echo json_encode([
+            "status" => "success",
+            "message" => "User updated successfully"
+        ]);
+    } else {
+        echo json_encode([
+            "status" => "error",
+            "message" => "Failed to update user"
+        ]);
+    }
+}
+
+
+public function delete($data)
+{
+    if (!isset($data['user_code'])) {
+        echo json_encode([
+            "status" => "error",
+            "message" => "User code is required"
+        ]);
+        return;
+    }
+
+    // current logged in user (based on your session)
+    $deleted_by = $_SESSION['fname'] . ' ' . $_SESSION['lname'];
+
+    if ($this->user->delete($data['user_code'], $deleted_by)) {
+
+        echo json_encode([
+            "status" => "success",
+            "message" => "User deleted successfully"
+        ]);
+
+    } else {
+
+        echo json_encode([
+            "status" => "error",
+            "message" => "Failed to delete user"
+        ]);
+    }
+}
 }

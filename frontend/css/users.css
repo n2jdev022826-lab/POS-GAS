@@ -507,9 +507,17 @@ tfoot td {
   gap: 10px;
 }
 
-.cancel-btn {
+.usercancel-btn {
   margin-left: 51%;
   background: #ccc;
+  padding: 9px 14px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+}
+
+.editcancel-btn{
+    background: #ccc;
   padding: 9px 14px;
   border-radius: 6px;
   border: none;

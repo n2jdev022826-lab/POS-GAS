@@ -131,7 +131,8 @@ $conn->close();
             <div class="employee-info">
                 <div class="employee-name"> <?php echo htmlspecialchars($_SESSION['lname'] . ", " . $_SESSION['fname']); ?></div>
                 <div id="employee-profile">
-                <img src="/POS-GAS/frontend/assets/uploads/users/<?php echo htmlspecialchars(!empty($_SESSION['image']) ? $_SESSION['image'] : 'default.jpg'); ?>" class="employee-img"></div>
+                    <img src="/POS-GAS/frontend/assets/uploads/users/<?php echo htmlspecialchars(!empty($_SESSION['image']) ? $_SESSION['image'] : 'default.jpg'); ?>" class="employee-img">
+                </div>
             </div>
         </div>
 
@@ -209,121 +210,235 @@ $conn->close();
 
     <div id="addUserModal" class="modal">
 
-    <div class="modal-box large">
+        <div class="modal-box large">
 
-        <div class="modal-header">
-            <h2>ADD USER</h2>
-            <span class="close-modal" onclick="closeUserModal()">&times;</span>
-        </div>
-
-        <form id="addUserForm" enctype="multipart/form-data">
-
-            <div class="modal-content">
-
-                <!-- LEFT SIDE (IMAGE) -->
-                <div class="image-section">
-
-                    <label id="imageLabel">USER IMAGE</label>
-
-                    <div class="image-preview" id="imagePreview"></div>
-
-                    <input type="file" name="image" id="imageInput" hidden>
-
-                    <button type="button" class="upload-btn" onclick="document.getElementById('imageInput').click()">
-                        UPLOAD
-                    </button>
-
-                </div>
-
-                <!-- RIGHT SIDE (FORM) -->
-                <div class="form-section">
-
-                    <div class="form-grid">
-
-                        <div class="input-group">
-                            <label>FIRST NAME</label>
-                            <input type="text" name="firstname" required>
-                        </div>
-
-                        <div class="input-group">
-                            <label>MIDDLE NAME</label>
-                            <input type="text" name="middlename">
-                        </div>
-
-                        <div class="input-group">
-                            <label>SURNAME</label>
-                            <input type="text" name="lastname" required>
-                        </div>
-
-                        <div class="input-group">
-                            <label>ROLE</label>
-                            <select name="role" required>
-                                <option value="">Select Role</option>
-                                <option value="admin">Admin</option>
-                                <option value="staff">Staff</option>
-                                <option value="cashier">Cashier</option>
-                            </select>
-                        </div>
-
-                        <div class="input-group">
-                            <label>CONTACT NO.</label>
-                            <input type="text" name="phone" required>
-                        </div>
-
-                        <div class="input-group">
-                            <label>SEX</label>
-                            <select name="sex" required>
-                                <option value="">Select</option>
-                                <option value="MALE">Male</option>
-                                <option value="FEMALE">Female</option>
-                            </select>
-                        </div>
-
-                        <div class="input-group">
-                            <label>ADDRESS</label>
-                            <input type="text" name="address" required>
-                        </div>
-
-                        <div class="input-group">
-                            <label>EMAIL</label>
-                            <input type="email" name="email" required>
-                        </div>
-
-                         <div class="input-group">
-                            <label>USERNAME</label>
-                            <input type="text" name="username" required>
-                        </div>
-
-                        <div class="input-group">
-                            <label>PASSWORD</label>
-                            <input type="password" name="password" required>
-                        </div>
-                        
-                        <div class="input-group">
-                            <label>HIRE DATE</label>
-                            <input type="date" name="hire_date">
-                        </div>
-
-
-                        <div class="modal-buttons">
-                        <button type="submit" class="save-btn">+ SAVE</button>
-                    </div>
-
-                    </div>
-
-                                        <div class="modal-buttons">
-                        <button type="submit" class="cancel-btn"  onclick="closeUserModal()" >Cancel</button>
-                    </div>
-
-                </div>
-
+            <div class="modal-header">
+                <h2>ADD USER</h2>
+                <span class="close-modal" onclick="closeUserModal()">&times;</span>
             </div>
 
-        </form>
+            <form id="addUserForm" enctype="multipart/form-data">
+
+                <div class="modal-content">
+
+                    <!-- LEFT SIDE (IMAGE) -->
+                    <div class="image-section">
+
+                        <label id="imageLabel">USER IMAGE</label>
+
+                        <div class="image-preview" id="imagePreview"></div>
+
+                        <input type="file" name="image" id="imageInput" hidden>
+
+                        <button type="button" class="upload-btn" onclick="document.getElementById('imageInput').click()">
+                            UPLOAD
+                        </button>
+
+                    </div>
+
+                    <!-- RIGHT SIDE (FORM) -->
+                    <div class="form-section">
+
+                        <div class="form-grid">
+
+                            <div class="input-group">
+                                <label>FIRST NAME</label>
+                                <input type="text" name="firstname" required>
+                            </div>
+
+                            <div class="input-group">
+                                <label>MIDDLE NAME</label>
+                                <input type="text" name="middlename">
+                            </div>
+
+                            <div class="input-group">
+                                <label>SURNAME</label>
+                                <input type="text" name="lastname" required>
+                            </div>
+
+                            <div class="input-group">
+                                <label>ROLE</label>
+                                <select name="role" required>
+                                    <option value="">Select Role</option>
+                                    <option value="admin">Admin</option>
+                                    <option value="staff">Staff</option>
+                                    <option value="cashier">Cashier</option>
+                                </select>
+                            </div>
+
+                            <div class="input-group">
+                                <label>CONTACT NO.</label>
+                                <input type="text" name="phone" required>
+                            </div>
+
+                            <div class="input-group">
+                                <label>SEX</label>
+                                <select name="sex" required>
+                                    <option value="">Select</option>
+                                    <option value="MALE">Male</option>
+                                    <option value="FEMALE">Female</option>
+                                </select>
+                            </div>
+
+                            <div class="input-group">
+                                <label>ADDRESS</label>
+                                <input type="text" name="address" required>
+                            </div>
+
+                            <div class="input-group">
+                                <label>EMAIL</label>
+                                <input type="email" name="email" required>
+                            </div>
+
+                            <div class="input-group">
+                                <label>USERNAME</label>
+                                <input type="text" name="username" required>
+                            </div>
+
+                            <div class="input-group">
+                                <label>PASSWORD</label>
+                                <input type="password" name="password" required>
+                            </div>
+
+                            <div class="input-group">
+                                <label>HIRE DATE</label>
+                                <input type="date" name="hire_date">
+                            </div>
+
+
+                            <div class="modal-buttons">
+                                <button type="submit" class="save-btn">+ SAVE</button>
+                            </div>
+
+                        </div>
+
+                        <div class="modal-buttons">
+                            <button type="submit" class="usercancel-btn" onclick="closeUserModal()">Cancel</button>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </form>
+
+        </div>
 
     </div>
 
-</div>
+    <!-- EDIT USER MODAL -->
+    <div id="editUserModal" class="modal">
+
+        <div class="modal-box large">
+
+            <div class="modal-header">
+                <h2>EDIT USER</h2>
+                <span class="close-modal" onclick="closeEditModal()">&times;</span>
+            </div>
+
+            <form id="editUserForm" enctype="multipart/form-data">
+
+                <input type="hidden" name="user_code" id="edit_user_code">
+
+                <div class="modal-content">
+
+                    <!-- LEFT SIDE -->
+                    <div class="image-section">
+
+                        <label>USER IMAGE</label>
+
+                        <div class="image-preview" id="editImagePreview"></div>
+
+                        <input type="file" name="image" id="editImageInput" hidden>
+
+                        <button type="button" class="upload-btn"
+                            onclick="document.getElementById('editImageInput').click()">
+                            UPLOAD
+                        </button>
+
+                    </div>
+
+                    <!-- RIGHT SIDE -->
+                    <div class="form-section">
+
+                        <div class="form-grid">
+
+                            <div class="input-group">
+                                <label>FIRST NAME</label>
+                                <input type="text" name="firstname" id="edit_firstname" required>
+                            </div>
+
+                            <div class="input-group">
+                                <label>MIDDLE NAME</label>
+                                <input type="text" name="middlename" id="edit_middlename">
+                            </div>
+
+                            <div class="input-group">
+                                <label>SURNAME</label>
+                                <input type="text" name="lastname" id="edit_lastname" required>
+                            </div>
+
+                            <div class="input-group">
+                                <label>ROLE</label>
+                                <select name="role" id="edit_role" required>
+                                    <option value="admin">Admin</option>
+                                    <option value="staff">Staff</option>
+                                    <option value="cashier">Cashier</option>
+                                </select>
+                            </div>
+
+                            <div class="input-group">
+                                <label>CONTACT NO.</label>
+                                <input type="text" name="phone" id="edit_phone" required>
+                            </div>
+
+                            <div class="input-group">
+                                <label>SEX</label>
+                                <select name="sex" id="edit_sex" required>
+                                    <option value="MALE">Male</option>
+                                    <option value="FEMALE">Female</option>
+                                </select>
+                            </div>
+
+                            <div class="input-group">
+                                <label>ADDRESS</label>
+                                <input type="text" name="address" id="edit_address" required>
+                            </div>
+
+                            <div class="input-group">
+                                <label>EMAIL</label>
+                                <input type="email" name="email" id="edit_email" required>
+                            </div>
+
+                            <div class="input-group">
+                                <label>USERNAME</label>
+                                <input type="text" name="username" id="edit_username" required>
+                            </div>
+
+                            <div class="input-group">
+                                <label>HIRE DATE</label>
+                                <input type="date" name="hire_date" id="edit_hire_date">
+                            </div>
+                            <div class="modal-buttons">
+                             <button type="submit" class="save-btn">UPDATE</button>
+                             </div>
+
+                            <div class="modal-buttons">
+                            <button type="button" class="editcancel-btn" onclick="closeEditModal()">Cancel</button>
+                            </div>
+                        </div>
+
+
+
+                    </div>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
 
     <script src="/POS-GAS/frontend/js/date-time.js"></script>
     <script src="/POS-GAS/frontend/js/print.js"></script>

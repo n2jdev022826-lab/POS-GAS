@@ -103,4 +103,79 @@ VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,NOW())";
         return $stmt->num_rows > 0;
     }
 
+
+
+
+    public function update($data)
+{
+    $user_code = $data['user_code'];
+
+    $imageName = '';
+
+    if (isset($_FILES['image']) && $_FILES['image']['name']) {
+        $imageName = time() . '_' . $_FILES['image']['name'];
+        $target = "../../frontend/assets/uploads/users/" . $imageName;
+        move_uploaded_file($_FILES['image']['tmp_name'], $target);
+    }
+
+    $sql = "UPDATE users SET 
+        fname=?, middlename=?, lname=?, username=?, sex=?, email=?, role=?, phone=?, address=?, hire_date=?";
+
+    if ($imageName) {
+        $sql .= ", image=?";
+    }
+
+    $sql .= " WHERE user_code=?";
+
+    $stmt = $this->conn->prepare($sql);
+
+    if ($imageName) {
+        $stmt->bind_param(
+            "ssssssssssss",
+            $data['firstname'],
+            $data['middlename'],
+            $data['lastname'],
+            $data['username'],
+            $data['sex'],
+            $data['email'],
+            $data['role'],
+            $data['phone'],
+            $data['address'],
+            $data['hire_date'],
+            $imageName,
+            $user_code
+        );
+    } else {
+        $stmt->bind_param(
+            "sssssssssss",
+            $data['firstname'],
+            $data['middlename'],
+            $data['lastname'],
+            $data['username'],
+            $data['sex'],
+            $data['email'],
+            $data['role'],
+            $data['phone'],
+            $data['address'],
+            $data['hire_date'],
+            $user_code
+        );
+    }
+
+    return $stmt->execute();
+}
+
+
+public function delete($user_code, $deleted_by)
+{
+    $sql = "UPDATE users 
+            SET is_deleted = 1, deleted_by = ? 
+            WHERE user_code = ?";
+
+    $stmt = $this->conn->prepare($sql);
+
+    $stmt->bind_param("ss", $deleted_by, $user_code);
+
+    return $stmt->execute();
+}
 }
