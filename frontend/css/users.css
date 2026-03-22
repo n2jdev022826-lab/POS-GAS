@@ -250,7 +250,7 @@ body {
 .table-wrapper {
   box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
   overflow-y: auto; /* enable vertical scroll */
-  overflow-x: hidden;
+  overflow-x: auto;
   max-height: 65vh;
   position: relative;
   border-radius: 10px;

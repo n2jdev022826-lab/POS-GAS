@@ -164,8 +164,7 @@ $conn->close();
                             <th>Address</th>
                             <th id="tdphone">Phone</th>
                             <th>Email</th>
-                            <th>Date Hired</th>
-                            <th>Created At</th>
+                            <th>Birthdate</th>
                             <th id="thaction">Action</th>
                         </tr>
                     </thead>
@@ -312,10 +311,11 @@ $conn->close();
                                 <button type="submit" class="save-btn">+ SAVE</button>
                             </div>
 
-                        </div>
 
-                        <div class="modal-buttons">
-                            <button type="submit" class="usercancel-btn" onclick="closeUserModal()">Cancel</button>
+                            <div class="modal-buttons">
+                                <button type="submit" class="editcancel-btn" onclick="closeUserModal()">Cancel</button>
+                            </div>
+
                         </div>
 
                     </div>
@@ -426,7 +426,7 @@ $conn->close();
                                 <label>BIRTH DATE</label>
                                 <input type="date" name="birthdate" id="edit_birth_date">
                             </div>
-                            
+
                             <div class="input-group">
                                 <label>HIRE DATE</label>
                                 <input type="date" name="hire_date" id="edit_hire_date">
@@ -452,6 +452,10 @@ $conn->close();
         </div>
 
     </div>
+
+    <script>
+        window.CURRENT_USER_CODE = <?php echo json_encode($_SESSION['user_code'] ?? null); ?>;
+    </script>
 
     <script src="/POS-GAS/frontend/js/date-time.js"></script>
     <script src="/POS-GAS/frontend/js/print.js"></script>
@@ -503,8 +507,7 @@ $conn->close();
     <td>${user.address}</td>
     <td id="tdphone">${user.phone}</td>
     <td>${user.email}</td>
-    <td>${user.hire_date}</td>
-    <td>${user.created_at}</td>
+    <td>${user.date_of_birth}</td>
     <td class="action-buttons">
         <button class="icon-btn edit-btn"
         onclick="editUser('${user.user_code}')">

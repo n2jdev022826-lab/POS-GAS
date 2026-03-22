@@ -111,6 +111,7 @@ function editUser(userCode) {
   document.getElementById("edit_address").value = user.address || "";
   document.getElementById("edit_email").value = user.email || "";
   document.getElementById("edit_username").value = user.username || "";
+  document.getElementById("edit_birth_date").value = user.date_of_birth || "";
   document.getElementById("edit_hire_date").value = user.hire_date || "";
 
   // Image preview
@@ -151,8 +152,19 @@ document.getElementById("editUserForm").addEventListener("submit", function (e) 
     });
 });
 
-// DELETE USER 
 function deleteUser(userCode) {
+
+  // 🚫 BLOCK SELF DELETE
+   if (userCode === window.CURRENT_USER_CODE) {
+    showAlert(
+      "warning",
+      "Action Blocked",
+      "You cannot delete your own account while logged in."
+    );
+    return;
+  }
+
+  // ✅ NORMAL DELETE FLOW
   showAlert(
     "confirm",
     "Delete User",

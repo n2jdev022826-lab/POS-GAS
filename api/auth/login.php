@@ -70,6 +70,7 @@ try {
     session_regenerate_id(true);
 
     $_SESSION['user_id'] = $user['id'];
+    $_SESSION['user_code'] = $user['user_code'];
     $_SESSION['username'] = $user['username'];
     $_SESSION['fname'] = $user['fname'];
     $_SESSION['lname'] = $user['lname'];
