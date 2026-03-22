@@ -275,8 +275,8 @@ $conn->close();
                                 <label>SEX</label>
                                 <select name="sex" required>
                                     <option value="">Select</option>
-                                    <option value="MALE">Male</option>
-                                    <option value="FEMALE">Female</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
                                 </select>
                             </div>
 
@@ -299,12 +299,14 @@ $conn->close();
                                 <label>PASSWORD</label>
                                 <input type="password" name="password" required>
                             </div>
-
+                            <div class="input-group">
+                                <label>BIRTH DATE</label>
+                                <input type="date" name="birthdate" required>
+                            </div>
                             <div class="input-group">
                                 <label>HIRE DATE</label>
                                 <input type="date" name="hire_date">
                             </div>
-
 
                             <div class="modal-buttons">
                                 <button type="submit" class="save-btn">+ SAVE</button>
@@ -395,8 +397,8 @@ $conn->close();
                             <div class="input-group">
                                 <label>SEX</label>
                                 <select name="sex" id="edit_sex" required>
-                                    <option value="MALE">Male</option>
-                                    <option value="FEMALE">Female</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
                                 </select>
                             </div>
 
@@ -416,15 +418,26 @@ $conn->close();
                             </div>
 
                             <div class="input-group">
+                                <label>NEW PASSWORD</label>
+                                <input type="password" name="password" placeholder="Leave blank to keep current password">
+                            </div>
+
+                            <div class="input-group">
+                                <label>BIRTH DATE</label>
+                                <input type="date" name="birthdate" id="edit_birth_date">
+                            </div>
+                            
+                            <div class="input-group">
                                 <label>HIRE DATE</label>
                                 <input type="date" name="hire_date" id="edit_hire_date">
                             </div>
-                            <div class="modal-buttons">
-                             <button type="submit" class="save-btn">UPDATE</button>
-                             </div>
 
                             <div class="modal-buttons">
-                            <button type="button" class="editcancel-btn" onclick="closeEditModal()">Cancel</button>
+                                <button type="submit" class="save-btn">UPDATE</button>
+                            </div>
+
+                            <div class="modal-buttons">
+                                <button type="button" class="editcancel-btn" onclick="closeEditModal()">Cancel</button>
                             </div>
                         </div>
 

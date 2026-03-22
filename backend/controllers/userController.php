@@ -12,53 +12,52 @@ class UserController
         $this->user = new UserModel($db);
     }
 
-    public function create()
-    {
+   public function create()
+{
+    $data = $_POST;
 
-        $data = $_POST;
+    $data['created_by'] = $_SESSION['fname'] . ' ' . $_SESSION['lname'];
 
-        if($this->user->checkUsername($data)){
-                         echo json_encode([
+    if($this->user->checkUsername($data)){
+        echo json_encode([
             "status" => "error",
             "message" => "Username already taken"
         ]);
         return;
-        }else if($this->user->checkEmail($data)){
-            echo json_encode([
-                "status" => "error",
-                "message" => "Email number already taken"
-            ]);
-            return;
-        }
-            else if($this->user->checkPhone($data)){
-                echo json_encode([
-                    "status" => "error",
-                    "message" => "Phone number already taken"
-                ]);
-                return;
-            }
-        
-        else{
-                                                                
-         if ($this->user->create($data)) {
-
-            echo json_encode([
-                "status" => "success",
-                "message" => "User added successfully"
-            ]);
-        } else {
-
-            echo json_encode([
-                "status" => "error",
-                "message" => "Failed to add user"
-            ]);
-        }
-        }
+    } 
+    else if($this->user->checkEmail($data)){
+        echo json_encode([
+            "status" => "error",
+            "message" => "Email already taken"
+        ]);
+        return;
     }
+    else if($this->user->checkPhone($data)){
+        echo json_encode([
+            "status" => "error",
+            "message" => "Phone already taken"
+        ]);
+        return;
+    }
+
+    if ($this->user->create($data)) {
+        echo json_encode([
+            "status" => "success",
+            "message" => "User added successfully"
+        ]);
+    } else {
+        echo json_encode([
+            "status" => "error",
+            "message" => "Failed to add user"
+        ]);
+    }
+}
 
     public function update()
 {
     $data = $_POST;
+
+    $data['updated_by'] = $_SESSION['fname'] . ' ' . $_SESSION['lname'];
 
     if ($this->user->update($data)) {
         echo json_encode([
@@ -73,7 +72,6 @@ class UserController
     }
 }
 
-
 public function delete($data)
 {
     if (!isset($data['user_code'])) {
@@ -84,7 +82,7 @@ public function delete($data)
         return;
     }
 
-    // current logged in user (based on your session)
+    // current logged in user
     $deleted_by = $_SESSION['fname'] . ' ' . $_SESSION['lname'];
 
     if ($this->user->delete($data['user_code'], $deleted_by)) {
