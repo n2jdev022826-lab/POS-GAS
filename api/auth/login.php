@@ -91,13 +91,13 @@ try {
 
     // ✅ Role-based redirect
     switch ($user['role']) {
-        case 'admin':
+        case 'Admin':
             $redirect = "dashboard.php";
             break;
-        case 'staff':
+        case 'Staff':
             $redirect = "testing.fuel.php";
             break;
-        case 'cashier':
+        case 'Cashier':
             $redirect = "cashier/cashier.php";
             break;
         default:

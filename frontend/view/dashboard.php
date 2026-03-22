@@ -98,6 +98,7 @@ $conn->close();
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>GAS STATION</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="/POS-GAS/frontend/css/global.css" />
   <link rel="stylesheet" href="/POS-GAS/frontend/css/dashboard.css" />
 </head>
 

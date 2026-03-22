@@ -51,6 +51,7 @@ $conn->close();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GAS STATION</title>
 
+    <link rel="stylesheet" href="/POS-GAS/frontend/css/global.css">
     <link rel="stylesheet" href="/POS-GAS/frontend/css/users.css">
     <link rel="stylesheet" href="/POS-GAS/frontend/css/print.css">
     <link rel="stylesheet" href="/POS-GAS/frontend/css/alert.css">
@@ -259,9 +260,9 @@ $conn->close();
                                 <label>ROLE</label>
                                 <select name="role" required>
                                     <option value="">Select Role</option>
-                                    <option value="admin">Admin</option>
-                                    <option value="staff">Staff</option>
-                                    <option value="cashier">Cashier</option>
+                                    <option value="Admin">Admin</option>
+                                    <option value="Staff">Staff</option>
+                                    <option value="Cashier">Cashier</option>
                                 </select>
                             </div>
 
@@ -313,7 +314,7 @@ $conn->close();
 
 
                             <div class="modal-buttons">
-                                <button type="submit" class="editcancel-btn" onclick="closeUserModal()">Cancel</button>
+                                <button type="submit" class="addcancel-btn" onclick="closeUserModal()">Cancel</button>
                             </div>
 
                         </div>
@@ -383,9 +384,9 @@ $conn->close();
                             <div class="input-group">
                                 <label>ROLE</label>
                                 <select name="role" id="edit_role" required>
-                                    <option value="admin">Admin</option>
-                                    <option value="staff">Staff</option>
-                                    <option value="cashier">Cashier</option>
+                                    <option value="Admin">Admin</option>
+                                    <option value="Staff">Staff</option>
+                                    <option value="Cashier">Cashier</option>
                                 </select>
                             </div>
 

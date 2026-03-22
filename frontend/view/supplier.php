@@ -36,6 +36,7 @@ $conn->close();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JAYLO MEDICAL CLINIC</title>
 
+    <link rel="stylesheet" href="/POS-GAS/frontend/css/global.css">
     <link rel="stylesheet" href="/POS-GAS/frontend/css/supplier.css">
     <link rel="stylesheet" href="/POS-GAS/frontend/css/print.css">
     <link rel="stylesheet" href="/POS-GAS/frontend/css/alert.css">
@@ -188,60 +189,123 @@ $conn->close();
     </div>
 
     <!-- ADD SUPPLIER MODAL -->
+<div id="addSupplierModal" class="modal">
+  <div class="modal-box large">
+    <div class="modal-header">
+      <h2>ADD SUPPLIER</h2>
+      <span class="close-modal" onclick="closeSupplierModal()">&times;</span>
+    </div>
 
-    <div class="modal" id="addSupplierModal">
+    <form id="addSupplierForm">
+      <div class="modal-content">
 
-        <div class="modal-box">
+        <!-- FULL FORM (NO IMAGE SECTION) -->
+        <div class="form-section" style="width:100%;">
+          <div class="form-grid">
 
-            <div class="modal-header">
-                <h2>Add Supplier</h2>
-                <span class="close-btn" onclick="closeSupplierModal()">×</span>
+            <div class="input-group">
+              <label>SUPPLIER NAME</label>
+              <input type="text" name="supplier_name" required>
             </div>
 
-            <form id="addSupplierForm">
+            <div class="input-group">
+              <label>CONTACT PERSON</label>
+              <input type="text" name="contact_name">
+            </div>
 
-                <div class="modal-form">
+            <div class="input-group">
+              <label>CONTACT NO.</label>
+              <input type="text" name="phone">
+            </div>
 
-                    <div class="form-group">
-                        <label>Supplier Name</label>
-                        <input type="text" name="supplier_name" required>
-                    </div>
+            <div class="input-group">
+              <label>EMAIL</label>
+              <input type="email" name="email">
+            </div>
 
-                    <div class="form-group">
-                        <label>Contact Person</label>
-                        <input type="text" name="contact_name">
-                    </div>
+            <div class="input-group" style="grid-column: span 2;">
+              <label>ADDRESS</label>
+              <input type="text" name="address">
+            </div>
 
-                    <div class="form-group">
-                        <label>Address</label>
-                        <input type="text" name="address">
-                    </div>
+            <div class="modal-buttons">
+              <button type="submit" class="save-btn">+ SAVE</button>
+            </div>
 
-                    <div class="form-group">
-                        <label>Contact No.</label>
-                        <input type="text" name="phone">
-                    </div>
+            <div class="modal-buttons">
+              <button type="button" class="editcancel-btn" onclick="closeSupplierModal()">Cancel</button>
+            </div>
 
-                    <div class="form-group full">
-                        <label>Email</label>
-                        <input type="email" name="email">
-                    </div>
-
-                </div>
-
-                <div class="modal-buttons">
-
-                    <button type="button" class="btn cancel-btn" onclick="closeSupplierModal()">Cancel</button>
-
-                    <button type="submit" class="btn save-btn">Save Supplier</button>
-
-                </div>
-
-            </form>
-
+          </div>
         </div>
 
+      </div>
+    </form>
+  </div>
+</div>
+
+
+<!-- EDIT SUPPLIER MODAL -->
+<div id="editSupplierModal" class="modal">
+  <div class="modal-box large">
+    <div class="modal-header">
+      <h2>EDIT SUPPLIER</h2>
+      <span class="close-modal" onclick="closeEditSupplierModal()">&times;</span>
     </div>
+
+    <form id="editSupplierForm">
+      <input type="hidden" name="supplier_code" id="edit_supplier_code">
+
+      <div class="modal-content">
+
+        <!-- FULL FORM -->
+        <div class="form-section" style="width:100%;">
+          <div class="form-grid">
+
+            <div class="input-group">
+              <label>SUPPLIER NAME</label>
+              <input type="text" name="supplier_name" id="edit_supplier_name" required>
+            </div>
+
+            <div class="input-group">
+              <label>CONTACT PERSON</label>
+              <input type="text" name="contact_name" id="edit_contact_name">
+            </div>
+
+            <div class="input-group">
+              <label>CONTACT NO.</label>
+              <input type="text" name="phone" id="edit_phone">
+            </div>
+
+            <div class="input-group">
+              <label>EMAIL</label>
+              <input type="email" name="email" id="edit_email">
+            </div>
+
+            <div class="input-group" style="grid-column: span 2;">
+              <label>ADDRESS</label>
+              <input type="text" name="address" id="edit_address">
+            </div>
+
+            <div class="modal-buttons">
+              <button type="submit" class="save-btn">UPDATE</button>
+            </div>
+
+            <div class="modal-buttons">
+              <button type="button" class="editcancel-btn" onclick="closeEditSupplierModal()">Cancel</button>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </form>
+  </div>
+</div>
+
+    <script>
+        window.CURRENT_USER_CODE = <?php echo json_encode($_SESSION['user_code'] ?? null); ?>;
+    </script>
 
     <script src="/POS-GAS/frontend/js/date-time.js"></script>
     <script src="/POS-GAS/frontend/js/print.js"></script>
@@ -282,13 +346,13 @@ $conn->close();
 
   <td class="action-buttons">
         <button class="icon-btn edit-btn"
-        onclick="editUser('${supplier.user_code}')">
+        onclick="editSupplier('${supplier.supplier_code}')">
             <img src="/POS-GAS/frontend/assets/icons/edit.png">
             <span>EDIT</span>
         </button>
 
         <button class="icon-btn delete-btn"
-        onclick="deleteUser('${supplier.user_code}')">
+        onclick="deleteSupplier('${supplier.supplier_code}')">
             <img src="/POS-GAS/frontend/assets/icons/delete.png">
             <span>DELETE</span>
         </button>
