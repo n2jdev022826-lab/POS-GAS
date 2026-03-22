@@ -147,8 +147,6 @@ $conn->close();
                             <th>Contact No.</th>
                             <th>Email</th>
                             <th>Address</th>
-                            <th>Created By</th>
-                            <th>Updated By</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -281,15 +279,20 @@ $conn->close();
 <td>${supplier.phone}</td>
 <td>${supplier.email}</td>
 <td>${supplier.address}</td>
-<td>${supplier.created_by}</td>
-<td>${supplier.update_by}</td>
 
-<td class="action-buttons">
+  <td class="action-buttons">
+        <button class="icon-btn edit-btn"
+        onclick="editUser('${supplier.user_code}')">
+            <img src="/POS-GAS/frontend/assets/icons/edit.png">
+            <span>EDIT</span>
+        </button>
 
-<button class="edit-btn">Edit</button>
-<button class="delete-btn">Delete</button>
-
-</td>
+        <button class="icon-btn delete-btn"
+        onclick="deleteUser('${supplier.user_code}')">
+            <img src="/POS-GAS/frontend/assets/icons/delete.png">
+            <span>DELETE</span>
+        </button>
+    </td>
 
 </tr>
 `;

@@ -347,7 +347,7 @@ $conn->close();
                     <!-- LEFT SIDE -->
                     <div class="image-section">
 
-                        <label>USER IMAGE</label>
+                        <label id="imageLabel">USER IMAGE</label>
 
                         <div class="image-preview" id="editImagePreview"></div>
 

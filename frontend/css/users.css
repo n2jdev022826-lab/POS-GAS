@@ -249,7 +249,7 @@ body {
 /* TABLE */
 .table-wrapper {
   box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
-  overflow-y: auto; /* enable vertical scroll */
+  overflow-y: auto;
   overflow-x: auto;
   max-height: 65vh;
   position: relative;
@@ -273,7 +273,7 @@ thead th {
   position: sticky;
   top: 0;
   z-index: 10;
-  background: #9A0303; /* MUST match thead background */
+  background: #9A0303;
 }
 
 th,
@@ -298,7 +298,7 @@ tfoot {
 tfoot td {
   position: sticky;
   bottom: 0;
-  background: #f4f4f4; /* same as your footer bg */
+  background: #f4f4f4;
   z-index: 100;
   font-weight: bold;
 }
@@ -401,6 +401,8 @@ tfoot td {
     background-position: center;
     box-shadow:15px 15px 30px rgba(0, 0, 0, 0.15);
 }
+
+
 
 .upload-btn {
   margin-top: 20px;
