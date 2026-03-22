@@ -78,7 +78,7 @@ $conn->close();
                     <span>Sales</span>
                 </li>
 
-                <li onclick="window.location.href='products.php';">
+                <li onclick="window.location.href='productspage';">
                     <img src="/POS-GAS/frontend/assets/icons/products-icon.png" class="menu-icon">
                     <span>Products</span>
                 </li>

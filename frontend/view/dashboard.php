@@ -20,7 +20,7 @@ SELECT
 
 $resultSales = $conn->query($sqlSales);
 if ($row = $resultSales->fetch_assoc()) {
-    $totalSales = $row['total'];
+  $totalSales = $row['total'];
 }
 
 /* ================= TOTAL PRODUCTS ================= */
@@ -30,7 +30,7 @@ $sqlProducts = "SELECT COUNT(*) as total FROM products WHERE is_deleted = 0";
 $resultProducts = $conn->query($sqlProducts);
 
 if ($row = $resultProducts->fetch_assoc()) {
-    $totalProducts = $row['total'];
+  $totalProducts = $row['total'];
 }
 
 /* ================= TOTAL CUSTOMERS ================= */
@@ -41,12 +41,12 @@ $sqlCustomers = "SELECT COUNT(*) as total FROM users WHERE role = 'cashier' AND 
 $resultCustomers = $conn->query($sqlCustomers);
 
 if ($row = $resultCustomers->fetch_assoc()) {
-    $totalCustomers = $row['total'];
+  $totalCustomers = $row['total'];
 }
 
 /* ================= WEEKLY SALES ================= */
 /* Combine transactions + product sales */
-$weeklySales = [0,0,0,0,0,0,0];
+$weeklySales = [0, 0, 0, 0, 0, 0, 0];
 
 $sqlWeekly = "
 SELECT DAYOFWEEK(created_at) as day, SUM(total_amount) as total 
@@ -61,8 +61,8 @@ GROUP BY DAYOFWEEK(created_at)
 $resultWeekly = $conn->query($sqlWeekly);
 
 while ($row = $resultWeekly->fetch_assoc()) {
-    $index = $row['day'] - 1; // Sunday = 1
-    $weeklySales[$index] = (float)$row['total'];
+  $index = $row['day'] - 1; // Sunday = 1
+  $weeklySales[$index] = (float)$row['total'];
 }
 
 /* ================= PIE CHART (TOTAL COST = price * stock) ================= */
@@ -82,8 +82,8 @@ GROUP BY category
 $resultPie = $conn->query($sqlPie);
 
 while ($row = $resultPie->fetch_assoc()) {
-    $categoryLabels[] = $row['category'];
-    $categoryData[] = (float)$row['total_cost'];
+  $categoryLabels[] = $row['category'];
+  $categoryData[] = (float)$row['total_cost'];
 }
 
 $conn->close();
@@ -104,7 +104,9 @@ $conn->close();
 
 <body>
 
-  <!-- ================= SIDEBAR ================= -->
+  <!-- ========================================================================================================================== -->
+  <!--                                                        SIDEBAR                                                             -->
+  <!-- ========================================================================================================================== -->
 
   <div class="sidebar">
     <div>
@@ -120,7 +122,7 @@ $conn->close();
           <span>Sales</span>
         </li>
 
-        <li onclick="window.location.href='products.php';">
+        <li onclick="window.location.href='productspage.php';">
           <img src="/POS-GAS/frontend/assets/icons/products-icon.png" class="menu-icon">
           <span>Products</span>
         </li>
@@ -145,7 +147,7 @@ $conn->close();
           <span>Manage Debts</span>
         </li>
 
-        
+
         <li onclick="window.location.href='users.php';">
           <img src="/POS-GAS/frontend/assets/icons/user-icon.png" class="menu-icon">
           <span>Users</span>
@@ -158,66 +160,79 @@ $conn->close();
 
       </ul>
     </div>
-       <div class="logout" onclick="window.location.href='session';">
-      <img src="/POS-GAS/frontend/assets/icons/logout-icon.png" class="menu-icon"> 
+    <div class="logout" onclick="window.location.href='session';">
+      <img src="/POS-GAS/frontend/assets/icons/logout-icon.png" class="menu-icon">
       LOG OUT
     </div>
   </div>
 
-  <!-- ================= MAIN ================= -->
+  < <!--==========================================================================================================================-->
+    <!--                                                   MAIN CONTENT                                                             -->
+    <!-- ========================================================================================================================== -->
 
-  <div class="main">
+    <div class="main">
 
-    <div class="topbar">
-      <div id="datetime"></div>
 
-      <div class="employee-info">
-        <div class="employee-name"><?php echo htmlspecialchars($_SESSION['lname'] . ", " . $_SESSION['fname']); ?></div>
-        <div id="employee-profile"><img src="/POS-GAS/frontend/assets/uploads/users/<?php echo htmlspecialchars(!empty($_SESSION['image']) ? $_SESSION['image'] : 'default.jpg'); ?>" class="employee-img"></div>
+      <!-- ========================================================================================================================== -->
+      <!--                                                         TOPBAR                                                             -->
+      <!-- ========================================================================================================================== -->
+      <div class="topbar">
+        <div id="datetime"></div>
+
+        <div class="employee-info">
+          <div class="employee-name"><?php echo htmlspecialchars($_SESSION['lname'] . ", " . $_SESSION['fname']); ?></div>
+          <div id="employee-profile"><img src="/POS-GAS/frontend/assets/uploads/users/<?php echo htmlspecialchars(!empty($_SESSION['image']) ? $_SESSION['image'] : 'default.jpg'); ?>" class="employee-img"></div>
+        </div>
       </div>
+
+      <!-- ========================================================================================================================== -->
+      <!--                                                        CARDS                                                               -->
+      <!-- ========================================================================================================================== -->
+      <div class="cards">
+        <div class="card">
+          <h3 id="total-sales">TOTAL SALES</h3>
+          <h1>₱ <?php echo number_format($totalSales, 2); ?></h1>
+        </div>
+
+        <div class="card">
+          <h3 id="total-products">TOTAL PRODUCTS</h3>
+          <h1><?php echo $totalProducts; ?></h1>
+        </div>
+
+        <div class="card">
+          <h3 id="total-customers">TOTAL CUSTOMERS</h3>
+          <h1><?php echo $totalCustomers; ?></h1>
+        </div>
+      </div>
+
+      <!-- ========================================================================================================================== -->
+      <!--                                                        CHARTS                                                              -->
+      <!-- ========================================================================================================================== -->
+      <div class="charts">
+        <div id="line" class="chart-box">
+          <h3>Sales</h3>
+          <canvas id="lineChart"></canvas>
+        </div>
+
+        <div id="pie" class="chart-box">
+          <h3>Expenses</h3>
+          <canvas id="pieChart"></canvas>
+        </div>
+      </div>
+
     </div>
 
-    <!-- Cards -->
-    <div class="cards">
-  <div class="card">
-    <h3 id="total-sales">TOTAL SALES</h3>
-    <h1>₱ <?php echo number_format($totalSales, 2); ?></h1>
-  </div>
+    <!-- ========================================================================================================================== -->
+    <!--                                                        SCRIPTS                                                             -->
+    <!-- ========================================================================================================================== -->
+    <script>
+      const weeklySales = <?php echo json_encode($weeklySales); ?>;
+      const pieLabels = <?php echo json_encode($categoryLabels); ?>;
+      const pieData = <?php echo json_encode($categoryData); ?>;
+    </script>
 
-  <div class="card">
-    <h3 id="total-products">TOTAL PRODUCTS</h3>
-    <h1><?php echo $totalProducts; ?></h1>
-  </div>
-
-  <div class="card">
-    <h3 id="total-customers">TOTAL CUSTOMERS</h3>
-    <h1><?php echo $totalCustomers; ?></h1>
-  </div>
-</div>
-
-    <!-- Charts -->
-    <div class="charts">
-      <div id="line" class="chart-box">
-        <h3>Sales</h3>
-        <canvas id="lineChart"></canvas>
-      </div>
-
-      <div id="pie" class="chart-box">
-        <h3>Expenses</h3>
-        <canvas id="pieChart"></canvas>
-      </div>
-    </div>
-
-  </div>
-
-<script>
-  const weeklySales = <?php echo json_encode($weeklySales); ?>;
-  const pieLabels = <?php echo json_encode($categoryLabels); ?>;
-  const pieData = <?php echo json_encode($categoryData); ?>;
-</script>
-
-<script src="/POS-GAS/frontend/js/dashboard.js"></script>
-  <script src="/POS-GAS/frontend/js/date-time.js"></script>
+    <script src="/POS-GAS/frontend/js/dashboard.js"></script>
+    <script src="/POS-GAS/frontend/js/date-time.js"></script>
 
 
 </body>

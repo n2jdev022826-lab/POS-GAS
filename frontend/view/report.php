@@ -11,16 +11,17 @@ require_once "../../backend/middleware/auth.php";
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>JAYLO MEDICAL CLINIC</title>
+  <title>GAS STATION</title>
+  <link rel="stylesheet" href="/POS-GAS/frontend/css/global.css">
   <link rel="stylesheet" href="/POS-GAS/frontend/css/report.css">
 </head>
 
 <body>
-<!-- ================= SIDEBAR ================= -->
+  <!-- ================= SIDEBAR ================= -->
 
   <div class="sidebar">
     <div>
-      
+
       <ul class="menu">
         <li onclick="window.location.href='dashboard.php';">
           <img src="/POS-GAS/frontend/assets/icons/dashboard-icon.png" class="menu-icon">
@@ -32,7 +33,7 @@ require_once "../../backend/middleware/auth.php";
           <span>Sales</span>
         </li>
 
-        <li onclick="window.location.href='products.php';">
+        <li onclick="window.location.href='productspage';">
           <img src="/POS-GAS/frontend/assets/icons/products-icon.png" class="menu-icon">
           <span>Products</span>
         </li>
@@ -57,7 +58,7 @@ require_once "../../backend/middleware/auth.php";
           <span>Manage Debts</span>
         </li>
 
-        
+
         <li onclick="window.location.href='users.php';">
           <img src="/POS-GAS/frontend/assets/icons/user-icon.png" class="menu-icon">
           <span>Users</span>
@@ -70,8 +71,8 @@ require_once "../../backend/middleware/auth.php";
 
       </ul>
     </div>
-        <div class="logout" onclick="window.location.href='session';">
-      <img src="/POS-GAS/frontend/assets/icons/logout-icon.png" class="menu-icon"> 
+    <div class="logout" onclick="window.location.href='session';">
+      <img src="/POS-GAS/frontend/assets/icons/logout-icon.png" class="menu-icon">
       LOG OUT
     </div>
   </div>
@@ -80,36 +81,39 @@ require_once "../../backend/middleware/auth.php";
   <!-- ================= MAIN ================= -->
   <div class="main">
 
-     <!-- TOP BAR -->
+    <!-- TOP BAR -->
     <div class="topbar">
       <div id="datetime"></div>
 
       <div class="employee-info">
         <div class="employee-name"><?php echo htmlspecialchars($_SESSION['lname'] . ", " . $_SESSION['fname']); ?></div>
         <div id="employee-profile"><img src="/POS-GAS/frontend/assets/uploads/users/<?php echo htmlspecialchars(!empty($_SESSION['image']) ? $_SESSION['image'] : 'default.jpg'); ?>" class="employee-img"></div>
-        </div>
       </div>
+    </div>
 
 
-     <!-- Cards -->
+    <!-- Cards -->
     <div class="cards">
-      <div id="salescard" class="card" onclick="window.location.href='reports/salesreport';">
-        <h3 id="salesreport"></h3>
+      <div id="salescard" class="card"
+        onclick="window.location.href='reports/salesreport';">
+        <h3>Sales</h3>
         <h1>SALES REPORT</h1>
       </div>
 
-      <div id="receivablescard" class="card" onclick="window.location.href='reports/recievables';">
-        <h3 id="receivables"></h3>
-        <h1>ACCOUNT RECIEVABLES REPORT</h1>
+      <div id="receivablescard" class="card"
+        onclick="window.location.href='reports/recievables';">
+        <h3>Finance</h3>
+        <h1>ACCOUNT RECEIVABLES REPORT</h1>
       </div>
 
-      <div id="collectioncard" class="card" onclick="window.location.href='reports/collection';">
-        <h3 id="collection"></h3>
+      <div id="collectioncard" class="card"
+        onclick="window.location.href='reports/collection';">
+        <h3>Collections</h3>
         <h1>COLLECTION REPORT</h1>
       </div>
     </div>
 
-    
+
   </div>
   <script src="/POS-GAS/frontend/js/date-time.js"></script>
 </body>

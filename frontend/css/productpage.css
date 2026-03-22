@@ -1,0 +1,63 @@
+.cards {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.card {
+  position: relative;
+  width: 320px;
+  height: 180px;
+  border-radius: 12px; /* less round */
+  padding: 20px;
+  cursor: pointer;
+  overflow: hidden;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+/* Subtle hover (not too dramatic) */
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+}
+
+/* Gradients closer to image */
+#salescard {
+  background: linear-gradient(135deg, #f7d000, #f39c12);
+}
+
+#receivablescard {
+  background: linear-gradient(135deg, #ff8a00, #ff5e00);
+}
+
+/* Large faded background text */
+.card::before {
+  content: attr(data-bg);
+  position: absolute;
+  font-size: 90px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.12);
+  top: 50%;
+  left: 55%;
+  transform: translate(-50%, -50%) rotate(-90deg);
+  pointer-events: none;
+  letter-spacing: 2px;
+}
+
+/* Typography */
+.card h3 {
+  margin: 0 0 6px;
+  font-size: 15px;
+  font-weight: 400;
+  opacity: 0.9;
+}
+
+.card h1 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 600;
+}

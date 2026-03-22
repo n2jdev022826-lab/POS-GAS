@@ -34,7 +34,7 @@ $conn->close();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JAYLO MEDICAL CLINIC</title>
+    <title>GAS STATION</title>
 
     <link rel="stylesheet" href="/POS-GAS/frontend/css/global.css">
     <link rel="stylesheet" href="/POS-GAS/frontend/css/supplier.css">
@@ -64,7 +64,7 @@ $conn->close();
                     <span>Sales</span>
                 </li>
 
-                <li onclick="window.location.href='products.php';">
+                <li onclick="window.location.href='productspage';">
                     <img src="/POS-GAS/frontend/assets/icons/products-icon.png" class="menu-icon">
                     <span>Products</span>
                 </li>
