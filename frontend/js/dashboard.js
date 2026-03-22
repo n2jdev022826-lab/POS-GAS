@@ -1,86 +1,67 @@
 // WAIT UNTIL PAGE FULLY LOADS
 window.addEventListener("load", function () {
 
-  // ✅ SAFE FALLBACKS
+  // ✅ SAFE FALLBACKS FOR LINE CHART
   const weeklySalesData = typeof weeklySales !== "undefined"
     ? weeklySales
     : [0,0,0,0,0,0,0];
 
-  const pieLabelsData = typeof pieLabels !== "undefined"
-    ? pieLabels
-    : ["No Data"];
-
-  const pieValuesData = typeof pieData !== "undefined"
-    ? pieData
-    : [1];
-
   /* ================= LINE CHART ================= */
   const lineCtx = document.getElementById('lineChart');
-
-  const lineChart = new Chart(lineCtx, {
-    type: 'line',
-    data: {
-      labels: ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],
-      datasets: [{
-        label: 'Sales',
-        data: weeklySalesData,
-        borderColor: '#00a8c6',
-        backgroundColor: 'rgba(0,168,198,0.1)',
-        tension: 0.4,
-        fill: true,
-        pointBackgroundColor:'#94c1ff'
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      resizeDelay: 200,
-      plugins: {
-        legend: { display: false }
-      }
-    }
-  });
-
- /* ================= PIE CHART ================= */
-const pieCtx = document.getElementById('pieChart');
-
-const pieChart = new Chart(pieCtx, {
-  type: 'pie',
-  data: {
-    labels: pieLabelsData,
-    datasets: [{
-      data: pieValuesData,
-      backgroundColor: [
-        '#17a2b8',
-        '#8e7cc3',
-        '#f6a545',
-        '#28a745',
-        '#dc3545',
-        '#ffc107'
-      ]
-    }]
-  },
-  options: {
-    responsive: true,
-    maintainAspectRatio: false,
-    resizeDelay: 200,
-    plugins: {
-      tooltip: {
-        callbacks: {
-          label: function(context) {
-            let value = context.raw || 0;
-            return context.label + ': ₱ ' + value.toLocaleString();
-          }
+  if (lineCtx) { // ✅ ensure element exists
+    const lineChart = new Chart(lineCtx, {
+      type: 'line',
+      data: {
+        labels: ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],
+        datasets: [{
+          label: 'Sales',
+          data: weeklySalesData,
+          borderColor: '#00a8c6',
+          backgroundColor: 'rgba(0,168,198,0.1)',
+          tension: 0.4,
+          fill: true,
+          pointBackgroundColor:'#94c1ff'
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        resizeDelay: 200,
+        plugins: {
+          legend: { display: false }
         }
       }
-    }
-  }
-});
+    });
 
-  /* ================= RESIZE FIX ================= */
-  window.addEventListener('resize', function () {
-    lineChart.resize();
-    pieChart.resize();
+    /* ================= RESIZE FIX ================= */
+    window.addEventListener('resize', function () {
+      lineChart.resize();
+    });
+  }
+
+  /* ================= FUEL TANK LEVELS ================= */
+  document.querySelectorAll(".fuel").forEach(fuel => {
+    const tankCard = fuel.closest(".tank-card");
+    const liters = parseFloat(fuel.dataset.liters) || 0;
+    const maxCapacity = parseFloat(fuel.dataset.maxLiters) || 10000;
+    const percent = Math.min((liters / maxCapacity) * 100, 100);
+
+    fuel.style.transition = "height 1.5s ease-in-out";
+    fuel.style.height = percent + "%";
+
+    const percentText = tankCard.querySelector(".percent");
+    if (percentText) percentText.innerText = percent.toFixed(1) + "%";
+
+    if (percent < 20) {
+      fuel.classList.add("low");
+      tankCard.classList.add("alert");
+    } else {
+      fuel.classList.remove("low");
+      tankCard.classList.remove("alert");
+    }
+
+    const wave = fuel.querySelector(".wave");
+    if (wave) wave.style.animationDuration = `${Math.max(0.5, percent / 50 + 1)}s`;
   });
 
 });

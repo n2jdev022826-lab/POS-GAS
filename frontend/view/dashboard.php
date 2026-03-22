@@ -7,6 +7,93 @@ require_once "../../backend/middleware/auth.php";
 $db = new Database();
 $conn = $db->connect();
 
+/* ================= TODAY SALES ================= */
+$todaySales = 0;
+
+$sqlToday = "
+SELECT 
+    (SELECT IFNULL(SUM(total_amount),0) FROM transactions WHERE DATE(created_at) = CURDATE()) +
+    (SELECT IFNULL(SUM(total_amount),0) FROM product_sales WHERE DATE(created_at) = CURDATE())
+    AS total
+";
+
+$resToday = $conn->query($sqlToday);
+if ($row = $resToday->fetch_assoc()) {
+  $todaySales = $row['total'];
+}
+
+
+/* ================= MONTHLY SALES ================= */
+$monthlySales = 0;
+
+$sqlMonth = "
+SELECT 
+    (SELECT IFNULL(SUM(total_amount),0) FROM transactions WHERE MONTH(created_at) = MONTH(CURDATE())) +
+    (SELECT IFNULL(SUM(total_amount),0) FROM product_sales WHERE MONTH(created_at) = MONTH(CURDATE()))
+    AS total
+";
+
+$resMonth = $conn->query($sqlMonth);
+if ($row = $resMonth->fetch_assoc()) {
+  $monthlySales = $row['total'];
+}
+
+
+/* ================= TOTAL FUEL STOCK ================= */
+$totalFuelStock = 0;
+
+$sqlFuelStock = "
+SELECT SUM(remaining_liters) as total FROM fuel_monitoring
+";
+
+$resFuel = $conn->query($sqlFuelStock);
+if ($row = $resFuel->fetch_assoc()) {
+  $totalFuelStock = $row['total'] ?? 0;
+}
+
+
+/* ================= LOW FUEL ALERT ================= */
+$lowFuelCount = 0;
+
+$sqlLowFuel = "
+SELECT COUNT(*) as total 
+FROM fuel_monitoring 
+WHERE remaining_liters < 500
+";
+
+$resLowFuel = $conn->query($sqlLowFuel);
+if ($row = $resLowFuel->fetch_assoc()) {
+  $lowFuelCount = $row['total'];
+}
+
+$query = "
+  SELECT f.name, fm.remaining_liters
+  FROM fuel_monitoring fm
+  LEFT JOIN fuels f ON f.id = fm.fuel_id
+";
+
+$result = mysqli_query($conn, $query);
+
+if (!$result) {
+  die("Error: " . mysqli_error($conn));
+}
+
+
+/* ================= TOTAL DEBTS ================= */
+$totalDebt = 0;
+
+$sqlDebt = "
+SELECT IFNULL(SUM(balance),0) as total 
+FROM debts 
+WHERE status = 'unpaid' 
+AND is_deleted = 0
+";
+
+$resDebt = $conn->query($sqlDebt);
+if ($row = $resDebt->fetch_assoc()) {
+  $totalDebt = $row['total'];
+}
+
 /* ================= TOTAL SALES ================= */
 /* Fuel transactions + product sales */
 $totalSales = 0;
@@ -166,57 +253,104 @@ $conn->close();
     </div>
   </div>
 
-  < <!--==========================================================================================================================-->
-    <!--                                                   MAIN CONTENT                                                             -->
+  <!--==========================================================================================================================-->
+  <!--                                                   MAIN CONTENT                                                             -->
+  <!-- ========================================================================================================================== -->
+
+  <div class="main">
+
+
     <!-- ========================================================================================================================== -->
+    <!--                                                         TOPBAR                                                             -->
+    <!-- ========================================================================================================================== -->
+    <div class="topbar">
+      <div id="datetime"></div>
 
-    <div class="main">
+      <div class="employee-info">
+        <div class="employee-name"><?php echo htmlspecialchars($_SESSION['lname'] . ", " . $_SESSION['fname']); ?></div>
+        <div id="employee-profile"><img src="/POS-GAS/frontend/assets/uploads/users/<?php echo htmlspecialchars(!empty($_SESSION['image']) ? $_SESSION['image'] : 'default.jpg'); ?>" class="employee-img"></div>
+      </div>
+    </div>
 
+    <!-- ========================================================================================================================== -->
+    <!--                                                        CARDS                                                               -->
+    <!-- ========================================================================================================================== -->
+    <div class="cards">
 
-      <!-- ========================================================================================================================== -->
-      <!--                                                         TOPBAR                                                             -->
-      <!-- ========================================================================================================================== -->
-      <div class="topbar">
-        <div id="datetime"></div>
-
-        <div class="employee-info">
-          <div class="employee-name"><?php echo htmlspecialchars($_SESSION['lname'] . ", " . $_SESSION['fname']); ?></div>
-          <div id="employee-profile"><img src="/POS-GAS/frontend/assets/uploads/users/<?php echo htmlspecialchars(!empty($_SESSION['image']) ? $_SESSION['image'] : 'default.jpg'); ?>" class="employee-img"></div>
-        </div>
+      <div class="card">
+        <h3>TOTAL SALES</h3>
+        <h1>₱ <?php echo number_format($totalSales, 2); ?></h1>
       </div>
 
-      <!-- ========================================================================================================================== -->
-      <!--                                                        CARDS                                                               -->
-      <!-- ========================================================================================================================== -->
-      <div class="cards">
-        <div class="card">
-          <h3 id="total-sales">TOTAL SALES</h3>
-          <h1>₱ <?php echo number_format($totalSales, 2); ?></h1>
-        </div>
-
-        <div class="card">
-          <h3 id="total-products">TOTAL PRODUCTS</h3>
-          <h1><?php echo $totalProducts; ?></h1>
-        </div>
-
-        <div class="card">
-          <h3 id="total-customers">TOTAL CUSTOMERS</h3>
-          <h1><?php echo $totalCustomers; ?></h1>
-        </div>
+      <div class="card">
+        <h3>TODAY SALES</h3>
+        <h1>₱ <?php echo number_format($todaySales, 2); ?></h1>
       </div>
 
-      <!-- ========================================================================================================================== -->
-      <!--                                                        CHARTS                                                              -->
-      <!-- ========================================================================================================================== -->
-      <div class="charts">
-        <div id="line" class="chart-box">
-          <h3>Sales</h3>
-          <canvas id="lineChart"></canvas>
-        </div>
+      <div class="card">
+        <h3>MONTH SALES</h3>
+        <h1>₱ <?php echo number_format($monthlySales, 2); ?></h1>
+      </div>
 
-        <div id="pie" class="chart-box">
-          <h3>Expenses</h3>
-          <canvas id="pieChart"></canvas>
+      <div class="card">
+        <h3>FUEL STOCK</h3>
+        <h1><?php echo number_format($totalFuelStock, 2); ?> L</h1>
+      </div>
+
+      <div class="card <?php echo $lowFuelCount > 0 ? 'alert' : ''; ?>">
+        <h3>LOW FUEL ALERT</h3>
+        <h1><?php echo $lowFuelCount; ?></h1>
+      </div>
+
+      <div class="card">
+        <h3>PENDING DEBTS</h3>
+        <h1>₱ <?php echo number_format($totalDebt, 2); ?></h1>
+      </div>
+
+      <div class="card">
+        <h3>PRODUCTS</h3>
+        <h1><?php echo $totalProducts; ?></h1>
+      </div>
+
+      <div class="card">
+        <h3>CUSTOMERS</h3>
+        <h1><?php echo $totalCustomers; ?></h1>
+      </div>
+
+    </div>
+
+    <!-- ========================================================================================================================== -->
+    <!--                                                        CHARTS                                                              -->
+    <!-- ========================================================================================================================== -->
+    <div class="charts">
+      <div id="line" class="chart-box">
+        <h3>Sales</h3>
+        <canvas id="lineChart"></canvas>
+      </div>
+
+      <div id="pie" class="chart-box">
+        <h3>Fuel Tank Levels</h3>
+
+        <div class="tank-grid">
+          <?php while ($row = mysqli_fetch_assoc($result)) { ?>
+            <div class="tank-card">
+
+              <div class="tank">
+                <div class="fuel"
+                  data-liters="<?php echo $row['remaining_liters']; ?>">
+                  <div class="wave"></div>
+                  <div class="bubbles"></div>
+                </div>
+              </div>
+
+              <div class="tank-label">
+                <h4><?php echo $row['name']; ?></h4>
+                <p><?php echo number_format($row['remaining_liters'], 2); ?> L</p>
+                <span class="percent">0%</span>
+              </div>
+
+            </div>
+          <?php } ?>
         </div>
       </div>
 
@@ -233,6 +367,8 @@ $conn->close();
 
     <script src="/POS-GAS/frontend/js/dashboard.js"></script>
     <script src="/POS-GAS/frontend/js/date-time.js"></script>
+
+   
 
 
 </body>
