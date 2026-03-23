@@ -346,33 +346,43 @@ $conn->close();
         const tableBody = document.getElementById("tableBody");
 
         function renderTable() {
-            tableBody.innerHTML = "";
+    tableBody.innerHTML = "";
 
-            fuels.forEach(f => {
+    if (fuels.length === 0) {
+        tableBody.innerHTML = `
+            <tr>
+                <td colspan="6" style="text-align:center; padding:20px;">
+                    No fuel found
+                </td>
+            </tr>
+        `;
+        return;
+    }
 
-                tableBody.innerHTML += `
+    fuels.forEach(f => {
+        tableBody.innerHTML += `
         <tr>
             <td>${f.fuel_code}</td>
             <td>${f.name}</td>
             <td>${f.price_per_liter}</td>
             <td>${f.remaining_liters} L</td>
             <td>${f.created_at}</td>
-<td class="action-buttons">
-    <button class="icon-btn edit-btn"
-        onclick="editFuel('${f.fuel_code}')">
-        <img src="/POS-GAS/frontend/assets/icons/edit.png">
-        <span>EDIT</span>
-    </button>
+            <td class="action-buttons">
+                <button class="icon-btn edit-btn"
+                    onclick="editFuel('${f.fuel_code}')">
+                    <img src="/POS-GAS/frontend/assets/icons/edit.png">
+                    <span>EDIT</span>
+                </button>
 
-    <button class="icon-btn delete-btn"
-        onclick="deleteFuel('${f.fuel_code}')">
-        <img src="/POS-GAS/frontend/assets/icons/delete.png">
-        <span>DELETE</span>
-    </button>
-</td>
+                <button class="icon-btn delete-btn"
+                    onclick="deleteFuel('${f.fuel_code}')">
+                    <img src="/POS-GAS/frontend/assets/icons/delete.png">
+                    <span>DELETE</span>
+                </button>
+            </td>
         </tr>`;
-            });
-        }
+    });
+}
 
         renderTable();
     </script>

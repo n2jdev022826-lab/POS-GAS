@@ -15,6 +15,7 @@ class FuelModel
 
 public function createFuel($data)
 {
+    $created_by = $_SESSION['fname'] . ' ' . $_SESSION['lname'];
     $name = $data['name'] ?? '';
     $price = $data['price_per_liter'] ?? 0;
 
@@ -33,9 +34,9 @@ public function createFuel($data)
     }
 
     // ✅ INSERT IF NOT EXISTS
-    $sql = "INSERT INTO fuels (name, price_per_liter) VALUES (?, ?)";
+    $sql = "INSERT INTO fuels (name, price_per_liter,created_by) VALUES (?, ?, ?)";
     $stmt = $this->conn->prepare($sql);
-    $stmt->bind_param("sd", $name, $price);
+    $stmt->bind_param("sds", $name, $price,$created_by);
 
     if ($stmt->execute()) {
         return [
@@ -53,6 +54,7 @@ public function createFuel($data)
 // ================= UPDATE FUEL =================
 public function updateFuel($data)
 {
+    $updated_by = $_SESSION['fname'] . ' ' . $_SESSION['lname'];
     $fuel_code = $data['fuel_code'] ?? '';
     $name = $data['name'] ?? '';
     $price = $data['price_per_liter'] ?? 0;
@@ -74,10 +76,10 @@ public function updateFuel($data)
 
     // ✅ Update
     $sql = "UPDATE fuels 
-            SET name = ?, price_per_liter = ? 
+            SET name = ?, price_per_liter = ?, updated_by = ? , updated_at = NOW()
             WHERE fuel_code = ?";
     $stmt = $this->conn->prepare($sql);
-    $stmt->bind_param("sds", $name, $price, $fuel_code);
+    $stmt->bind_param("sdss", $name, $price, $updated_by, $fuel_code);
 
     if ($stmt->execute()) {
         return [
@@ -96,11 +98,12 @@ public function updateFuel($data)
 // ================= DELETE FUEL (SOFT DELETE) =================
 public function deleteFuel($data)
 {
+    $deleted_by = $_SESSION['fname'] . ' ' . $_SESSION['lname'];
     $fuel_code = $data['fuel_code'] ?? '';
 
-    $sql = "UPDATE fuels SET is_deleted = 1 WHERE fuel_code = ?";
+    $sql = "UPDATE fuels SET is_deleted = 1, deleted_by = ?, deleted_at = NOW() WHERE fuel_code = ?";
     $stmt = $this->conn->prepare($sql);
-    $stmt->bind_param("s", $fuel_code);
+    $stmt->bind_param("ss", $deleted_by, $fuel_code);
 
     if ($stmt->execute()) {
         return [
