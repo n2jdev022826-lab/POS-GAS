@@ -23,6 +23,8 @@ function displaySuppliers() {
     const end = start + rowsPerPage;
     const paginatedSuppliers = filteredSuppliers.slice(start, end);
 
+    
+
     // RENDER TABLE
     paginatedSuppliers.forEach(supplier => {
 

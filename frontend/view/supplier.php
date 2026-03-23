@@ -16,7 +16,7 @@ contact_name,
 phone,
 email,
 address
-FROM suppliers";
+FROM suppliers WHERE is_deleted = 0" ;
 
 $result = $conn->query($sql);
 
