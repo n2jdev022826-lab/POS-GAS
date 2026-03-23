@@ -15,7 +15,15 @@ class SupplierController {
 
         $data['created_by'] = $_SESSION['fname'] . ' ' . $_SESSION['lname'];
 
-        if ($this->supplier->create($data)) {
+
+        if($this->supplier->checkSupplier($data)){
+             echo json_encode([
+            "status" => "error",
+            "message" => "Duplicated Supplier"
+        ]);
+        return;
+        }else{
+                    if ($this->supplier->create($data)) {
             echo json_encode([
                 "status" => "success",
                 "message" => "Supplier added successfully"
@@ -26,6 +34,9 @@ class SupplierController {
                 "message" => "Failed to add supplier"
             ]);
         }
+        }
+
+
     }
 
     public function update() {

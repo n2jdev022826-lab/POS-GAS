@@ -78,4 +78,18 @@ class SupplierModel {
 
         return $stmt->execute();
     }
+
+    public function checkSupplier($data){
+
+        $supplier_name = $_POST["supplier_name"];
+
+        $sql = "SELECT * FROM suppliers WHERE supplier_name = ? ";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("s", $supplier_name);
+        $stmt->execute();
+        $stmt->store_result();
+        return $stmt->num_rows > 0;
+
+
+    }
 }

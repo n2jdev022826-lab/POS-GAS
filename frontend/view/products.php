@@ -9,17 +9,7 @@ $conn = $db->connect();
 
 $products = [];
 
-$sql = "SELECT 
-id,
-product_code,
-product_name,
-generic_name,
-category,
-supplier,
-purchase_price,
-selling_price,
-stock_quantity,
-expiry_date
+$sql = "SELECT *
 FROM Products
 WHERE is_deleted = 0";
 
@@ -133,6 +123,7 @@ $conn->close();
     </style>
     <link rel="stylesheet" href="/POS-GAS/frontend/css/product.css">
     <link rel="stylesheet" href="/POS-GAS/frontend/css/print.css">
+    <link rel="stylesheet" href="/POS-GAS/frontend/css/global.css">
 
 </head>
 
@@ -248,6 +239,7 @@ $conn->close();
 
                 <button class="btn add-btn" onclick="addProduct()">+ Add</button>
                 <button class="btn print-btn" onclick="printReceipt()">🖨 Print</button>
+                <button></button>
 
             </div>
 

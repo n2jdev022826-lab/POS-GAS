@@ -12,13 +12,13 @@ class categoryModel{
 
     public function create($data){
 
-   $created_by =  $_SESSION['user_id'];
+   $created_by =  $_SESSION['fname'] . " ". $_SESSION["lname"];
     $category_name = $data['category_name'] ?? '';
     $category_description = $data['category_description'] ?? '';
 
-        $sql = "INSERT INTO categories
-        (category_name,description,created_by)
-        VALUES (?,?,?)";
+       $sql = "INSERT INTO categories
+        (category_name, description, created_by, created_at)
+        VALUES (?, ?, ?, NOW())";
 
         $stmt = $this->conn->prepare($sql);
 
@@ -46,6 +46,10 @@ class categoryModel{
         $stmt->store_result();
         return $stmt->num_rows > 0;
 
+    }
+
+    public function update($data){
+        $sql = "UPDATE ";
     }
 
 
