@@ -39,8 +39,9 @@ $conn->close();
     <title>GAS STATION - FUELS</title>
 
     <link rel="stylesheet" href="/POS-GAS/frontend/css/global.css">
-    <link rel="stylesheet" href="/POS-GAS/frontend/css/users.css">
+    <link rel="stylesheet" href="/POS-GAS/frontend/css/fuel.css">
     <link rel="stylesheet" href="/POS-GAS/frontend/css/alert.css">
+    <link rel="stylesheet" href="/POS-GAS/frontend/css/print.css">
 
 </head>
 
@@ -133,7 +134,9 @@ $conn->close();
                 </div>
 
                 <button class="btn add-btn" onclick="addFuel()">+ Add</button>
+                <button class="btn refill-btn" onclick="openRefillModal()">⛽ Refill</button>
                 <button class="btn print-btn" onclick="printReceipt()">🖨 Print</button>
+
 
             </div>
 
@@ -153,14 +156,40 @@ $conn->close();
                     </thead>
 
                     <tbody id="tableBody"></tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="6"></td>
+                        </tr>
+                    </tfoot>
 
                 </table>
 
             </div>
 
-        </div>
+            <div class="pagination-container">
 
+                <div class="limit-box">
+                    Show
+                    <select id="rowsPerPage">
+                        <option value="5">5</option>
+                        <option value="10" selected>10</option>
+                        <option value="20">20</option>
+                        <option value="50">50</option>
+                    </select>
+                    entries
+                </div>
+
+                <div class="pagination">
+                    <button>Prev</button>
+                    <span id="pageInfo">Page 1</span>
+                    <button>Next</button>
+                </div>
+
+            </div>
+
+        </div>
     </div>
+
 
     <!-- ================= ADD FUEL MODAL ================= -->
     <div id="addFuelModal" class="modal">
@@ -237,7 +266,7 @@ $conn->close();
                             </div>
 
                             <div class="modal-buttons">
-                                <button type="button" onclick="closeEditFuelModal()">Cancel</button>
+                                <button type="button" class="addcancel-btn" onclick="closeEditFuelModal()">Cancel</button>
                             </div>
 
                         </div>
@@ -247,6 +276,56 @@ $conn->close();
             </form>
         </div>
     </div>
+
+    <!-- ================= REFILL FUEL MODAL ================= -->
+<div id="refillModal" class="modal">
+  <div class="modal-box large">
+
+    <div class="modal-header">
+      <h2>REFILL FUEL</h2>
+      <span class="close-modal" onclick="closeRefillModal()">&times;</span>
+    </div>
+
+    <form id="refillForm">
+
+      <div class="modal-content">
+        <div class="form-section" style="width:100%;">
+
+          <div class="form-grid">
+
+            <div class="input-group">
+              <label>FUEL</label>
+              <select name="fuel_id" required>
+                <?php foreach ($fuels as $f): ?>
+                  <option value="<?php echo $f['id']; ?>">
+                    <?php echo $f['name']; ?>
+                  </option>
+                <?php endforeach; ?>
+              </select>
+            </div>
+
+            <div class="input-group">
+              <label>LITERS TO ADD</label>
+              <input type="number" name="liters_added" required>
+            </div>
+
+            <div class="modal-buttons">
+              <button type="submit" class="save-btn">REFILL</button>
+            </div>
+
+            <div class="modal-buttons">
+              <button type="button" class="addcancel-btn" onclick="closeRefillModal()">Cancel</button>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+    </form>
+
+  </div>
+</div>
 
     <!-- ================= SCRIPTS ================= -->
 

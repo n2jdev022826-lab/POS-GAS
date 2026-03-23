@@ -12,6 +12,10 @@ document.getElementById("searchInput").addEventListener("input", function () {
         displaySuppliers();
     } else if (typeof displayUsers === "function") {
         displayUsers();
+    }else if (typeof displayUsers === "function") {
+        displayFuels();
     }
+
+    
 
 });

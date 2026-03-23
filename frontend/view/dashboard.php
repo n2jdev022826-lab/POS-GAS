@@ -124,7 +124,7 @@ if ($row = $resultProducts->fetch_assoc()) {
 /* No customers table → using users with role cashier */
 $totalCustomers = 0;
 
-$sqlCustomers = "SELECT COUNT(*) as total FROM users WHERE role = 'cashier' AND is_deleted = 0";
+$sqlCustomers = "SELECT COUNT(*) as total FROM customers WHERE is_deleted = 0";
 $resultCustomers = $conn->query($sqlCustomers);
 
 if ($row = $resultCustomers->fetch_assoc()) {

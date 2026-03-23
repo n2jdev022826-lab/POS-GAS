@@ -19,6 +19,58 @@ function closeEditFuelModal() {
   document.body.classList.remove("modal-open");
 }
 
+function openRefillModal() {
+    document.getElementById("refillModal").style.display = "flex";
+}
+
+function closeRefillModal() {
+    document.getElementById("refillModal").style.display = "none";
+}
+
+// ================= REFILL FUEL =================
+document.getElementById("refillForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    const formData = new FormData(this);
+
+    fetch("http://localhost/POS-GAS/api/fuel/refill.php", {
+        method: "POST",
+        body: formData
+    })
+    .then(res => res.text())
+    .then(data => {
+
+        console.log("RAW RESPONSE:", data);
+
+        let json;
+
+        try {
+            json = JSON.parse(data);
+        } catch (e) {
+            console.error("JSON ERROR:", e);
+            showAlert("error", "Server Error", "Invalid response");
+            return;
+        }
+
+        if (json.status === "success") {
+            showAlert("success", "Success", json.message);
+
+            setTimeout(() => {
+                closeRefillModal();
+                location.reload();
+            }, 1000);
+
+        } else {
+            showAlert("error", "Failed", json.message);
+        }
+
+    })
+    .catch(err => {
+        console.error("Fetch Error:", err);
+        showAlert("error", "Error", "Refill failed");
+    });
+});
+
 
 // ================= ADD FUEL =================
 document.getElementById("addFuelForm").addEventListener("submit", function (e) {
@@ -26,7 +78,7 @@ document.getElementById("addFuelForm").addEventListener("submit", function (e) {
 
   const formData = new FormData(this);
 
-  fetch("http://localhost/POS-GAS/api/fuels/create.php", {
+  fetch("http://localhost/POS-GAS/api/fuel/create.php", {
     method: "POST",
     body: formData,
   })
@@ -88,7 +140,7 @@ document.getElementById("editFuelForm").addEventListener("submit", function (e) 
 
   const formData = new FormData(this);
 
-  fetch("http://localhost/POS-GAS/api/fuels/update.php", {
+  fetch("http://localhost/POS-GAS/api/fuel/update.php", {
     method: "POST",
     body: formData,
   })
@@ -111,6 +163,7 @@ document.getElementById("editFuelForm").addEventListener("submit", function (e) 
 });
 
 
+
 // ================= DELETE FUEL =================
 function deleteFuel(fuelCode) {
 
@@ -123,7 +176,7 @@ function deleteFuel(fuelCode) {
 
       if (!confirmed) return;
 
-      fetch("http://localhost/POS-GAS/api/fuels/delete.php", {
+      fetch("http://localhost/POS-GAS/api/fuel/delete.php", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

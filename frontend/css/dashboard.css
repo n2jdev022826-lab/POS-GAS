@@ -83,7 +83,7 @@
 
 .charts {
   display: grid;
-  grid-template-columns: 2fr 1fr; /* line chart bigger */
+  grid-template-columns: 1fr 1fr; /* line chart bigger */
   gap: 20px;
   margin-top: 25px;
 }
