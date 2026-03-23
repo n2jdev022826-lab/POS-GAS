@@ -57,7 +57,7 @@ class UserModel
         $username = $data['username'] ?? '';
 
 
-        $sql = "SELECT * FROM users WHERE username = ?";
+        $sql = "SELECT * FROM users WHERE username = ? AND is_deleted = 0";
         $stmt = $this->conn->prepare($sql);
         $stmt->bind_param("s", $username);
         $stmt->execute();
@@ -70,7 +70,7 @@ class UserModel
         $phone = $data['phone'] ?? '';
 
 
-        $sql = "SELECT * FROM users WHERE phone = ?";
+        $sql = "SELECT * FROM users WHERE phone = ? AND is_deleted = 0";
         $stmt = $this->conn->prepare($sql);
         $stmt->bind_param("s", $phone);
         $stmt->execute();
@@ -83,7 +83,7 @@ class UserModel
         $email = $data['email'] ?? '';
 
 
-        $sql = "SELECT * FROM users WHERE email = ?";
+        $sql = "SELECT * FROM users WHERE email = ? AND is_deleted = 0";
         $stmt = $this->conn->prepare($sql);
         $stmt->bind_param("s", $email);
         $stmt->execute();
