@@ -39,7 +39,7 @@ while ($row = $fuelResult->fetch_assoc()) {
 
                                   <div class="input-group">
                                 <label>ENTER PUMP NUMBER</label>
-                                <input type="number" name="pump_number" required>
+                                <input type="text" name="pump_number" required>
                             </div>
 
                             <div class="input-group">
@@ -54,6 +54,8 @@ while ($row = $fuelResult->fetch_assoc()) {
         <?php endforeach; ?>
     </select>
 </div>
+
+                <input type="text" name="pump_code" value="PUMPCODE-00000001">
 
                 <div class="input-group">
                     <select name="status" id="">
@@ -94,7 +96,7 @@ while ($row = $fuelResult->fetch_assoc()) {
                     <td><?= htmlspecialchars($pump['fuel_id']) ?></td>
                     <td><?= date("F d, Y h:i A", strtotime($pump['created_at'])) ?></td>
                     <td>
-                        <button class="delete-btn" data-id="<?= $pump['id'] ?>">
+                        <button class="delete-btn" data-id="<?= $pump['pump_code'] ?>">
                             Delete
                         </button>
                     </td>
@@ -122,7 +124,7 @@ while ($row = $fuelResult->fetch_assoc()) {
         const form = e.target;
         const formData = new FormData(form);
 
-        fetch("http://localhost/POS-GAS/api/pump/create.php",{
+        fetch("http://localhost/POS-GAS/api/pump/update.php",{
             method: "POST",
             body: formData
         })
@@ -157,15 +159,15 @@ while ($row = $fuelResult->fetch_assoc()) {
 </script>
 
  <script>
-      document.addEventListener("click", function(e) {
+     document.addEventListener("click", function(e) {
     if (e.target.classList.contains("delete-btn")) {
 
-        const code = e.target.getAttribute("data-code");
+        const code = e.target.getAttribute("data-id"); // ✅ FIXED
 
-        if (!confirm("Are you sure you want to delete this category?")) return;
+        if (!confirm("Are you sure you want to delete this pump?")) return;
 
         const formData = new FormData();
-        formData.append("category_code", code); // ✅ FIXED
+        formData.append("pump_code", code);
 
         fetch("http://localhost/POS-GAS/api/pump/delete.php", {
             method: "POST",

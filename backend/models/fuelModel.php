@@ -117,4 +117,6 @@ public function deleteFuel($data)
         "message" => "Failed to delete fuel"
     ];
 }
+
+
 }

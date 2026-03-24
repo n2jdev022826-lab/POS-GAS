@@ -49,6 +49,7 @@ $conn->close();
                                 <input type="text" name="category_description" required>
                             </div>
 
+
                             <div class="modal-buttons">
                                 <button type="submit" class="save-btn">+ SAVE</button>
                             </div>

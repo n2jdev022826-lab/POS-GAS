@@ -42,6 +42,47 @@ class pumpController{
 
     }
 
+    public function update()
+    {
+        $data = $_POST;
+
+        if($this->pump->update($data)){
+            echo json_encode([
+            "status" => "success",
+            "message" => "Pump Updated successfully"
+        ]);
+
+
+        }else{
+             echo json_encode([
+                "status" => "error",
+                "message" => "Failed to update pump"
+            ]); 
+        }
+
+
+
+
+    }
+
+    public function delete()
+    {
+        $data = $_POST;
+
+        if($this->pump->delete($data)){
+             echo json_encode([
+            "status" => "success",
+            "message" => "Pump Deleted successfully"
+        ]);
+        }else{
+            echo json_encode([
+                "status" => "error",
+                "message" => "Failed to delete pump"
+            ]); 
+        }
+
+    }
+
 
 
 
