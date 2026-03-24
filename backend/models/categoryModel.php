@@ -12,28 +12,25 @@ class categoryModel{
 
     public function create($data){
 
-   $created_by =  $_SESSION['fname'] . " ". $_SESSION["lname"];
+    $created_by = $_SESSION['fname'] . " " . $_SESSION["lname"];
     $category_name = $data['category_name'] ?? '';
     $category_description = $data['category_description'] ?? '';
 
-       $sql = "INSERT INTO categories
-        (category_name, description, created_by, created_at)
-        VALUES (?, ?, ?, NOW())";
+    $sql = "INSERT INTO categories
+            (category_name, description, created_by, created_at)
+            VALUES (?, ?, ?, NOW())";
 
-        $stmt = $this->conn->prepare($sql);
+    $stmt = $this->conn->prepare($sql);
 
-        $stmt->bind_param(
-            "sss",
-            $category_name,
-            $category_description,
-            $created_by
-            
-          
-        );
+    $stmt->bind_param(
+        "sss",
+        $category_name,
+        $category_description,
+        $created_by
+    );
 
-        return $stmt->execute();
-
-    }
+    return $stmt->execute();
+}
 
     public function checkCategory($data){
 

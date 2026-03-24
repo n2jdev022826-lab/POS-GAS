@@ -73,8 +73,6 @@ public function delete()
 
         $data = $_POST;
 
-    
-
     if($this->category->delete($data)){
          echo json_encode([
             "status" => "success",

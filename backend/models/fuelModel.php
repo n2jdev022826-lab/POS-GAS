@@ -34,9 +34,9 @@ public function createFuel($data)
     }
 
     // ✅ INSERT IF NOT EXISTS
-    $sql = "INSERT INTO fuels (name, price_per_liter,created_by) VALUES (?, ?, ?)";
+    $sql = "INSERT INTO fuels (name, price_per_liter, created_by, created_at) VALUES (?, ?, ?, NOW())";
     $stmt = $this->conn->prepare($sql);
-    $stmt->bind_param("sds", $name, $price,$created_by);
+    $stmt->bind_param("sds", $name, $price,$created_by,);
 
     if ($stmt->execute()) {
         return [
