@@ -90,74 +90,7 @@ $conn->close();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GAS STATION</title>
-    <style>
-        /* container */
-        .input-group {
-            position: relative;
-        }
-
-        /* search input */
-        #searchBox {
-            width: 100%;
-            padding: 8px 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            font-size: 14px;
-        }
-
-        #categorySearch {
-            width: 100%;
-            padding: 8px 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            font-size: 14px;
-        }
-
-        /* dropdown container */
-        .dropdown-list {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            width: 100%;
-            max-height: 180px;
-            overflow-y: auto;
-
-            background: white;
-            border: 1px solid #ccc;
-            border-top: none;
-
-            display: none;
-            z-index: 1000;
-
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        /* dropdown item */
-        .dropdown-item {
-            padding: 8px 10px;
-            cursor: pointer;
-            font-size: 14px;
-        }
-
-        /* hover effect */
-        .dropdown-item:hover {
-            background: #f5f5f5;
-        }
-
-        /* scrollbar styling */
-        .dropdown-list::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .dropdown-list::-webkit-scrollbar-thumb {
-            background: #ccc;
-            border-radius: 3px;
-        }
-
-        .dropdown-list::-webkit-scrollbar-thumb:hover {
-            background: #999;
-        }
-    </style>
+ 
     <link rel="stylesheet" href="/POS-GAS/frontend/css/product.css">
     <link rel="stylesheet" href="/POS-GAS/frontend/css/print.css">
     <link rel="stylesheet" href="/POS-GAS/frontend/css/global.css">
@@ -301,7 +234,7 @@ $conn->close();
                             <th>Selling Price</th>
                             <th>QTY.</th>
                             <th>QTY. Left</th>
-                            <th>Total</th>
+                            <th>Total Cost</th>
                             <th>Action</th>
                         </tr>
 
