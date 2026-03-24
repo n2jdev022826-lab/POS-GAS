@@ -61,6 +61,7 @@ function displayUsers() {
     </button>
 </td>
 </tr>
+
 `;
 
         tableBody.innerHTML += row;

@@ -95,7 +95,7 @@ $conn->close();
             <?php endforeach; ?>
         <?php else: ?>
             <tr>
-                <td colspan="8">No users found</td>
+                <td colspan="8">No Category found</td>
             </tr>
         <?php endif; ?>
     </tbody>

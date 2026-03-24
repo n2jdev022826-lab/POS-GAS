@@ -9,9 +9,46 @@ $conn = $db->connect();
 
 $products = [];
 
-$sql = "SELECT *
-FROM Products
-WHERE is_deleted = 0";
+$sql = "SELECT 
+    p.product_code,
+    p.name,
+    c.category_name AS category,
+    s.supplier_name AS supplier,
+    p.original_price,
+    p.selling_price,
+    p.expiry_date,
+    p.image,
+    p.created_at,
+
+    pil.quantity,
+    pm.remaining_quantity AS quantity_left,
+
+    (p.original_price * IFNULL(pil.quantity, 0)) AS total
+
+FROM products p
+
+LEFT JOIN categories c ON p.category_id = c.category_id
+LEFT JOIN suppliers s ON p.supplier_id = s.supplier_id
+
+-- ✅ FIXED INVENTORY JOIN
+LEFT JOIN (
+    SELECT pil1.product_id, pil1.quantity
+    FROM product_inventory_logs pil1
+    INNER JOIN (
+        SELECT product_id, MAX(created_at) AS latest_date
+        FROM product_inventory_logs
+        GROUP BY product_id
+    ) pil2 
+    ON pil1.product_id = pil2.product_id 
+    AND pil1.created_at = pil2.latest_date
+) pil ON p.id = pil.product_id
+
+-- ✅ MONITORING
+LEFT JOIN product_monitoring pm 
+    ON p.id = pm.product_id
+
+WHERE p.is_deleted = 0
+ORDER BY p.created_at DESC;";
 
 $result = $conn->query($sql);
 
@@ -25,7 +62,7 @@ $result = $conn->query($sql);
 
 $data = [];
 
-while($row = $result->fetch_assoc()){
+while ($row = $result->fetch_assoc()) {
     $data[] = $row;
 }
 
@@ -34,7 +71,7 @@ $result = $conn->query($sql);
 
 $categoryData = [];
 
-while($row = $result->fetch_assoc()){
+while ($row = $result->fetch_assoc()) {
     $categoryData[] = $row;
 }
 
@@ -54,76 +91,77 @@ $conn->close();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GAS STATION</title>
     <style>
-    /* container */
-    .input-group{
-        position: relative;
-    }
+        /* container */
+        .input-group {
+            position: relative;
+        }
 
-    /* search input */
-    #searchBox{
-        width: 100%;
-        padding: 8px 10px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        font-size: 14px;
-    }
+        /* search input */
+        #searchBox {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+        }
 
-    #categorySearch{
-        width: 100%;
-        padding: 8px 10px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        font-size: 14px;
-    }
+        #categorySearch {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+        }
 
-    /* dropdown container */
-    .dropdown-list{
-        position: absolute;
-        top: 100%;
-        left: 0;
-        width: 100%;
-        max-height: 180px;
-        overflow-y: auto;
+        /* dropdown container */
+        .dropdown-list {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            max-height: 180px;
+            overflow-y: auto;
 
-        background: white;
-        border: 1px solid #ccc;
-        border-top: none;
+            background: white;
+            border: 1px solid #ccc;
+            border-top: none;
 
-        display: none;
-        z-index: 1000;
+            display: none;
+            z-index: 1000;
 
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    }
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
 
-    /* dropdown item */
-    .dropdown-item{
-        padding: 8px 10px;
-        cursor: pointer;
-        font-size: 14px;
-    }
+        /* dropdown item */
+        .dropdown-item {
+            padding: 8px 10px;
+            cursor: pointer;
+            font-size: 14px;
+        }
 
-    /* hover effect */
-    .dropdown-item:hover{
-        background: #f5f5f5;
-    }
+        /* hover effect */
+        .dropdown-item:hover {
+            background: #f5f5f5;
+        }
 
-    /* scrollbar styling */
-    .dropdown-list::-webkit-scrollbar{
-        width: 6px;
-    }
+        /* scrollbar styling */
+        .dropdown-list::-webkit-scrollbar {
+            width: 6px;
+        }
 
-    .dropdown-list::-webkit-scrollbar-thumb{
-        background: #ccc;
-        border-radius: 3px;
-    }
+        .dropdown-list::-webkit-scrollbar-thumb {
+            background: #ccc;
+            border-radius: 3px;
+        }
 
-    .dropdown-list::-webkit-scrollbar-thumb:hover{
-        background: #999;
-    }
+        .dropdown-list::-webkit-scrollbar-thumb:hover {
+            background: #999;
+        }
     </style>
     <link rel="stylesheet" href="/POS-GAS/frontend/css/product.css">
     <link rel="stylesheet" href="/POS-GAS/frontend/css/print.css">
     <link rel="stylesheet" href="/POS-GAS/frontend/css/global.css">
+    <link rel="stylesheet" href="/POS-GAS/frontend/css/alert.css">
 
 </head>
 
@@ -196,15 +234,15 @@ $conn->close();
 
     <div class="main">
 
-     <!-- TOP BAR -->
-    <div class="topbar">
-      <div id="datetime"></div>
+        <!-- TOP BAR -->
+        <div class="topbar">
+            <div id="datetime"></div>
 
-      <div class="employee-info">
-        <div class="employee-name"><?php echo htmlspecialchars($_SESSION['lname'] . ", " . $_SESSION['fname']); ?></div>
-        <div id="employee-profile"><img src="/POS-GAS/frontend/assets/uploads/users/<?php echo htmlspecialchars(!empty($_SESSION['image']) ? $_SESSION['image'] : 'default.jpg'); ?>" class="employee-img"></div>
+            <div class="employee-info">
+                <div class="employee-name"><?php echo htmlspecialchars($_SESSION['lname'] . ", " . $_SESSION['fname']); ?></div>
+                <div id="employee-profile"><img src="/POS-GAS/frontend/assets/uploads/users/<?php echo htmlspecialchars(!empty($_SESSION['image']) ? $_SESSION['image'] : 'default.jpg'); ?>" class="employee-img"></div>
+            </div>
         </div>
-      </div>
 
         <!-- PRODUCT STATS -->
 
@@ -252,9 +290,9 @@ $conn->close();
                     <thead>
 
                         <tr>
+                            <th>Product Image</th>
                             <th>Product Code</th>
                             <th>Product Name</th>
-                            <th>Generic Name</th>
                             <th>Category</th>
                             <th>Supplier</th>
                             <th>Date Received</th>
@@ -269,7 +307,9 @@ $conn->close();
 
                     </thead>
 
-                    <tbody id="tableBody"></tbody>
+                    <tbody id="tableBody">
+
+                    </tbody>
 
                     <tfoot>
                         <tr>
@@ -309,173 +349,243 @@ $conn->close();
 
     </div>
 
-    <!-- ================= ADD PRODUCT MODAL ================= -->
-
-
+    <!-- ========================================================================================================================== -->
+    <!--                                          ADD PRODUCTS MODAL FORM                                                               -->
+    <!-- ========================================================================================================================== -->
 
     <div id="addProductModal" class="modal">
 
-        <div class="modal-box">
+    <div class="modal-box large">
 
-            <div class="modal-header">
-                <h2>Add Product</h2>
-                <span class="close-modal" onclick="closeProductModal()">&times;</span>
+        <div class="modal-header">
+            <h2>ADD PRODUCT</h2>
+            <span class="close-modal" onclick="closeProductModal()">&times;</span>
+        </div>
+
+        <form id="addProductForm" enctype="multipart/form-data">
+
+            <div class="modal-content">
+
+                <!-- LEFT SIDE -->
+                <div class="image-section">
+
+                    <label id="imageLabel">PRODUCT IMAGE</label>
+
+                    <div class="image-preview" id="productImagePreview"></div>
+
+                    <input type="file" name="image" id="productImageInput" hidden>
+
+                    <button type="button" class="upload-btn"
+                        onclick="document.getElementById('productImageInput').click()">
+                        UPLOAD
+                    </button>
+
+                </div>
+
+                <!-- RIGHT SIDE -->
+                <div class="form-section">
+
+                    <div class="form-grid">
+
+                        <div class="input-group">
+                            <label>PRODUCT NAME</label>
+                            <input type="text" name="name" required>
+                        </div>
+
+                        <div class="input-group">
+                            <label>CATEGORY</label>
+                            <select name="category_id">
+                                <option value="">Select Category</option>
+                            </select>
+                        </div>
+
+                        <div class="input-group">
+                            <label>SUPPLIER</label>
+                            <select name="supplier_id">
+                                <option value="">Select Supplier</option>
+                            </select>
+                        </div>
+
+                        <div class="input-group">
+                            <label>DATE RECEIVED</label>
+                            <input type="date" name="date_received">
+                        </div>
+
+                        <div class="input-group">
+                            <label>EXPIRY DATE</label>
+                            <input type="date" name="expiry_date">
+                        </div>
+
+                        <div class="input-group">
+                            <label>ORIGINAL PRICE</label>
+                            <input type="number" name="original_price" step="0.01">
+                        </div>
+
+                        <div class="input-group">
+                            <label>SELLING PRICE</label>
+                            <input type="number" name="selling_price" step="0.01">
+                        </div>
+
+                        <div class="input-group">
+                            <label>QTY.</label>
+                            <input type="number" name="quantity">
+                        </div>
+
+                        <div class="input-group">
+                            <label>QTY. LEFT</label>
+                            <input type="number" name="quantity_left" readonly>
+                        </div>
+
+                        <div class="input-group">
+                            <label>TOTAL</label>
+                            <input type="number" name="total" readonly>
+                        </div>
+
+                        <div class="modal-buttons">
+                            <button type="submit" class="save-btn">+ SAVE</button>
+                        </div>
+
+                        <div class="modal-buttons">
+                            <button type="button" class="addcancel-btn" onclick="closeProductModal()">Cancel</button>
+                        </div>
+
+                    </div>
+
+                </div>
+
             </div>
 
-            <form id="addProductForm">
-
-                <div class="modal-grid">
-
-                    <div class="input-group">
-                        <label>Product Name</label>
-                        <input type="text"  name="product_name" required>
-
-                       
-                    </div>
-
-                    <div class="input-group">
-                        <label>Generic Name</label>
-                        <input type="text" name="generic_name">
-                    </div>
-
-                    <div class="input-group">
-    <label>Category</label>
-    <input type="text" id="categorySearch" name="category" required autocomplete="off">
-    
-    <div id="categoryDropdown" class="dropdown-list"></div>
-
-    <input type="hidden" id="selectedCategoryID">
-</div>
-
-                    <div class="input-group">
-                        <label>Supplier</label>
-                        <input type="text" id="searchBox" name="supplier" required autocomplete="off">
-                         <div id="dropdownList" class="dropdown-list"></div> 
-
-                        <input type="hidden" id="selectedID">
-                    </div>
-
-                    <div class="input-group">
-                        <label>Expiry Date</label>
-                        <input type="date" name="expiry_date">
-                    </div>
-
-                    <div class="input-group">
-                        <label>Original Price</label>
-                        <input type="number" step="0.01" name="purchase_price">
-                    </div>
-
-                    <div class="input-group">
-                        <label>Selling Price</label>
-                        <input type="number" step="0.01" name="selling_price">
-                    </div>
-
-                    <div class="input-group">
-                        <label>Quantity</label>
-                        <input type="number" name="stock_quantity">
-                    </div>
-
-                    <input type="hidden" name="created_by" value="<?php echo $_SESSION['user_id']; ?>">
-
-                </div>
-
-                <div class="modal-buttons">
-                    <button type="button" class="cancel-btn" onclick="closeProductModal()">Cancel</button>
-                    <button type="submit" class="save-btn">Save Product</button>
-                </div>
-
-            </form>
-
-        </div>
+        </form>
 
     </div>
 
+</div>
+
+
+    <!-- ========================================================================================================================== -->
+    <!--                                          EDIT PRODUCT MODAL FORM                                                               -->
+    <!-- ========================================================================================================================== -->
+
+    <div id="editProductModal" class="modal">
+
+    <div class="modal-box large">
+
+        <div class="modal-header">
+            <h2>EDIT PRODUCT</h2>
+            <span class="close-modal" onclick="closeEditProductModal()">&times;</span>
+        </div>
+
+        <form id="editProductForm" enctype="multipart/form-data">
+
+            <input type="hidden" name="product_code" id="edit_product_code">
+
+            <div class="modal-content">
+
+                <!-- LEFT -->
+                <div class="image-section">
+
+                    <label id="imageLabel">PRODUCT IMAGE</label>
+
+                    <div class="image-preview" id="editProductImagePreview"></div>
+
+                    <input type="file" name="image" id="editProductImageInput" hidden>
+
+                    <button type="button" class="upload-btn"
+                        onclick="document.getElementById('editProductImageInput').click()">
+                        UPLOAD
+                    </button>
+
+                </div>
+
+                <!-- RIGHT -->
+                <div class="form-section">
+
+                    <div class="form-grid">
+
+                        <div class="input-group">
+                            <label>PRODUCT NAME</label>
+                            <input type="text" name="name" id="edit_name">
+                        </div>
+
+                        <div class="input-group">
+                            <label>CATEGORY</label>
+                            <select name="category_id" id="edit_category"></select>
+                        </div>
+
+                        <div class="input-group">
+                            <label>SUPPLIER</label>
+                            <select name="supplier_id" id="edit_supplier"></select>
+                        </div>
+
+                        <div class="input-group">
+                            <label>DATE RECEIVED</label>
+                            <input type="date" name="date_received" id="edit_date_received">
+                        </div>
+
+                        <div class="input-group">
+                            <label>EXPIRY DATE</label>
+                            <input type="date" name="expiry_date" id="edit_expiry_date">
+                        </div>
+
+                        <div class="input-group">
+                            <label>ORIGINAL PRICE</label>
+                            <input type="number" name="original_price" id="edit_original_price">
+                        </div>
+
+                        <div class="input-group">
+                            <label>SELLING PRICE</label>
+                            <input type="number" name="selling_price" id="edit_selling_price">
+                        </div>
+
+                        <div class="input-group">
+                            <label>QTY.</label>
+                            <input type="number" name="quantity" id="edit_quantity">
+                        </div>
+
+                        <div class="input-group">
+                            <label>QTY. LEFT</label>
+                            <input type="number" name="quantity_left" id="edit_quantity_left" readonly>
+                        </div>
+
+                        <div class="input-group">
+                            <label>TOTAL</label>
+                            <input type="number" name="total" id="edit_total" readonly>
+                        </div>
+
+                        <div class="modal-buttons">
+                            <button type="submit" class="save-btn">UPDATE</button>
+                        </div>
+
+                        <div class="modal-buttons">
+                            <button type="button" class="editcancel-btn" onclick="closeEditProductModal()">Cancel</button>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
     <script>
-        const products = <?php echo json_encode($products); ?>;
-
-        function displayProducts() {
-
-            const body = document.getElementById("tableBody");
-            body.innerHTML = "";
-
-            products.forEach(p => {
-
-                const total = p.selling_price * p.stock_quantity;
-
-                body.innerHTML += `
-
-<tr>
-
-<td>${p.product_code}</td>
-<td>${p.product_name}</td>
-<td>${p.generic_name}</td>
-<td>${p.category}</td>
-<td>${p.supplier ?? ''}</td>
-<td>-</td>
-<td>${p.expiry_date ?? ''}</td>
-<td>${p.purchase_price}</td>
-<td>${p.selling_price}</td>
-<td>${p.stock_quantity}</td>
-<td>${p.stock_quantity}</td>
-<td>${total}</td>
-
-<td>
-
-<button onclick='editProduct(${JSON.stringify(p)})'>Edit</button>
-
-<form action="../../backend/products/delete_product.php" method="POST" style="display:inline">
-
-<input type="hidden" name="product_id" value="${p.product_id}">
-<input type="hidden" name="deleted_by" value="<?php echo $_SESSION['user_id']; ?>">
-
-<button type="submit">Delete</button>
-
-</form>
-
-</td>
-
-</tr>
-
-`;
-
-            });
-
-            document.getElementById("totalProducts").innerText = products.length;
-
-            const low = products.filter(p => p.stock_quantity <= 10);
-            document.getElementById("lowStockCount").innerText = low.length;
-
-            const today = new Date();
-
-            const expiring = products.filter(p => {
-
-                if (!p.expiry_date) return false;
-
-                const exp = new Date(p.expiry_date);
-                const diff = (exp - today) / (1000 * 60 * 60 * 24);
-
-                return diff <= 30;
-
-            });
-
-            document.getElementById("expiringCount").innerText = expiring.length;
-
-        }
-
-        displayProducts();
+let supplierList = <?php echo json_encode($data); ?>;
+let categoryList = <?php echo json_encode($data); ?>;
+const products = <?php echo json_encode($products); ?>;
     </script>
-
-    <script>
-        let dataList = <?php echo json_encode($data); ?>;
-        let categoryList = <?php echo json_encode($categoryData); ?>;
-    </script>
-
-    <script src="/POS-GAS/frontend/js/filtersupplier.js"></script>
-    <script src="/POS-GAS/frontend/js/filtercategory.js"></script>
-    <script src="/POS-GAS/frontend/js/product-modal.js"></script>
+    <script src="/POS-GAS/frontend/js/search.js"></script>
+    <script src="/POS-GAS/frontend/js/products-modal.js"></script>
+    <script src="/POS-GAS/frontend/js/alert.js"></script>
+    <script src="/POS-GAS/frontend/js/products-page.js"></script>
+    <script src="/POS-GAS/frontend/js/load.js"></script>
     <script src="/POS-GAS/frontend/js/date-time.js"></script>
     <script src="/POS-GAS/frontend/js/print.js"></script>
-    <script src="/POS-GAS/frontend/js/search.js"></script>
+
 
 
 </body>

@@ -1,21 +1,19 @@
 let searchQuery = "";
 
 document.getElementById("searchInput").addEventListener("input", function () {
+  searchQuery = this.value.toLowerCase();
 
-    searchQuery = this.value.toLowerCase();
+  if (typeof currentPage !== "undefined") {
+    currentPage = 1;
+  }
 
-    if (typeof currentPage !== "undefined") {
-        currentPage = 1;
-    }
-
-    if (typeof displaySuppliers === "function") {
-        displaySuppliers();
-    } else if (typeof displayUsers === "function") {
-        displayUsers();
-    }else if (typeof displayUsers === "function") {
-        displayFuels();
-    }
-
-    
-
+  if (typeof displaySuppliers === "function") {
+    displaySuppliers();
+  } else if (typeof displayUsers === "function") {
+    displayUsers();
+  } else if (typeof displayFuels === "function") {
+    displayFuels();
+  } else if (typeof displayProducts === "function") {
+    displayProducts();
+  }
 });
