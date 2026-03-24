@@ -39,7 +39,7 @@ class categoryModel{
 
         $category_name = $data['category_name'] ?? '';
 
-        $sql = "SELECT * FROM categories WHERE category_name = ?";
+        $sql = "SELECT * FROM categories WHERE category_name = ? AND is_deleted = 0";
         $stmt = $this->conn->prepare($sql);
         $stmt->bind_param("s", $category_name);
         $stmt->execute();
@@ -49,8 +49,36 @@ class categoryModel{
     }
 
     public function update($data){
-        $sql = "UPDATE ";
+            $category_code = $data['category_code'] ?? '';
+            $updated_by =  $_SESSION['fname'] . " ". $_SESSION["lname"];
+            $category_name = $data['category_name'] ?? '';
+            $category_description = $data['category_description'] ?? '';
+        
+        $sql = "UPDATE categories SET category_name = ?, description = ?, updated_by =?, updated_at = NOW() WHERE category_code = ?";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("ssss", $category_name,$category_description,$updated_by,$category_code);
+        return $stmt->execute();
+
     }
+
+
+    public function delete($data)
+{
+    $category_code = $data["category_code"] ?? '';
+    $deleted_by = $_SESSION['fname'] . " " . $_SESSION["lname"];
+
+    // ✅ FIXED SQL
+    $sql = "UPDATE categories 
+            SET is_deleted = 1, deleted_by = ?, deleted_at = NOW() 
+            WHERE category_code = ?";
+
+    $stmt = $this->conn->prepare($sql);
+
+    // ✅ FIXED binding (2 placeholders = 2 params)
+    $stmt->bind_param("ss", $deleted_by, $category_code);
+
+    return $stmt->execute();
+}
 
 
 }
