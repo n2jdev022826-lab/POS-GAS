@@ -1,24 +1,42 @@
-
 // =======================
 // LOAD CATEGORIES
 // =======================
-function loadCategories() {
+function loadCategories(selectId = null, selectedValue = null) {
     fetch("http://localhost/POS-GAS/api/categories/get_all.php")
         .then(res => res.json())
         .then(data => {
 
-            const categorySelect = document.querySelector('[name="category_id"]');
-            const editCategorySelect = document.getElementById('edit_category');
+            const categorySelect = selectId
+                ? document.getElementById(selectId)
+                : document.querySelector('[name="category_id"]');
 
+            const editCategorySelect = !selectId
+                ? document.getElementById('edit_category')
+                : null;
+
+            // RESET
             categorySelect.innerHTML = '<option value="">Select Category</option>';
-            editCategorySelect.innerHTML = '<option value="">Select Category</option>';
+            if (editCategorySelect) {
+                editCategorySelect.innerHTML = '<option value="">Select Category</option>';
+            }
 
             data.forEach(cat => {
-                const option1 = `<option value="${cat.category_id}">${cat.category_name}</option>`;
-                const option2 = `<option value="${cat.category_id}">${cat.category_name}</option>`;
 
-                categorySelect.innerHTML += option1;
-                editCategorySelect.innerHTML += option2;
+                const selected = (selectedValue && selectedValue == cat.category_id) ? 'selected' : '';
+
+                const option = `<option value="${cat.category_id}" ${selected}>
+                                    ${cat.category_name}
+                                </option>`;
+
+                categorySelect.innerHTML += option;
+
+                if (editCategorySelect) {
+                    editCategorySelect.innerHTML += `
+                        <option value="${cat.category_id}">
+                            ${cat.category_name}
+                        </option>`;
+                }
+
             });
 
         });
@@ -27,23 +45,42 @@ function loadCategories() {
 // =======================
 // LOAD SUPPLIERS
 // =======================
-function loadSuppliers() {
+function loadSuppliers(selectId = null, selectedValue = null) {
     fetch("http://localhost/POS-GAS/api/suppliers/get_all.php")
         .then(res => res.json())
         .then(data => {
 
-            const supplierSelect = document.querySelector('[name="supplier_id"]');
-            const editSupplierSelect = document.getElementById('edit_supplier');
+            const supplierSelect = selectId
+                ? document.getElementById(selectId)
+                : document.querySelector('[name="supplier_id"]');
 
+            const editSupplierSelect = !selectId
+                ? document.getElementById('edit_supplier')
+                : null;
+
+            // RESET
             supplierSelect.innerHTML = '<option value="">Select Supplier</option>';
-            editSupplierSelect.innerHTML = '<option value="">Select Supplier</option>';
+            if (editSupplierSelect) {
+                editSupplierSelect.innerHTML = '<option value="">Select Supplier</option>';
+            }
 
             data.forEach(sup => {
-                const option1 = `<option value="${sup.supplier_id}">${sup.supplier_name}</option>`;
-                const option2 = `<option value="${sup.supplier_id}">${sup.supplier_name}</option>`;
 
-                supplierSelect.innerHTML += option1;
-                editSupplierSelect.innerHTML += option2;
+                const selected = (selectedValue && selectedValue == sup.supplier_id) ? 'selected' : '';
+
+                const option = `<option value="${sup.supplier_id}" ${selected}>
+                                    ${sup.supplier_name}
+                                </option>`;
+
+                supplierSelect.innerHTML += option;
+
+                if (editSupplierSelect) {
+                    editSupplierSelect.innerHTML += `
+                        <option value="${sup.supplier_id}">
+                            ${sup.supplier_name}
+                        </option>`;
+                }
+
             });
 
         });

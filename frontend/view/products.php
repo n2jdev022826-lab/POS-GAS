@@ -12,7 +12,9 @@ $products = [];
 $sql = "SELECT 
     p.product_code,
     p.name,
+    p.category_id, 
     c.category_name AS category,
+    p.supplier_id, 
     s.supplier_name AS supplier,
     p.original_price,
     p.selling_price,
@@ -53,11 +55,18 @@ ORDER BY p.created_at DESC;";
 $result = $conn->query($sql);
 
 while ($row = $result->fetch_assoc()) {
+
+    // ✅ FORMAT DATE FOR INPUT TYPE="date"
+    if (!empty($row['created_at'])) {
+        $row['date_received'] = date('Y-m-d', strtotime($row['created_at']));
+    } else {
+        $row['date_received'] = '';
+    }
+
     $products[] = $row;
 }
 
-
-$sql = "SELECT supplier_name FROM suppliers WHERE is_deleted = 0";
+$sql = "SELECT supplier_id, supplier_name FROM suppliers WHERE is_deleted = 0";
 $result = $conn->query($sql);
 
 $data = [];
@@ -90,7 +99,7 @@ $conn->close();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GAS STATION</title>
- 
+
     <link rel="stylesheet" href="/POS-GAS/frontend/css/product.css">
     <link rel="stylesheet" href="/POS-GAS/frontend/css/print.css">
     <link rel="stylesheet" href="/POS-GAS/frontend/css/global.css">
@@ -288,111 +297,111 @@ $conn->close();
 
     <div id="addProductModal" class="modal">
 
-    <div class="modal-box large">
+        <div class="modal-box large">
 
-        <div class="modal-header">
-            <h2>ADD PRODUCT</h2>
-            <span class="close-modal" onclick="closeProductModal()">&times;</span>
-        </div>
+            <div class="modal-header">
+                <h2>ADD PRODUCT</h2>
+                <span class="close-modal" onclick="closeProductModal()">&times;</span>
+            </div>
 
-        <form id="addProductForm" enctype="multipart/form-data">
+            <form id="addProductForm" enctype="multipart/form-data">
 
-            <div class="modal-content">
+                <div class="modal-content">
 
-                <!-- LEFT SIDE -->
-                <div class="image-section">
+                    <!-- LEFT SIDE -->
+                    <div class="image-section">
 
-                    <label id="imageLabel">PRODUCT IMAGE</label>
+                        <label id="imageLabel">PRODUCT IMAGE</label>
 
-                    <div class="image-preview" id="productImagePreview"></div>
+                        <div class="image-preview" id="productImagePreview"></div>
 
-                    <input type="file" name="image" id="productImageInput" hidden>
+                        <input type="file" name="image" id="productImageInput" hidden>
 
-                    <button type="button" class="upload-btn"
-                        onclick="document.getElementById('productImageInput').click()">
-                        UPLOAD
-                    </button>
+                        <button type="button" class="upload-btn"
+                            onclick="document.getElementById('productImageInput').click()">
+                            UPLOAD
+                        </button>
 
-                </div>
+                    </div>
 
-                <!-- RIGHT SIDE -->
-                <div class="form-section">
+                    <!-- RIGHT SIDE -->
+                    <div class="form-section">
 
-                    <div class="form-grid">
+                        <div class="form-grid">
 
-                        <div class="input-group">
-                            <label>PRODUCT NAME</label>
-                            <input type="text" name="name" required>
-                        </div>
+                            <div class="input-group">
+                                <label>PRODUCT NAME</label>
+                                <input type="text" name="name" required>
+                            </div>
 
-                        <div class="input-group">
-                            <label>CATEGORY</label>
-                            <select name="category_id">
-                                <option value="">Select Category</option>
-                            </select>
-                        </div>
+                            <div class="input-group">
+                                <label>CATEGORY</label>
+                                <select name="category_id">
+                                    <option value="">Select Category</option>
+                                </select>
+                            </div>
 
-                        <div class="input-group">
-                            <label>SUPPLIER</label>
-                            <select name="supplier_id">
-                                <option value="">Select Supplier</option>
-                            </select>
-                        </div>
+                            <div class="input-group">
+                                <label>SUPPLIER</label>
+                                <select name="supplier_id">
+                                    <option value="">Select Supplier</option>
+                                </select>
+                            </div>
 
-                        <div class="input-group">
-                            <label>DATE RECEIVED</label>
-                            <input type="date" name="date_received">
-                        </div>
+                            <div class="input-group">
+                                <label>DATE RECEIVED</label>
+                                <input type="date" name="date_received">
+                            </div>
 
-                        <div class="input-group">
-                            <label>EXPIRY DATE</label>
-                            <input type="date" name="expiry_date">
-                        </div>
+                            <div class="input-group">
+                                <label>EXPIRY DATE</label>
+                                <input type="date" name="expiry_date">
+                            </div>
 
-                        <div class="input-group">
-                            <label>ORIGINAL PRICE</label>
-                            <input type="number" name="original_price" step="0.01">
-                        </div>
+                            <div class="input-group">
+                                <label>ORIGINAL PRICE</label>
+                                <input type="number" name="original_price" step="0.01">
+                            </div>
 
-                        <div class="input-group">
-                            <label>SELLING PRICE</label>
-                            <input type="number" name="selling_price" step="0.01">
-                        </div>
+                            <div class="input-group">
+                                <label>SELLING PRICE</label>
+                                <input type="number" name="selling_price" step="0.01">
+                            </div>
 
-                        <div class="input-group">
-                            <label>QTY.</label>
-                            <input type="number" name="quantity">
-                        </div>
+                            <div class="input-group">
+                                <label>QTY.</label>
+                                <input type="number" name="quantity">
+                            </div>
 
-                        <div class="input-group">
-                            <label>QTY. LEFT</label>
-                            <input type="number" name="quantity_left" readonly>
-                        </div>
+                            <div class="input-group">
+                                <label>QTY. LEFT</label>
+                                <input type="number" name="quantity_left" readonly>
+                            </div>
 
-                        <div class="input-group">
-                            <label>TOTAL</label>
-                            <input type="number" name="total" readonly>
-                        </div>
+                            <div class="input-group">
+                                <label>TOTAL</label>
+                                <input type="number" name="total" readonly>
+                            </div>
 
-                        <div class="modal-buttons">
-                            <button type="submit" class="save-btn">+ SAVE</button>
-                        </div>
+                            <div class="modal-buttons">
+                                <button type="submit" class="save-btn">+ SAVE</button>
+                            </div>
 
-                        <div class="modal-buttons">
-                            <button type="button" class="addcancel-btn" onclick="closeProductModal()">Cancel</button>
+                            <div class="modal-buttons">
+                                <button type="button" class="addcancel-btn" onclick="closeProductModal()">Cancel</button>
+                            </div>
+
                         </div>
 
                     </div>
 
                 </div>
 
-            </div>
+            </form>
 
-        </form>
+        </div>
 
     </div>
-
-</div>
 
 
     <!-- ========================================================================================================================== -->
@@ -401,115 +410,115 @@ $conn->close();
 
     <div id="editProductModal" class="modal">
 
-    <div class="modal-box large">
+        <div class="modal-box large">
 
-        <div class="modal-header">
-            <h2>EDIT PRODUCT</h2>
-            <span class="close-modal" onclick="closeEditProductModal()">&times;</span>
-        </div>
+            <div class="modal-header">
+                <h2>EDIT PRODUCT</h2>
+                <span class="close-modal" onclick="closeEditProductModal()">&times;</span>
+            </div>
 
-        <form id="editProductForm" enctype="multipart/form-data">
+            <form id="editProductForm" enctype="multipart/form-data">
 
-            <input type="hidden" name="product_code" id="edit_product_code">
+                <input type="hidden" name="product_code" id="edit_product_code">
 
-            <div class="modal-content">
+                <div class="modal-content">
 
-                <!-- LEFT -->
-                <div class="image-section">
+                    <!-- LEFT -->
+                    <div class="image-section">
 
-                    <label id="imageLabel">PRODUCT IMAGE</label>
+                        <label id="imageLabel">PRODUCT IMAGE</label>
 
-                    <div class="image-preview" id="editProductImagePreview"></div>
+                        <div class="image-preview" id="editProductImagePreview"></div>
 
-                    <input type="file" name="image" id="editProductImageInput" hidden>
+                        <input type="file" name="image" id="editProductImageInput" hidden>
 
-                    <button type="button" class="upload-btn"
-                        onclick="document.getElementById('editProductImageInput').click()">
-                        UPLOAD
-                    </button>
+                        <button type="button" class="upload-btn"
+                            onclick="document.getElementById('editProductImageInput').click()">
+                            UPLOAD
+                        </button>
 
-                </div>
+                    </div>
 
-                <!-- RIGHT -->
-                <div class="form-section">
+                    <!-- RIGHT -->
+                    <div class="form-section">
 
-                    <div class="form-grid">
+                        <div class="form-grid">
 
-                        <div class="input-group">
-                            <label>PRODUCT NAME</label>
-                            <input type="text" name="name" id="edit_name">
-                        </div>
+                            <div class="input-group">
+                                <label>PRODUCT NAME</label>
+                                <input type="text" name="name" id="edit_name">
+                            </div>
 
-                        <div class="input-group">
-                            <label>CATEGORY</label>
-                            <select name="category_id" id="edit_category"></select>
-                        </div>
+                            <div class="input-group">
+                                <label>CATEGORY</label>
+                                <select name="category_id" id="edit_category"></select>
+                            </div>
 
-                        <div class="input-group">
-                            <label>SUPPLIER</label>
-                            <select name="supplier_id" id="edit_supplier"></select>
-                        </div>
+                            <div class="input-group">
+                                <label>SUPPLIER</label>
+                                <select name="supplier_id" id="edit_supplier"></select>
+                            </div>
 
-                        <div class="input-group">
-                            <label>DATE RECEIVED</label>
-                            <input type="date" name="date_received" id="edit_date_received">
-                        </div>
+                            <div class="input-group">
+                                <label>DATE RECEIVED</label>
+                                <input type="date" name="date_received" id="edit_date_received">
+                            </div>
 
-                        <div class="input-group">
-                            <label>EXPIRY DATE</label>
-                            <input type="date" name="expiry_date" id="edit_expiry_date">
-                        </div>
+                            <div class="input-group">
+                                <label>EXPIRY DATE</label>
+                                <input type="date" name="expiry_date" id="edit_expiry_date">
+                            </div>
 
-                        <div class="input-group">
-                            <label>ORIGINAL PRICE</label>
-                            <input type="number" name="original_price" id="edit_original_price">
-                        </div>
+                            <div class="input-group">
+                                <label>ORIGINAL PRICE</label>
+                                <input type="number" name="original_price" id="edit_original_price">
+                            </div>
 
-                        <div class="input-group">
-                            <label>SELLING PRICE</label>
-                            <input type="number" name="selling_price" id="edit_selling_price">
-                        </div>
+                            <div class="input-group">
+                                <label>SELLING PRICE</label>
+                                <input type="number" name="selling_price" id="edit_selling_price">
+                            </div>
 
-                        <div class="input-group">
-                            <label>QTY.</label>
-                            <input type="number" name="quantity" id="edit_quantity">
-                        </div>
+                            <div class="input-group">
+                                <label>QTY.</label>
+                                <input type="number" name="quantity" id="edit_quantity">
+                            </div>
 
-                        <div class="input-group">
-                            <label>QTY. LEFT</label>
-                            <input type="number" name="quantity_left" id="edit_quantity_left" readonly>
-                        </div>
+                            <div class="input-group">
+                                <label>QTY. LEFT</label>
+                                <input type="number" name="quantity_left" id="edit_quantity_left" readonly>
+                            </div>
 
-                        <div class="input-group">
-                            <label>TOTAL</label>
-                            <input type="number" name="total" id="edit_total" readonly>
-                        </div>
+                            <div class="input-group">
+                                <label>TOTAL</label>
+                                <input type="number" name="total" id="edit_total" readonly>
+                            </div>
 
-                        <div class="modal-buttons">
-                            <button type="submit" class="save-btn">UPDATE</button>
-                        </div>
+                            <div class="modal-buttons">
+                                <button type="submit" class="save-btn">UPDATE</button>
+                            </div>
 
-                        <div class="modal-buttons">
-                            <button type="button" class="editcancel-btn" onclick="closeEditProductModal()">Cancel</button>
+                            <div class="modal-buttons">
+                                <button type="button" class="editcancel-btn" onclick="closeEditProductModal()">Cancel</button>
+                            </div>
+
                         </div>
 
                     </div>
 
                 </div>
 
-            </div>
+            </form>
 
-        </form>
+        </div>
 
     </div>
 
-</div>
-
 
     <script>
-let supplierList = <?php echo json_encode($data); ?>;
-let categoryList = <?php echo json_encode($data); ?>;
-const products = <?php echo json_encode($products); ?>;
+        let supplierList = <?php echo json_encode($data); ?>;
+        let categoryList = <?php echo json_encode($categoryData); ?>;
+        const products = <?php echo json_encode($products); ?>;
     </script>
     <script src="/POS-GAS/frontend/js/search.js"></script>
     <script src="/POS-GAS/frontend/js/products-modal.js"></script>

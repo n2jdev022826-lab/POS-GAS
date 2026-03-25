@@ -15,7 +15,7 @@ class ProductController
     public function create()
     {
         $data = $_POST;
-        $data['created_by'] = $_SESSION['fname'];
+        $data['created_by'] = $_SESSION['fname'] . ' ' . $_SESSION['lname'];
 
         $result = $this->product->create($data, $_FILES);
 
@@ -34,10 +34,10 @@ class ProductController
 
     public function update()
     {
-
         $data = $_POST;
+        $data['updated_by'] = $_SESSION['fname'] . ' ' . $_SESSION['lname'];
 
-        if ($this->product->update($data)) {
+        if ($this->product->update($data, $_FILES)) {
 
             echo json_encode([
                 "status" => "success",
@@ -55,8 +55,9 @@ class ProductController
 
     public function delete()
     {
-
         $data = json_decode(file_get_contents("php://input"), true);
+
+        $data['deleted_by'] = $_SESSION['fname'] . ' ' . $_SESSION['lname'];
 
         if ($this->product->delete($data)) {
 

@@ -159,11 +159,12 @@ $categoryData = [];
 
 $sqlPie = "
 SELECT 
-    category,
-    SUM(price * stock) AS total_cost
-FROM products
-WHERE is_deleted = 0
-GROUP BY category
+    c.category_name AS category,
+    SUM(p.selling_price * p.stock) AS total_cost
+FROM products p
+LEFT JOIN Categories c ON c.category_id = p.category_id
+WHERE p.is_deleted = 0
+GROUP BY c.category_name
 ";
 
 $resultPie = $conn->query($sqlPie);

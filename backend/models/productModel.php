@@ -110,56 +110,121 @@ public function create($data, $files)
 }
 
 
-    public function update($data){
+  public function update($data, $files)
+{
+    try {
 
-        $sql = "UPDATE Products SET
-        product_name=?,
-        generic_name=?,
-        category=?,
-        supplier=?,
-        purchase_price=?,
-        selling_price=?,
-        stock_quantity=?,
-        expiry_date=?,
-        updated_by=?
-        WHERE product_id=?";
+        $product_code = $data['product_code'];
+
+        // =========================
+        // 1. GET OLD IMAGE
+        // =========================
+        $oldImage = '';
+        $getSql = "SELECT image FROM products WHERE product_code = ?";
+        $getStmt = $this->conn->prepare($getSql);
+        $getStmt->bind_param("s", $product_code);
+        $getStmt->execute();
+        $result = $getStmt->get_result();
+
+        if ($row = $result->fetch_assoc()) {
+            $oldImage = $row['image'];
+        }
+
+        // =========================
+        // 2. HANDLE IMAGE
+        // =========================
+        $imageName = $oldImage;
+
+        if (!empty($files['image']['name'])) {
+
+            $imageName = time() . '_' . $files['image']['name'];
+            $target = "../../frontend/assets/uploads/products/" . $imageName;
+
+            if (!move_uploaded_file($files['image']['tmp_name'], $target)) {
+                return false;
+            }
+        }
+
+        // =========================
+        // 3. UPDATE PRODUCT
+        // =========================
+        $updated_by = $data['updated_by'] ?? '';
+
+        $sql = "UPDATE products SET
+            name=?,
+            category_id=?,
+            supplier_id=?,
+            original_price=?,
+            selling_price=?,
+            expiry_date=?,
+            image=?,
+            updated_by=?,
+            updated_at=NOW()
+            WHERE product_code=?";
 
         $stmt = $this->conn->prepare($sql);
 
         $stmt->bind_param(
-            "ssssddisss",
-            $data['product_name'],
-            $data['generic_name'],
-            $data['category'],
-            $data['supplier'],
-            $data['purchase_price'],
+            "sssddssss",
+            $data['name'],
+            $data['category_id'],
+            $data['supplier_id'],
+            $data['original_price'],
             $data['selling_price'],
-            $data['stock_quantity'],
             $data['expiry_date'],
-            $data['updated_by'],
-            $data['product_id']
+            $imageName,
+            $updated_by,
+            $product_code
         );
 
-        return $stmt->execute();
+        if ($stmt->execute()) {
+
+            // =========================
+            // 4. DELETE OLD IMAGE
+            // =========================
+            if (!empty($files['image']['name']) && $oldImage) {
+                $oldPath = "../../frontend/assets/uploads/products/" . $oldImage;
+
+                if (file_exists($oldPath)) {
+                    unlink($oldPath);
+                }
+            }
+
+            return true;
+        }
+
+        return false;
+
+    } catch (Exception $e) {
+        return false;
     }
+}
 
+public function delete($data)
+{
+    try {
 
-    public function delete($data){
+        $deleted_by = $data['deleted_by'] ?? '';
 
-        $sql = "UPDATE Products
-        SET is_deleted = 1,
-        deleted_by = ?
-        WHERE product_id = ?";
+        $sql = "UPDATE products
+                SET is_deleted = 1,
+                    deleted_by = ?,
+                    deleted_at = NOW()
+                WHERE product_code = ?";
 
         $stmt = $this->conn->prepare($sql);
 
         $stmt->bind_param(
             "ss",
-            $data['deleted_by'],
-            $data['product_id']
+            $deleted_by,
+            $data['product_code']
         );
 
         return $stmt->execute();
+
+    } catch (Exception $e) {
+        return false;
     }
+}
 
 }

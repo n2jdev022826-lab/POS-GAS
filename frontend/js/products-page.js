@@ -20,7 +20,7 @@ function displayProducts() {
  const row = `
 <tr>
 <td>
-    <img src="/POS-GAS/frontend/assets/uploads/products/${product.image || 'default.jpg'}" 
+    <img src="/POS-GAS/frontend/assets/uploads/products/${product.image || 'default.png'}" 
          class="user-img">
 </td>
 
