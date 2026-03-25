@@ -76,7 +76,7 @@ while($row = $result->fetch_assoc()){
             <?php endforeach; ?>
         <?php else: ?>
             <tr>
-                <td colspan="4">No pumps found</td>
+                <td colspan="4">No Customer found</td>
             </tr>
         <?php endif; ?>
     </tbody>
