@@ -52,7 +52,7 @@ class customerModel{
 
     }
 
-    public function update()
+    public function update($data)
     {
 
 
@@ -62,11 +62,24 @@ class customerModel{
              $phone = $data['phone'] ?? '';
                  $email = $data['email'] ?? '';
                       $address = $data['address'] ?? '';
-        $sql = "UPDATE customers SET customer_name=?, phone=?, email=?, address=? updated_by = ?, updated_at = NOW() WHERE customer_code = ?";
-        $stmt = $this->conn->preapre($sql);
-        $stmt->bind_param("ssssss",$customer_name,$phone,$email,$address,$updated_by);
+                            $customer_code = $data['customer_code'] ?? '';
+        $sql = "UPDATE customers SET customer_name=?, phone=?, email=?, address=?, updated_by = ?, updated_at = NOW() WHERE customer_code = ?";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("ssssss",$customer_name,$phone,$email,$address,$updated_by, $customer_code);
         return $stmt->execute();
 
+    }
+
+
+    public function delete($data)
+    {
+        $deleted_by = $_SESSION["fname"] . " " . $_SESSION["lname"];
+        $customer_code = $data["customer_code"] ?? '';
+
+        $sql = "UPDATE customers SET is_deleted = 1, deleted_by = ?, deleted_at = NOW() WHERE customer_code = ?";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("ss",$deleted_by,$customer_code);
+        return $stmt->execute();
     }
 
 

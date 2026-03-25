@@ -78,6 +78,22 @@ public function update()
     }
 }
 
+public function delete()
+{
+        $data = $_POST;
+    if($this->customer->delete($data)){
+         echo json_encode([
+            "status" => "success",
+            "message" => "Customer deleted successfully"
+        ]);
+    }else{
+         echo json_encode([
+            "status" => "error",
+            "message" => "Failed to delete customer"
+        ]);
+    }
+}
+
    
     
 

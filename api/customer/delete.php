@@ -13,7 +13,7 @@ $db = new Database();
 $conn = $db->connect();
 
 $controller = new customerController($conn);
-$controller->update();
+$controller->delete();
 
 
 
