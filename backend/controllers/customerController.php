@@ -61,6 +61,23 @@ class customerController{
     }
 }
 
+public function update()
+{
+    $data = $_POST;
+
+    if($this->customer->update($data)){
+         echo json_encode([
+            "status" => "success",
+            "message" => "Customer updated successfully"
+        ]);
+    }else{
+         echo json_encode([
+            "status" => "error",
+            "message" => "Failed to update customer"
+        ]);
+    }
+}
+
    
     
 
