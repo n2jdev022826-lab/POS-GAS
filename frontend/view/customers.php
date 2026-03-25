@@ -29,7 +29,7 @@ require_once "../../backend/middleware/auth.php";
         const form = e.target;
         const formData = new FormData(form);
 
-        fetch("/POS-GAS/api/customer/create", {
+        fetch("http://localhost/POS-GAS/api/customer/create.php", {
                 method: "POST",
                 body: formData
             })

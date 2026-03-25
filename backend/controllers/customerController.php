@@ -11,10 +11,28 @@ class customerController{
         $this->customer = new customerModel($conn);
     }
 
+     private function isEmpty($data)
+{
+    $name = $data['customer_name'] ?? '';
+    return empty(trim($name));
+}
+
+
 
     public function create()
 {
     $data = $_POST;
+
+
+
+      if ($this->isEmpty($data)) {
+        echo json_encode([
+            "status" => "error",
+            "message" => "Customer name is required"
+        ]);
+        return;
+    }
+
 
     // check duplicate
     if ($this->customer->check($data)) {

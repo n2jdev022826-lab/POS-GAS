@@ -12,7 +12,7 @@ class customerModel{
 
     public function create($data){
 
-    $created_by = $_SESSION['user_id'];
+    $created_by = $_SESSION['fname'] . " ". $_SESSION["lname"];
 
     $customer_name = $data['customer_name'] ?? '';
     $phone = $data['phone'] ?? '';
@@ -20,8 +20,8 @@ class customerModel{
     $address = $data['address'] ?? '';
 
     $sql = "INSERT INTO customers
-            (customer_name, phone, email, address, created_by)
-            VALUES (?, ?, ?, ?, ?)";
+            (customer_name, phone, email, address, created_by, created_at)
+            VALUES (?, ?, ?, ?, ?, NOW())";
 
     $stmt = $this->conn->prepare($sql);
 
