@@ -1,33 +1,4 @@
-const products = [
-{
-name:"Amoxicillin",
-dose:"500 mg",
-price:30,
-stock:210,
-expiry:"10/28/2027"
-},
-{
-name:"Ibuprofen",
-dose:"200 mg",
-price:50,
-stock:210,
-expiry:"10/28/2027"
-},
-{
-name:"Paracetamol",
-dose:"500 mg",
-price:20,
-stock:210,
-expiry:"10/28/2027"
-},
-{
-name:"Ciprofloxacin",
-dose:"500 mg",
-price:25,
-stock:210,
-expiry:"10/28/2027"
-}
-];
+
 
 const grid = document.getElementById("productGrid");
 const modal = document.getElementById("productModal");
@@ -36,38 +7,84 @@ let cart = [];
 let selectedProduct = null;
 
 
+function formatDate(dateStr) {
+  if (!dateStr) return "N/A";
+
+  const date = new Date(dateStr);
+
+  // Format: MM/DD/YYYY (or change if you want)
+  return date.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit"
+  });
+}
+
+
 /* LOAD PRODUCTS */
 
-function loadProducts(){
+function loadProducts() {
 
-grid.innerHTML="";
+fetch("http://localhost/POS-GAS/api/products/get_products.php")
+  .then(res => res.text()) // 👈 TEMP CHANGE
+  .then(data => {
+    console.log(data); // 👈 SEE REAL ERROR HERE
+  });
 
-products.forEach(product=>{
+  fetch("http://localhost/POS-GAS/api/products/get_products.php")
+    .then(res => res.json())
+    .then(data => {
 
-let card=document.createElement("div");
-card.classList.add("card");
+      if (data.status !== "success") {
+        console.error(data.message);
+        return;
+      }
 
-card.innerHTML=`
+      const products = data.data;
 
-<div class="img"></div>
+      grid.innerHTML = "";
 
-<div class="details">
-<h3>${product.name}</h3>
-<p>${product.dose}</p>
+      products.forEach(product => {
 
-<p>Remaining: ${product.stock}</p>
-<p class="expiry">Expires at ${product.expiry}</p>
+        let card = document.createElement("div");
+        card.classList.add("card");
 
-<h4>₱ ${product.price}</h4>
-</div>
-`;
+        card.innerHTML = `
+          <div class="img">
+            ${product.image 
+              ? ` <img 
+        src="/POS-GAS/frontend/assets/uploads/products/${product.image || 'default.jpg'}" 
+        class="product-image">` 
+              : ""}
+          </div>
 
-card.onclick=()=>openModal(product);
+          <div class="details">
+            <h3>${product.name}</h3>
+            <p>${product.product_code}</p>
 
-grid.appendChild(card);
+            <p>Remaining: ${product.stock}</p>
+            <p class="expiry">Expires at ${formatDate(product.expiry_date)}</p>
 
-});
+            <h4>₱ ${product.selling_price}</h4>
+          </div>
+        `;
 
+        card.onclick = () => openModal({
+          name: product.name,
+          dose: product.product_code, // since no dose column
+          stock: product.stock,
+          expiry: formatDate(product.expiry_date),
+          price: product.selling_price
+        });
+
+        grid.appendChild(card);
+      });
+
+    })
+    .catch(err => {
+      console.error(err);
+      alert("Failed to load products");
+    });
 }
 
 loadProducts();
@@ -235,3 +252,28 @@ checkoutForm && checkoutForm.addEventListener('submit', (e)=>{
 	hiddenChange.value = (paid - total).toFixed(2);
 	// allow form to submit
 });
+
+
+const employeeMenu = document.getElementById("employeeMenu");
+const dropdown = document.getElementById("employeeDropdown");
+
+// Toggle dropdown
+employeeMenu.addEventListener("click", function (e) {
+  e.stopPropagation();
+  dropdown.style.display =
+    dropdown.style.display === "flex" ? "none" : "flex";
+});
+
+// Close when clicking outside
+document.addEventListener("click", function () {
+  dropdown.style.display = "none";
+});
+
+// Actions
+function goToAccount() {
+  window.location.href = "account-settings.php"; // change if needed
+}
+
+function logout() {
+  window.location.href = "../session.php";
+}

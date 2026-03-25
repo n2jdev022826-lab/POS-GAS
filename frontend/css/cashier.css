@@ -83,7 +83,39 @@ body {
 }
 
 #datetime{
-  color: #0a4449;
+  color: #9A0303;
+}
+
+
+.employee-info {
+  position: relative;
+  cursor: pointer;
+}
+
+/* Dropdown container */
+.employee-dropdown {
+  position: absolute;
+  top: 60px;
+  right: 0;
+  width: 180px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 1000;
+}
+
+/* Items */
+.dropdown-item {
+  padding: 12px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.dropdown-item:hover {
+  background: #f2f2f2;
 }
 
 /* POS LAYOUT */
@@ -163,8 +195,16 @@ display: flex;
 .card .img{
 width:130px;
 height:130px;
-background:#ddd;
+background:#ffffff;
 margin-bottom:10px;
+border-radius: 10px;
+border: none;
+}
+
+.product-image{
+  width:130px;
+height:130px;
+padding: 5px;
 }
 
 .expiry{
@@ -180,9 +220,9 @@ color:#00a36c;
 
 .right-panel{
 width:28%;
-background:linear-gradient(#61d2c2,#2ea6b1);
+background: linear-gradient(to bottom, #FC5E39, #B80201);
 padding:30px;
-color:rgb(9, 114, 106);
+color:rgb(114, 25, 9);
 }
 
 .cart-container{

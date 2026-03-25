@@ -12,7 +12,7 @@ require_once "../../backend/middleware/auth.php";
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>JAYLO MEDICAL CLINIC</title>
+  <title>GAS STATION</title>
   <link rel="stylesheet" href="/POS-GAS/frontend/css/sales.css">
   <link rel="stylesheet" href="/POS-GAS/frontend/css/print.css">
 </head>

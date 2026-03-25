@@ -11,8 +11,8 @@ require_once "../../../backend/middleware/auth.php";
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>JAYLO MEDICAL CLINIC</title>
-    <link rel="stylesheet" href="/POS-GAS/frontend/css/cashier.css"/>
+    <title>GAS STATION</title>
+    <link rel="stylesheet" href="/POS-GAS/frontend/css/cashier.css" />
 </head>
 
 <body>
@@ -26,9 +26,17 @@ require_once "../../../backend/middleware/auth.php";
         <div class="topbar">
             <div id="datetime"></div>
 
-            <div class="employee-info">
-                <div class="employee-name"> <?php echo htmlspecialchars($_SESSION['lname']. ", " . $_SESSION['fname']); ?></div>
-                <div id="employee-profile"></div>
+            <div class="employee-info" id="employeeMenu">
+                <div class="employee-name">
+                    <?php echo htmlspecialchars($_SESSION['lname'] . ", " . $_SESSION['fname']); ?>
+                </div>
+                <div id="employee-profile"><img src="/POS-GAS/frontend/assets/uploads/users/<?php echo htmlspecialchars(!empty($_SESSION['image']) ? $_SESSION['image'] : 'default.jpg'); ?>" class="employee-img"></div>
+
+                <!-- DROPDOWN -->
+                <div class="employee-dropdown" id="employeeDropdown">
+                    <div class="dropdown-item" onclick="goToAccount()">Account Settings</div>
+                    <div class="dropdown-item" onclick="logout()">Logout</div>
+                </div>
             </div>
         </div>
 
@@ -36,27 +44,26 @@ require_once "../../../backend/middleware/auth.php";
 
         <div class="left-panel">
 
-                <div class="search-section">
+            <div class="search-section">
 
-                    <input type="text" placeholder="SEARCH PRODUCT">
+                <input type="text" id="searchInput" placeholder="SEARCH PRODUCT">
 
-                    <button class="view-btn" onclick="window.location.href='productlist';" >VIEW PRODUCTS</button>
-
-                </div>
-
-
-                <div class="category-bar">
-
-                    MEDICINES
-
-                </div>
-
-
-                <div class="product-grid" id="productGrid">
-                    
-                </div>
+                <button class="view-btn" onclick="window.location.href='productlist';">VIEW PRODUCTS</button>
 
             </div>
+
+
+            <div class="category-bar">
+
+                <!-- fetch categories here that will filter cards base on their category -->
+
+            </div>
+
+
+            <!-- cards -->
+            <div class="product-grid" id="productGrid"></div>
+
+        </div>
 
     </div>
 
@@ -74,11 +81,11 @@ require_once "../../../backend/middleware/auth.php";
 
             <div id="cartItems"></div>
         </div>
-            <div class="cart-total">
-                TOTAL: ₱ <span id="totalAmount">0</span>
-            </div>
+        <div class="cart-total">
+            TOTAL: ₱ <span id="totalAmount">0</span>
+        </div>
 
-        
+
 
         <div class="cart-buttons">
 
@@ -89,7 +96,7 @@ require_once "../../../backend/middleware/auth.php";
 
     </div>
 
-     <!-- MODAL -->
+    <!-- MODAL -->
 
     <div class="modal" id="productModal">
 
