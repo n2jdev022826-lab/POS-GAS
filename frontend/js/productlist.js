@@ -2,7 +2,7 @@ let currentPage = 1;
 let rowsPerPage = parseInt(document.getElementById("rowsPerPage").value) || 10;
 
 let searchQuery = "";
-let currentFilter = "all";
+let currentFilter = "all"; // filter mode
 
 // ================= SEARCH =================
 document.getElementById("searchInput").addEventListener("input", function () {
@@ -16,6 +16,7 @@ function filterProducts(type) {
     currentFilter = type;
     currentPage = 1;
 
+    // highlight active card
     document.querySelectorAll(".stat-card").forEach(card => {
         card.classList.remove("active");
     });
@@ -137,11 +138,17 @@ function updateStats() {
         const qtyLeft = parseInt(p.quantity_left || 0);
         const expiry = p.expiry_date ? new Date(p.expiry_date) : null;
 
-        if (qtyLeft < 10) lowstock++;
+        // low stock
+        if (qtyLeft < 10) {
+            lowstock++;
+        }
 
+        // expiring within 7 days
         if (expiry) {
             const diffDays = (expiry - today) / (1000 * 60 * 60 * 24);
-            if (diffDays <= 7) expiring++;
+            if (diffDays <= 7) {
+                expiring++;
+            }
         }
     });
 
@@ -153,3 +160,27 @@ function updateStats() {
 // ================= INIT =================
 updateStats();
 displayProducts();
+
+const employeeMenu = document.getElementById("employeeMenu");
+const dropdown = document.getElementById("employeeDropdown");
+
+// Toggle dropdown
+employeeMenu.addEventListener("click", function (e) {
+  e.stopPropagation();
+  dropdown.style.display =
+    dropdown.style.display === "flex" ? "none" : "flex";
+});
+
+// Close when clicking outside
+document.addEventListener("click", function () {
+  dropdown.style.display = "none";
+});
+
+// Actions
+function goToAccount() {
+  window.location.href = "account-settings.php"; // change if needed
+}
+
+function logout() {
+  window.location.href = "../session.php";
+}

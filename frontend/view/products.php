@@ -520,7 +520,7 @@ $conn->close();
         let categoryList = <?php echo json_encode($categoryData); ?>;
         const products = <?php echo json_encode($products); ?>;
     </script>
-    <script src="/POS-GAS/frontend/js/search.js"></script>
+    
     <script src="/POS-GAS/frontend/js/products-modal.js"></script>
     <script src="/POS-GAS/frontend/js/alert.js"></script>
     <script src="/POS-GAS/frontend/js/products-page.js"></script>
