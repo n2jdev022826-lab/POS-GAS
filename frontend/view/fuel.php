@@ -26,6 +26,18 @@ while ($row = $result->fetch_assoc()) {
     $fuels[] = $row;
 }
 
+
+
+$supplier = [];
+
+$sql = "SELECT * FROM suppliers  WHERE is_deleted = 0";
+
+$resultsupp = $conn->query($sql);
+
+while($row = $resultsupp->fetch_assoc()){
+    $supplier[] = $row;
+}
+
 $conn->close();
 
 ?>
@@ -293,7 +305,7 @@ $conn->close();
 
           <div class="form-grid">
 
-            <div class="input-group">
+          <div class="input-group">
               <label>FUEL</label>
               <select name="fuel_id" required>
                 <?php foreach ($fuels as $f): ?>
@@ -303,6 +315,20 @@ $conn->close();
                 <?php endforeach; ?>
               </select>
             </div>
+
+            <div class="input-group">
+              <label>SUPPLIER</label>
+              <select name="supplier_id" required>
+                <?php foreach ($supplier as $s): ?>
+                  <option value="<?php echo $s['supplier_id']; ?>">
+                    <?php echo $s['supplier_name']; ?>
+                  </option>
+                <?php endforeach; ?>
+              </select>
+            </div>
+
+            
+
 
             <div class="input-group">
               <label>LITERS TO ADD</label>
