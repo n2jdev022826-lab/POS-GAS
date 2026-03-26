@@ -13,6 +13,7 @@ require_once "../../../backend/middleware/auth.php";
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>GAS STATION</title>
     <link rel="stylesheet" href="/POS-GAS/frontend/css/cashier.css" />
+    <link rel="stylesheet" href="/POS-GAS/frontend/css/alert.css" />
 </head>
 
 <body>
@@ -177,6 +178,24 @@ require_once "../../../backend/middleware/auth.php";
     <script src="/POS-GAS/frontend/js/cashier.js"></script>
     <script src="/POS-GAS/frontend/js/dashboard.js"></script>
     <script src="/POS-GAS/frontend/js/date-time.js"></script>
+    <script src="/POS-GAS/frontend/js/alert.js"></script>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+
+        <?php if (isset($_SESSION['error'])) { ?>
+
+          showAlert(
+            "warning",
+            "Access Denied",
+            "<?php echo $_SESSION['error']; ?>"
+          );
+
+        <?php unset($_SESSION['error']);
+        } ?>
+
+      });
+    </script>
 
 
 </body>

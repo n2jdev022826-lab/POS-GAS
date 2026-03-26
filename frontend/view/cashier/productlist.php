@@ -2,7 +2,6 @@
 
 require_once "../../../config/database.php";
 require_once "../../../backend/middleware/auth.php";
-
 ?>
 
 <!DOCTYPE html>
@@ -11,7 +10,7 @@ require_once "../../../backend/middleware/auth.php";
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>JAYLO MEDICAL CLINIC</title>
+  <title>GAS STATION</title>
   <link rel="stylesheet" href="/POS-GAS/frontend/css/productlist.css">
   <link rel="stylesheet" href="/POS-GAS/frontend/css/print.css">
 </head>

@@ -3,9 +3,13 @@
 require_once "../../config/database.php";
 require_once "../../backend/middleware/route.php";
 require_once "../../backend/middleware/auth.php";
+require_once "../../backend/middleware/authmiddleware.php";
 
 $db = new Database();
 $conn = $db->connect();
+
+AuthMiddleware::check();              // must be logged in
+AuthMiddleware::allowOnly(['Admin', 'Staff']); // 🚫 only Admin and Staff allowed
 
 /* ================= TODAY SALES ================= */
 $todaySales = 0;
@@ -188,6 +192,7 @@ $conn->close();
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link rel="stylesheet" href="/POS-GAS/frontend/css/global.css" />
   <link rel="stylesheet" href="/POS-GAS/frontend/css/dashboard.css" />
+  <link rel="stylesheet" href="/POS-GAS/frontend/css/alert.css" />
 </head>
 
 <body>
@@ -368,8 +373,26 @@ $conn->close();
 
     <script src="/POS-GAS/frontend/js/dashboard.js"></script>
     <script src="/POS-GAS/frontend/js/date-time.js"></script>
+    <script src="/POS-GAS/frontend/js/alert.js"></script>
 
-   
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+
+        <?php if (isset($_SESSION['error'])) { ?>
+
+          showAlert(
+            "warning",
+            "Access Denied",
+            "<?php echo $_SESSION['error']; ?>"
+          );
+
+        <?php unset($_SESSION['error']);
+        } ?>
+
+      });
+    </script>
+
+
 
 
 </body>
