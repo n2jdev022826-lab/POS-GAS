@@ -110,6 +110,19 @@ function displayProducts() {
 <td>${product.quantity || 0}</td>
 <td>${product.quantity_left || 0}</td>
 <td>${(product.original_price * (product.quantity || 0)).toFixed(2)}</td>
+<td class="action-buttons">
+    <button class="icon-btn edit-btn"
+        onclick="editProduct('${product.product_code}')">
+        <img src="/POS-GAS/frontend/assets/icons/edit.png">
+        <span>EDIT</span>
+    </button>
+
+    <button class="icon-btn delete-btn"
+        onclick="deleteProduct('${product.product_code}')">
+        <img src="/POS-GAS/frontend/assets/icons/delete.png">
+        <span>DELETE</span>
+    </button>
+</td>
 </tr>
 `;
 

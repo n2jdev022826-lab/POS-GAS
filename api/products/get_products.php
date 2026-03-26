@@ -10,6 +10,7 @@ $sql = "SELECT
     p.selling_price,
     p.expiry_date,
     p.image,
+    p.category_id, 
 
     pm.remaining_quantity AS stock
 

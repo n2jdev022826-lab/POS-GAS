@@ -1,279 +1,288 @@
-
-
 const grid = document.getElementById("productGrid");
 const modal = document.getElementById("productModal");
+const categoryBar = document.querySelector(".category-bar");
 
 let cart = [];
 let selectedProduct = null;
+let allProducts = [];
+let activeCategory = "all";
 
-
+/* FORMAT DATE */
 function formatDate(dateStr) {
   if (!dateStr) return "N/A";
-
   const date = new Date(dateStr);
-
-  // Format: MM/DD/YYYY (or change if you want)
   return date.toLocaleDateString("en-US", {
     year: "numeric",
     month: "2-digit",
-    day: "2-digit"
+    day: "2-digit",
   });
 }
 
+/* FORMAT NUMBER AS PHP CURRENCY */
+function formatPHP(amount) {
+  return new Intl.NumberFormat("en-PH", {
+    style: "currency",
+    currency: "PHP",
+  }).format(amount);
+}
 
 /* LOAD PRODUCTS */
-
 function loadProducts() {
-
-fetch("http://localhost/POS-GAS/api/products/get_products.php")
-  .then(res => res.text()) // 👈 TEMP CHANGE
-  .then(data => {
-    console.log(data); // 👈 SEE REAL ERROR HERE
-  });
-
   fetch("http://localhost/POS-GAS/api/products/get_products.php")
-    .then(res => res.json())
-    .then(data => {
-
+    .then((res) => res.json())
+    .then((data) => {
       if (data.status !== "success") {
         console.error(data.message);
         return;
       }
-
-      const products = data.data;
-
-      grid.innerHTML = "";
-
-      products.forEach(product => {
-
-        let card = document.createElement("div");
-        card.classList.add("card");
-
-        card.innerHTML = `
-          <div class="img">
-            ${product.image 
-              ? ` <img 
-        src="/POS-GAS/frontend/assets/uploads/products/${product.image || 'default.jpg'}" 
-        class="product-image">` 
-              : ""}
-          </div>
-
-          <div class="details">
-            <h3>${product.name}</h3>
-            <p>${product.product_code}</p>
-
-            <p>Remaining: ${product.stock}</p>
-            <p class="expiry">Expires at ${formatDate(product.expiry_date)}</p>
-
-            <h4>₱ ${product.selling_price}</h4>
-          </div>
-        `;
-
-        card.onclick = () => openModal({
-          name: product.name,
-          dose: product.product_code, // since no dose column
-          stock: product.stock,
-          expiry: formatDate(product.expiry_date),
-          price: product.selling_price
-        });
-
-        grid.appendChild(card);
-      });
-
+      allProducts = data.data;
+      renderProducts();
     })
-    .catch(err => {
+    .catch((err) => {
       console.error(err);
       alert("Failed to load products");
     });
 }
 
-loadProducts();
+/* RENDER PRODUCTS (WITH FILTER) */
+function renderProducts() {
+  grid.innerHTML = "";
 
+  let filteredProducts = allProducts;
+  if (activeCategory !== "all") {
+    filteredProducts = allProducts.filter(
+      (product) => product.category_id == activeCategory
+    );
+  }
+
+  filteredProducts.forEach((product) => {
+    let card = document.createElement("div");
+    card.classList.add("card");
+
+    card.innerHTML = `
+      <div class="img">
+        ${
+          product.image
+            ? `<img src="/POS-GAS/frontend/assets/uploads/products/${product.image}" class="product-image">`
+            : ""
+        }
+      </div>
+      <div class="details">
+        <h3>${product.name}</h3>
+        <p class="pcode">${product.product_code}</p>
+        <p>Remaining: ${product.stock}</p>
+        <p class="expiry">Expires at ${formatDate(product.expiry_date)}</p>
+        <h4>${formatPHP(product.selling_price)}</h4>
+      </div>
+    `;
+
+    card.onclick = () =>
+      openModal({
+        name: product.name,
+        product_code: product.product_code,
+        stock: product.stock,
+        expiry: formatDate(product.expiry_date),
+        price: product.selling_price,
+        image: product.image,
+      });
+
+    grid.appendChild(card);
+  });
+}
+
+/* LOAD CATEGORIES */
+function loadCategories() {
+  fetch("http://localhost/POS-GAS/api/categories/get_all.php")
+    .then((res) => res.json())
+    .then((categories) => {
+      categoryBar.innerHTML = "";
+
+      const allBtn = document.createElement("button");
+      allBtn.innerText = "ALL";
+      allBtn.classList.add("category-btn", "active");
+      allBtn.onclick = () => {
+        activeCategory = "all";
+        setActiveButton(allBtn);
+        renderProducts();
+      };
+      categoryBar.appendChild(allBtn);
+
+      categories.forEach((cat) => {
+        const btn = document.createElement("button");
+        btn.innerText = cat.category_name;
+        btn.classList.add("category-btn");
+        btn.onclick = () => {
+          activeCategory = cat.category_id;
+          setActiveButton(btn);
+          renderProducts();
+        };
+        categoryBar.appendChild(btn);
+      });
+    })
+    .catch((err) => console.error("Failed to load categories:", err));
+}
+
+/* ACTIVE BUTTON UI */
+function setActiveButton(activeBtn) {
+  document.querySelectorAll(".category-btn").forEach((btn) => {
+    btn.classList.remove("active");
+  });
+  activeBtn.classList.add("active");
+}
 
 /* OPEN MODAL */
+function openModal(product) {
+  selectedProduct = product;
 
-function openModal(product){
+  document.getElementById("modalName").innerText = product.name;
+  document.getElementById("modalCode").innerText = product.product_code;
+  document.getElementById("modalStock").innerText = product.stock;
+  document.getElementById("modalExpiry").innerText = product.expiry;
+  document.getElementById("modalPrice").innerText = formatPHP(product.price);
 
-selectedProduct=product;
+  const imgContainer = document.querySelector("#productModal .img");
+  if (product.image) {
+    imgContainer.innerHTML = `<img src="/POS-GAS/frontend/assets/uploads/products/${product.image}" class="modal-image">`;
+  } else {
+    imgContainer.innerHTML = "";
+  }
 
-document.getElementById("modalName").innerText=product.name;
-document.getElementById("modalDose").innerText=product.dose;
-document.getElementById("modalStock").innerText=product.stock;
-document.getElementById("modalExpiry").innerText=product.expiry;
-document.getElementById("modalPrice").innerText=product.price;
-
-modal.style.display="flex";
-
+  modal.style.display = "flex";
 }
-
 
 /* CLOSE MODAL */
-
-document.getElementById("closeModal").onclick=()=>{
-
-modal.style.display="none";
-
+document.getElementById("closeModal").onclick = () => {
+  modal.style.display = "none";
 };
-
 
 /* ADD TO CART */
+document.getElementById("addToCart").onclick = () => {
+  let qty = parseInt(document.getElementById("modalQty").value);
+  let total = qty * selectedProduct.price;
 
-document.getElementById("addToCart").onclick=()=>{
+  cart.push({
+    name: selectedProduct.name,
+    qty: qty,
+    price: total,
+  });
 
-let qty=parseInt(document.getElementById("modalQty").value);
-
-let total=qty*selectedProduct.price;
-
-cart.push({
-name:selectedProduct.name,
-qty:qty,
-price:total
-});
-
-updateCart();
-
-modal.style.display="none";
-
+  updateCart();
+  modal.style.display = "none";
 };
 
-
 /* UPDATE CART */
+function updateCart() {
+  const cartDiv = document.getElementById("cartItems");
+  cartDiv.innerHTML = "";
 
-function updateCart(){
+  let totalAmount = 0;
 
-const cartDiv=document.getElementById("cartItems");
-cartDiv.innerHTML="";
+  cart.forEach((item) => {
+    let row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${item.name}</td>
+      <td>${item.qty}</td>
+      <td>${formatPHP(item.price)}</td>
+    `;
+    cartDiv.appendChild(row);
+    totalAmount += item.price;
+  });
 
-let totalAmount=0;
-
-cart.forEach(item=>{
-
-let row=document.createElement("div");
-row.classList.add("cart-row");
-
-row.innerHTML=`
-
-<span>${item.name}</span>
-<span>${item.qty}</span>
-<span>₱ ${item.price}</span>
-
-`;
-
-cartDiv.appendChild(row);
-
-totalAmount+=item.price;
-
-});
-
-document.getElementById("totalAmount").innerText=totalAmount;
-
+  document.getElementById("totalAmount").innerText = formatPHP(totalAmount);
 }
 
+/* CHECKOUT MODAL LOGIC */
+const checkoutModal = document.getElementById("checkoutModal");
+const checkoutTotalInput = document.getElementById("checkoutTotal");
+const discountSelect = document.getElementById("discountSelect");
+const amountPaid = document.getElementById("amountPaid");
+const changeDisplay = document.getElementById("changeDisplay");
+const hiddenItems = document.getElementById("hiddenItems");
+const hiddenTotal = document.getElementById("hiddenTotal");
+const hiddenChange = document.getElementById("hiddenChange");
+const checkoutForm = document.getElementById("checkoutForm");
+const okBtn = document.querySelector(".ok-btn");
+const cancelCheckout = document.getElementById("cancelCheckout");
+const closeCheckout = document.getElementById("closeCheckout");
 
-/* CHECKOUT HANDLERS */
-
-const okBtn = document.querySelector('.ok-btn');
-const checkoutModal = document.getElementById('checkoutModal');
-const closeCheckout = document.getElementById('closeCheckout');
-const cancelCheckout = document.getElementById('cancelCheckout');
-const checkoutTotal = document.getElementById('checkoutTotal');
-const amountPaid = document.getElementById('amountPaid');
-const changeDisplay = document.getElementById('changeDisplay');
-let hiddenItems = document.getElementById('hiddenItems');
-let hiddenTotal = document.getElementById('hiddenTotal');
-let hiddenChange = document.getElementById('hiddenChange');
-const checkoutForm = document.getElementById('checkoutForm');
-
-function openCheckout(){
-	// show current total
-	const total = parseFloat(document.getElementById('totalAmount').innerText) || 0;
-	checkoutTotal.innerText = total;
-	amountPaid.value = '';
-	changeDisplay.innerText = '0';
-	checkoutModal.style.display = 'flex';
+function openCheckout() {
+  let total = cart.reduce((sum, item) => sum + item.price, 0);
+  checkoutTotalInput.value = formatPHP(total);
+  amountPaid.value = "";
+  changeDisplay.value = formatPHP(0);
+  discountSelect.value = "0";
+  checkoutModal.style.display = "flex";
 }
 
-if(okBtn){
-	okBtn.addEventListener('click', (e)=>{
-		// If the clicked OK is the product modal OK, ignore (add-btn handles that). We open checkout only when clicking the right-panel OK button.
-		// Determine if cart has items
-		if(cart.length===0){
-			alert('Cart is empty');
-			return;
-		}
-		openCheckout();
-	});
+function updateCheckout() {
+  let total = cart.reduce((sum, item) => sum + item.price, 0);
+  let discount = parseFloat(discountSelect.value) || 0;
+  let discountedTotal = total - (total * discount) / 100;
+
+  checkoutTotalInput.value = formatPHP(discountedTotal);
+
+  let paid = parseFloat(amountPaid.value) || 0;
+  let change = Math.max(0, paid - discountedTotal);
+  changeDisplay.value = formatPHP(change);
 }
 
-if(closeCheckout) closeCheckout.onclick = ()=> checkoutModal.style.display='none';
-if(cancelCheckout) cancelCheckout.onclick = ()=> checkoutModal.style.display='none';
+if (okBtn) {
+  okBtn.addEventListener("click", () => {
+    if (cart.length === 0) {
+      alert("Cart is empty");
+      return;
+    }
+    openCheckout();
+  });
+}
 
-amountPaid && amountPaid.addEventListener('input', ()=>{
-	const paid = parseFloat(amountPaid.value) || 0;
-	const total = parseFloat(document.getElementById('totalAmount').innerText) || 0;
-	const change = Math.max(0, paid - total);
-	changeDisplay.innerText = change.toFixed(2);
+discountSelect.addEventListener("change", updateCheckout);
+amountPaid.addEventListener("input", updateCheckout);
+cancelCheckout.addEventListener(
+  "click",
+  () => (checkoutModal.style.display = "none")
+);
+closeCheckout.addEventListener(
+  "click",
+  () => (checkoutModal.style.display = "none")
+);
+
+checkoutForm.addEventListener("submit", (e) => {
+  let total = cart.reduce((sum, item) => sum + item.price, 0);
+  let discount = parseFloat(discountSelect.value) || 0;
+  let discountedTotal = total - (total * discount) / 100;
+  let paid = parseFloat(amountPaid.value) || 0;
+
+  if (paid < discountedTotal) {
+    e.preventDefault();
+    alert("Amount paid is less than total");
+    return;
+  }
+
+  hiddenItems.value = JSON.stringify(cart);
+  hiddenTotal.value = discountedTotal.toFixed(2);
+  hiddenChange.value = (paid - discountedTotal).toFixed(2);
 });
 
-// before submitting, populate hidden fields
-checkoutForm && checkoutForm.addEventListener('submit', (e)=>{
-	const total = parseFloat(document.getElementById('totalAmount').innerText) || 0;
-	const paid = parseFloat(amountPaid.value) || 0;
-	if(paid < total){
-		e.preventDefault();
-		alert('Amount paid is less than total');
-		return;
-	}
-	const payload = JSON.stringify(cart);
-	console.log('Submitting checkout', { items: cart, total, paid, change: (paid-total) });
-
-	// ensure hidden inputs exist (in case elements were not found earlier)
-	if(!hiddenItems){
-		const inp = document.createElement('input');
-		inp.type = 'hidden'; inp.name = 'items'; inp.id = 'hiddenItems';
-		checkoutForm.appendChild(inp);
-		hiddenItems = inp;
-	}
-	if(!hiddenTotal){
-		const inp = document.createElement('input');
-		inp.type = 'hidden'; inp.name = 'total'; inp.id = 'hiddenTotal';
-		checkoutForm.appendChild(inp);
-		hiddenTotal = inp;
-	}
-	if(!hiddenChange){
-		const inp = document.createElement('input');
-		inp.type = 'hidden'; inp.name = 'change'; inp.id = 'hiddenChange';
-		checkoutForm.appendChild(inp);
-		hiddenChange = inp;
-	}
-
-	hiddenItems.value = payload;
-	hiddenTotal.value = total;
-	hiddenChange.value = (paid - total).toFixed(2);
-	// allow form to submit
-});
-
-
+/* DROPDOWN */
 const employeeMenu = document.getElementById("employeeMenu");
 const dropdown = document.getElementById("employeeDropdown");
-
-// Toggle dropdown
-employeeMenu.addEventListener("click", function (e) {
+employeeMenu.addEventListener("click", (e) => {
   e.stopPropagation();
-  dropdown.style.display =
-    dropdown.style.display === "flex" ? "none" : "flex";
+  dropdown.style.display = dropdown.style.display === "flex" ? "none" : "flex";
 });
-
-// Close when clicking outside
-document.addEventListener("click", function () {
+document.addEventListener("click", () => {
   dropdown.style.display = "none";
 });
 
-// Actions
+/* NAVIGATION */
 function goToAccount() {
-  window.location.href = "account-settings.php"; // change if needed
+  window.location.href = "account-settings.php";
 }
-
 function logout() {
   window.location.href = "../session.php";
 }
+
+/* INIT */
+loadCategories();
+loadProducts();

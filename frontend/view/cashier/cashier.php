@@ -3,6 +3,7 @@
 require_once "../../../config/database.php";
 require_once "../../../backend/middleware/auth.php";
 
+
 ?>
 
 <!DOCTYPE html>
@@ -71,30 +72,34 @@ require_once "../../../backend/middleware/auth.php";
     <!-- ================= RIGHT PANEL ================= -->
 
     <div class="right-panel">
-        <div class="cart-container">
-            <div class="cart-header">
-
-                <span>PRODUCT NAME</span>
-                <span>QTY.</span>
-                <span>PRICE</span>
-
-            </div>
+        <<div class="cart-container">
+            <table class="cart-table">
+                <thead>
+                    <tr>
+                        <th>PRODUCT NAME</th>
+                        <th>QTY.</th>
+                        <th>PRICE</th>
+                    </tr>
+                </thead>
+                <tbody id="cartItems"></tbody>
+            </table>
 
             <div id="cartItems"></div>
-        </div>
-        <div class="cart-total">
-            TOTAL: ₱ <span id="totalAmount">0</span>
-        </div>
+    </div>
+    <div class="cart-total">
+        TOTAL: <span id="totalAmount">0</span>
+    </div>
 
 
 
-        <div class="cart-buttons">
+    <div class="cart-buttons">
 
-            <button class="edit-btn">EDIT</button>
-            <button class="ok-btn">OK</button>
+        <button class="edit-btn">EDIT</button>
+        <button class="ok-btn">OK</button>
 
-        </div>
+    </div>
 
+    </div>
     </div>
 
     <!-- MODAL -->
@@ -114,12 +119,12 @@ require_once "../../../backend/middleware/auth.php";
                     <div>
 
                         <h3 id="modalName"></h3>
-                        <p id="modalDose"></p>
+                        <p class="pcode" id="modalCode"></p>
 
                         <p>Remaining: <span id="modalStock"></span></p>
                         <p class="expiry">Expires at <span id="modalExpiry"></span></p>
 
-                        <h4>₱ <span id="modalPrice"></span></h4>
+                        <h4> <span id="modalPrice"></span></h4>
 
                     </div>
 
@@ -142,31 +147,49 @@ require_once "../../../backend/middleware/auth.php";
     </div>
 
     <script src="/POS-GAS/frontend/js/search.js"></script>
-    <!-- CHECKOUT MODAL -->
+
+    <!-- ================= CHECKOUT MODAL ================= -->
     <div class="modal" id="checkoutModal" style="display:none;">
         <div class="modal-content">
             <div class="close-btn" id="closeCheckout">✕</div>
-            <form id="checkoutForm" method="POS-GAST" action="reciept.php">
+
+            <form id="checkoutForm" method="POST" action="reciept.php">
                 <div class="modal-body">
                     <h3>Checkout</h3>
-                    <label>Customer name</label>
+
+                    <!-- Customer Name -->
+                    <label>Customer Name</label>
                     <input type="text" id="customerName" name="customerName" placeholder="Enter customer name" required />
 
+                    <!-- Total (Read-only, Financial Format) -->
                     <label>Total</label>
-                    <div>₱ <span id="checkoutTotal">0</span></div>
+                    <input type="text" id="checkoutTotal" value="₱ 0.00" readonly />
 
+                    <!-- Discount Dropdown -->
+                    <label>Discount</label>
+                    <select id="discountSelect">
+                        <option value="0">None</option>
+                        <option value="20">PWD - 20%</option>
+                        <option value="20">Senior - 20%</option>
+                        <option value="10">Employee - 10%</option>
+                    </select>
+
+                    <!-- Amount Paid -->
                     <label>Amount Paid</label>
-                    <input type="number" id="amountPaid" name="amountPaid" min="0" step="0.01" required />
+                    <input type="number" id="amountPaid" name="amountPaid" min="0" step="0.01" placeholder="Enter amount paid" required />
 
+                    <!-- Change (Read-only, Financial Format) -->
                     <label>Change</label>
-                    <div>₱ <span id="changeDisplay">0</span></div>
+                    <input type="text" id="changeDisplay" value="₱ 0.00" readonly />
 
                 </div>
 
+                <!-- Hidden fields to submit -->
                 <input type="hidden" name="items" id="hiddenItems" />
                 <input type="hidden" name="total" id="hiddenTotal" />
                 <input type="hidden" name="change" id="hiddenChange" />
 
+                <!-- Buttons -->
                 <div style="display:flex; gap:8px; justify-content:flex-end; padding:12px;">
                     <button type="button" id="cancelCheckout" class="edit-btn">Cancel</button>
                     <button type="submit" id="confirmCheckout" class="ok-btn">Pay</button>
@@ -181,20 +204,20 @@ require_once "../../../backend/middleware/auth.php";
     <script src="/POS-GAS/frontend/js/alert.js"></script>
 
     <script>
-      document.addEventListener("DOMContentLoaded", function() {
+        document.addEventListener("DOMContentLoaded", function() {
 
-        <?php if (isset($_SESSION['error'])) { ?>
+            <?php if (isset($_SESSION['error'])) { ?>
 
-          showAlert(
-            "warning",
-            "Access Denied",
-            "<?php echo $_SESSION['error']; ?>"
-          );
+                showAlert(
+                    "warning",
+                    "Access Denied",
+                    "<?php echo $_SESSION['error']; ?>"
+                );
 
-        <?php unset($_SESSION['error']);
-        } ?>
+            <?php unset($_SESSION['error']);
+            } ?>
 
-      });
+        });
     </script>
 
 

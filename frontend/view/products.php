@@ -514,7 +514,6 @@ $conn->close();
 
     </div>
 
-
     <script>
         let supplierList = <?php echo json_encode($data); ?>;
         let categoryList = <?php echo json_encode($categoryData); ?>;
