@@ -31,7 +31,7 @@ $conn->close();
     <title>GAS STATION</title>
 
     <link rel="stylesheet" href="/POS-GAS/frontend/css/global.css">
-    <link rel="stylesheet" href="/POS-GAS/frontend/css/supplier.css"> <!-- reuse -->
+    <link rel="stylesheet" href="/POS-GAS/frontend/css/category.css"> <!-- reuse -->
     <link rel="stylesheet" href="/POS-GAS/frontend/css/print.css">
     <link rel="stylesheet" href="/POS-GAS/frontend/css/alert.css">
 
@@ -122,10 +122,10 @@ $conn->close();
         </div>
 
         <!-- ================= CONTENT ================= -->
-        <div class="supplier-container">
+        <div class="category-container">
 
             <!-- CONTROLS -->
-            <div class="supplier-controls">
+            <div class="category-controls">
 
                 <div class="search-box">
                     <input type="text" id="searchInput" placeholder="Search category..." />

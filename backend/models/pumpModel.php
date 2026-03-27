@@ -1,94 +1,93 @@
 <?php
 
-class pumpModel{
-
-private $conn;
-
-
-
-public function __construct($conn)
+class pumpModel
 {
-    $this->conn = $conn; 
-}
+    private $conn;
 
+    public function __construct($db)
+    {
+        $this->conn = $db;
+    }
 
- public function create($data)
- {
-        $created_by = $_SESSION["fname"] ." ". $_SESSION['lname'];
-        $pump_number = $data['pump_number'] ?? '';
-        $fuel_type = $data['fuel_type'] ?? '';
-        $status = $data['status'] ?? '';
-        $sql = "INSERT INTO pumps (pump_name, fuel_id, status, created_by, created_at) VALUES(?, ?, ?, ?, NOW())";
+    // ================= CREATE =================
+    public function create($data)
+    {
+        $created_by = $data['created_by'] ?? '';
+
+        $sql = "INSERT INTO pumps 
+        (pump_name, fuel_id, status, created_by, created_at)
+        VALUES (?, ?, ?, ?, NOW())";
+
         $stmt = $this->conn->prepare($sql);
-       $stmt->bind_param("ssss", $pump_number, $fuel_type, $status, $created_by);
+
+        $stmt->bind_param(
+            "ssss",
+            $data['pump_number'],
+            $data['fuel_id'],
+            $data['status'],
+            $created_by
+        );
+
         return $stmt->execute();
+    }
 
- }
+    // ================= CHECK DUPLICATE =================
+    public function checkPump($data)
+    {
+        $pump_name = $data['pump_number'] ?? '';
 
- public function checkPump($data)
- {
-    $pump_number = $data['pump_number'] ?? '';
+        $sql = "SELECT pump_code FROM pumps 
+                WHERE pump_name = ? 
+                AND is_deleted = 0";
 
-    $sql = "SELECT * FROM pumps WHERE pump_name =? AND is_deleted = 0";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("s", $pump_name);
+        $stmt->execute();
+        $stmt->store_result();
 
-    $stmt = $this->conn->prepare($sql);
-    $stmt->bind_param("s", $pump_number);
-    $stmt->execute();
-    $stmt->store_result();
-    return $stmt->num_rows > 0;
- }
+        return $stmt->num_rows > 0;
+    }
 
- public function update($data)
- {
-    $updated_by = $_SESSION["fname"] ." ". $_SESSION['lname'];
-     $pump_name = $data['pump_number'] ?? '';
-        $fuel_type = $data['fuel_type'] ?? '';
-        $status = $data['status'] ?? '';
-        $pump_code = $data['pump_code'] ?? '';
+    // ================= UPDATE =================
+    public function update($data)
+    {
+        $updated_by = $data['updated_by'] ?? '';
 
-    $sql = "UPDATE pumps SET pump_name =?, fuel_id = ?, status = ?, updated_by = ?, updated_at = NOW() WHERE pump_code =?";
+        $sql = "UPDATE pumps 
+        SET pump_name=?, 
+            fuel_id=?, 
+            status=?, 
+            updated_by=?, 
+            updated_at=NOW()
+        WHERE pump_code=?";
 
-    $stmt = $this->conn->prepare($sql);
-    $stmt->bind_param("sssss",$pump_name, $fuel_type, $status,$updated_by, $pump_code);
-    return $stmt->execute();
- }
+        $stmt = $this->conn->prepare($sql);
 
+        $stmt->bind_param(
+            "sssss",
+            $data['pump_number'],
+            $data['fuel_id'],
+            $data['status'],
+            $updated_by,
+            $data['pump_code']
+        );
 
-public function delete($data)
-{
-    $deleted_by = $_SESSION["fname"] ." ". $_SESSION['lname'];
-    $pump_code = $data['pump_code'] ?? '';
+        return $stmt->execute();
+    }
 
-    if (empty($pump_code)) return false; // optional safety
+    // ================= DELETE =================
+    public function delete($pump_code, $deleted_by)
+    {
+        $sql = "UPDATE pumps 
+        SET is_deleted = 1,
+            deleted_by = ?,
+            deleted_at = NOW()
+        WHERE pump_code = ?";
 
-    $sql = "UPDATE pumps SET is_deleted = 1, deleted_by = ?, deleted_at = NOW() WHERE pump_code = ?";
+        $stmt = $this->conn->prepare($sql);
 
-    $stmt = $this->conn->prepare($sql);
-    $stmt->bind_param("ss",$deleted_by,$pump_code);
+        $stmt->bind_param("ss", $deleted_by, $pump_code);
 
-    // Return the result of execute
-    return $stmt->execute();
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        return $stmt->execute();
+    }
 }

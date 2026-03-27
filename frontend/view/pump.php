@@ -1,4 +1,5 @@
 <?php
+
 require_once "../../config/database.php";
 require_once "../../backend/middleware/route.php";
 require_once "../../backend/middleware/auth.php";
@@ -6,17 +7,27 @@ require_once "../../backend/middleware/auth.php";
 $db = new Database();
 $conn = $db->connect();
 
-// Fetch pumps
+// FETCH PUMPS
 $pumps = [];
 
-$sql = "SELECT * FROM pumps WHERE is_deleted = 0";
+$sql = "SELECT 
+p.pump_code,
+p.pump_name,
+f.name AS fuel_name,
+p.fuel_id,
+p.status,
+p.created_at
+FROM pumps p
+LEFT JOIN fuels f ON p.fuel_id = f.id
+WHERE p.is_deleted = 0";
+
 $result = $conn->query($sql);
 
 while ($row = $result->fetch_assoc()) {
     $pumps[] = $row;
 }
 
-// Fetch fuels
+// FETCH FUELS
 $fuels = [];
 $fuelQuery = "SELECT id, name FROM fuels WHERE is_deleted = 0";
 $fuelResult = $conn->query($fuelQuery);
@@ -24,263 +35,284 @@ $fuelResult = $conn->query($fuelQuery);
 while ($row = $fuelResult->fetch_assoc()) {
     $fuels[] = $row;
 }
+
+$conn->close();
 ?>
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/POS-GAS/frontend/css/alert.css">
-    <link rel="stylesheet" href="/POS-GAS/frontend/css/global.css">
-    
     <title>GAS STATION</title>
+
+    <link rel="stylesheet" href="/POS-GAS/frontend/css/global.css">
+    <link rel="stylesheet" href="/POS-GAS/frontend/css/pump.css">
+    <link rel="stylesheet" href="/POS-GAS/frontend/css/print.css">
+    <link rel="stylesheet" href="/POS-GAS/frontend/css/alert.css">
 </head>
 
 <body>
+ <!-- ========================================================================================================================== -->
+  <!--                                                        SIDEBAR                                                             -->
+  <!-- ========================================================================================================================== -->
 
+  <div class="sidebar">
+    <div>
+
+      <ul class="menu">
+        <li onclick="window.location.href='dashboard';">
+          <img src="/POS-GAS/frontend/assets/icons/dashboard-icon.png" class="menu-icon">
+          <span>Dashboard</span>
+        </li>
+
+        <li onclick="window.location.href='sales';">
+          <img src="/POS-GAS/frontend/assets/icons/sales-icon.png" class="menu-icon">
+          <span>Sales</span>
+        </li>
+
+        <li onclick="window.location.href='productspage';">
+          <img src="/POS-GAS/frontend/assets/icons/products-icon.png" class="menu-icon">
+          <span>Products</span>
+        </li>
+
+        <li onclick="window.location.href='customer';">
+          <img src="/POS-GAS/frontend/assets/icons/customer-icon.png" class="menu-icon">
+          <span>Customers</span>
+        </li>
+
+        <li onclick="window.location.href='supplier';">
+          <img src="/POS-GAS/frontend/assets/icons/supplier-icon.png" class="menu-icon">
+          <span>Suppliers</span>
+        </li>
+
+        <li onclick="window.location.href='report';">
+          <img src="/POS-GAS/frontend/assets/icons/report-icon.png" class="menu-icon">
+          <span>Reports</span>
+        </li>
+
+        <li onclick="window.location.href='users';">
+          <img src="/POS-GAS/frontend/assets/icons/user-icon.png" class="menu-icon">
+          <span>Users</span>
+        </li>
+
+        <li onclick="window.location.href='category';">
+          <img src="/POS-GAS/frontend/assets/icons/category-icon.png" class="menu-icon">
+          <span>Categories</span>
+        </li>
+
+        <li class="active" onclick="window.location.href='pump';">
+          <img src="/POS-GAS/frontend/assets/icons/pumps-icon.png" class="menu-icon">
+          <span>Pumps</span>
+        </li>
+
+        <li onclick="window.location.href='others';">
+          <img src="/POS-GAS/frontend/assets/icons/settings-icon.png" class="menu-icon">
+          <span>Others</span>
+        </li>
+
+      </ul>
+    </div>
+
+  </div>
+
+
+  <!-- ================= MAIN ================= -->
+  <div class="main">
 
     <!-- ========================================================================================================================== -->
-    <!--                                                        SIDEBAR                                                             -->
+    <!--                                                        TOPBAR                                                             -->
     <!-- ========================================================================================================================== -->
+    <div class="topbar">
+      <div id="datetime"></div>
 
-    <div class="sidebar">
-        <div>
-
-            <ul class="menu">
-                <li onclick="window.location.href='dashboard';">
-                    <img src="/POS-GAS/frontend/assets/icons/dashboard-icon.png" class="menu-icon">
-                    <span>Dashboard</span>
-                </li>
-
-                <li onclick="window.location.href='sales';">
-                    <img src="/POS-GAS/frontend/assets/icons/sales-icon.png" class="menu-icon">
-                    <span>Sales</span>
-                </li>
-
-                <li onclick="window.location.href='productspage';">
-                    <img src="/POS-GAS/frontend/assets/icons/products-icon.png" class="menu-icon">
-                    <span>Products</span>
-                </li>
-
-                <li onclick="window.location.href='customer';">
-                    <img src="/POS-GAS/frontend/assets/icons/customer-icon.png" class="menu-icon">
-                    <span>Customers</span>
-                </li>
-
-                <li onclick="window.location.href='supplier';">
-                    <img src="/POS-GAS/frontend/assets/icons/supplier-icon.png" class="menu-icon">
-                    <span>Suppliers</span>
-                </li>
-
-                <li onclick="window.location.href='report';">
-                    <img src="/POS-GAS/frontend/assets/icons/report-icon.png" class="menu-icon">
-                    <span>Reports</span>
-                </li>
-
-                <li onclick="window.location.href='users';">
-                    <img src="/POS-GAS/frontend/assets/icons/user-icon.png" class="menu-icon">
-                    <span>Users</span>
-                </li>
-
-                <li onclick="window.location.href='category';">
-                    <img src="/POS-GAS/frontend/assets/icons/category-icon.png" class="menu-icon">
-                    <span>Categories</span>
-                </li>
-
-                <li class="active" onclick="window.location.href='pump';">
-                    <img src="/POS-GAS/frontend/assets/icons/pumps-icon.png" class="menu-icon">
-                    <span>Pumps</span>
-                </li>
-
-                <li onclick="window.location.href='others';">
-                    <img src="/POS-GAS/frontend/assets/icons/settings-icon.png" class="menu-icon">
-                    <span>Others</span>
-                </li>
-
-            </ul>
+      <div class="employee-info" id="employeeMenu">
+        <div class="employee-name">
+          <?php echo htmlspecialchars($_SESSION['lname'] . ", " . $_SESSION['fname']); ?>
         </div>
+        <div id="employee-profile"><img src="/POS-GAS/frontend/assets/uploads/users/<?php echo htmlspecialchars(!empty($_SESSION['image']) ? $_SESSION['image'] : 'default.jpg'); ?>" class="employee-img"></div>
 
+        <!-- DROPDOWN -->
+        <div class="employee-dropdown" id="employeeDropdown">
+          <div class="dropdown-item" onclick="goToAccount()">Account Settings</div>
+          <div class="dropdown-item" onclick="logout()">Logout</div>
+        </div>
+      </div>
+    </div>
+
+        <div class="pump-container">
+
+            <div class="pump-controls">
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="Search pump..." />
+                </div>
+                <button class="btn add-btn" onclick="addPump()">+ Add</button>
+                <button class="btn print-btn" onclick="printReceipt()">🖨 Print</button>
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Pump Code</th>
+                            <th>Pump Number</th>
+                            <th>Fuel</th>
+                            <th>Status</th>
+                            <th>Created At</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="tableBody"></tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="6"></td>
+                        </tr>
+                    </tfoot>
+
+                </table>
+            </div>
+
+            <div class="pagination-container">
+                <div class="limit-box">
+                    Show
+                    <select id="rowsPerPage">
+                        <option value="5">5</option>
+                        <option value="10" selected>10</option>
+                    </select>
+                    entries
+                </div>
+
+                <div class="pagination">
+                    <button>Prev</button>
+                    <span id="pageInfo">Page 1</span>
+                    <button>Next</button>
+                </div>
+
+            </div>
+        </div>
     </div>
 
 
-    <!-- ================= MAIN ================= -->
-    <div class="main">
 
-        <!-- ========================================================================================================================== -->
-        <!--                                                        TOPBAR                                                             -->
-        <!-- ========================================================================================================================== -->
-        <div class="topbar">
-            <div id="datetime"></div>
-
-            <div class="employee-info" id="employeeMenu">
-                <div class="employee-name">
-                    <?php echo htmlspecialchars($_SESSION['lname'] . ", " . $_SESSION['fname']); ?>
-                </div>
-                <div id="employee-profile"><img src="/POS-GAS/frontend/assets/uploads/users/<?php echo htmlspecialchars(!empty($_SESSION['image']) ? $_SESSION['image'] : 'default.jpg'); ?>" class="employee-img"></div>
-
-                <!-- DROPDOWN -->
-                <div class="employee-dropdown" id="employeeDropdown">
-                    <div class="dropdown-item" onclick="goToAccount()">Account Settings</div>
-                    <div class="dropdown-item" onclick="logout()">Logout</div>
-                </div>
+    <!-- ADD MODAL -->
+    <div id="addPumpModal" class="modal">
+        <div class="modal-box large">
+            <div class="modal-header">
+                <h2>ADD PUMP</h2>
+                <span class="close-modal" onclick="closePumpModal()">&times;</span>
             </div>
+
+            <form id="addPumpForm">
+                <div class="modal-content">
+                    <div class="form-section" style="width:100%;">
+                        <div class="form-grid">
+
+                            <div class="input-group">
+                                <label>PUMP NUMBER</label>
+                                <input type="text" name="pump_number" required>
+                            </div>
+
+                            <div class="input-group">
+                                <label>FUEL</label>
+                                <select name="fuel_id" required>
+                                    <option value="">-- Select Fuel --</option>
+                                    <?php foreach ($fuels as $f): ?>
+                                        <option value="<?= $f['id']; ?>"><?= $f['name']; ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+
+                            <div class="input-group">
+                                <label>STATUS</label>
+                                <select name="status">
+                                    <option value="available">AVAILABLE</option>
+                                    <option value="not-available">NOT AVAILABLE</option>
+                                </select>
+                            </div>
+
+                            <div class="modal-buttons">
+                                <button type="submit" class="save-btn">+ SAVE</button>
+                            </div>
+
+                            <div class="modal-buttons">
+                                <button type="button" class="editcancel-btn" onclick="closePumpModal()">Cancel</button>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </form>
         </div>
+    </div>
 
-
-        <form id="addPumpForm">
-            <div class="modal-grid">
-
-                <div class="input-group">
-                    <label>ENTER PUMP NUMBER</label>
-                    <input type="text" name="pump_number" required>
-                </div>
-
-                <div class="input-group">
-                    <label>SELECT FUEL</label>
-                    <select name="fuel_type" required>
-                        <option value="">-- Select Fuel --</option>
-
-                        <?php foreach ($fuels as $fuel): ?>
-                            <option value="<?= $fuel['id']; ?>">
-                                <?= htmlspecialchars($fuel['name']); ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
-
-                <input type="text" name="pump_code" value="PUMPCODE-00000001">
-
-                <div class="input-group">
-                    <select name="status" id="">
-                        <option value="available">AVAILABLE</option>
-                        <option value="not-available">NOT-AVAILABLE</option>
-                    </select>
-                </div>
-
-
-
+    <!-- EDIT MODAL -->
+    <div id="editPumpModal" class="modal">
+        <div class="modal-box large">
+            <div class="modal-header">
+                <h2>EDIT PUMP</h2>
+                <span class="close-modal" onclick="closeEditPumpModal()">&times;</span>
             </div>
 
-            <div class="modal-buttons">
-                <button type="submit" class="save-btn">+ SAVE</button>
-                <button type="button" class="cancel-btn" onclick="closeUserModal()">Cancel</button>
-            </div>
-        </form>
+            <form id="editPumpForm">
+
+                <input type="hidden" name="pump_code" id="edit_pump_code">
+
+                <div class="modal-content">
+                    <div class="form-section" style="width:100%;">
+                        <div class="form-grid">
+
+                            <div class="input-group">
+                                <label>PUMP NUMBER</label>
+                                <input type="text" name="pump_number" id="edit_pump_number">
+                            </div>
+
+                            <div class="input-group">
+                                <label>FUEL</label>
+                                <select name="fuel_id" id="edit_fuel_id">
+                                    <?php foreach ($fuels as $f): ?>
+                                        <option value="<?= $f['id']; ?>"><?= $f['name']; ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+
+                            <div class="input-group">
+                                <label>STATUS</label>
+                                <select name="status" id="edit_status">
+                                    <option value="available">AVAILABLE</option>
+                                    <option value="not-available">NOT AVAILABLE</option>
+                                </select>
+                            </div>
+
+                            <div class="modal-buttons">
+                                <button type="submit" class="save-btn">UPDATE</button>
+                            </div>
+
+                            <div class="modal-buttons">
+                                <button type="button" class="editcancel-btn" onclick="closeEditPumpModal()">Cancel</button>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
 
 
+    <script>
+        const pumps = <?php echo json_encode($pumps); ?>;
+        const fuels = <?php echo json_encode($fuels); ?>;
+    </script>
 
-        <h2>Pump List</h2>
-
-        <table border="1" cellpadding="10">
-            <thead>
-                <tr>
-                    <th>Pump Code</th>
-                    <th>Fuel Type</th>
-                    <th>Created At</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php if (!empty($pumps)): ?>
-                    <?php foreach ($pumps as $pump): ?>
-                        <tr>
-
-                            <td><?= htmlspecialchars($pump['pump_code']) ?></td>
-                            <td><?= htmlspecialchars($pump['fuel_id']) ?></td>
-                            <td><?= date("F d, Y h:i A", strtotime($pump['created_at'])) ?></td>
-                            <td>
-                                <button class="delete-btn" data-id="<?= $pump['pump_code'] ?>">
-                                    Delete
-                                </button>
-                            </td>
-                        </tr>
-                    <?php endforeach; ?>
-                <?php else: ?>
-                    <tr>
-                        <td colspan="4">No pumps found</td>
-                    </tr>
-                <?php endif; ?>
-            </tbody>
-        </table>
-
-
+    <script src="/POS-GAS/frontend/js/search.js"></script>
+    <script src="/POS-GAS/frontend/js/pump-modal.js"></script>
+    <script src="/POS-GAS/frontend/js/pump-page.js"></script>
+    <script src="/POS-GAS/frontend/js/alert.js"></script>
+    <script src="/POS-GAS/frontend/js/dropdown.js"></script>
+     <script src="/POS-GAS/frontend/js/date-time.js"></script>
+    <script src="/POS-GAS/frontend/js/print.js"></script>
 
 </body>
 
 </html>
-
-<script src="/POS-GAS/frontend/js/alert.js"></script>
-<script src="/POS-GAS/frontend/js/dropdown.js"></script>
-
-<script>
-    document.getElementById("addPumpForm").addEventListener("submit", function(e) {
-        e.preventDefault();
-
-        const form = e.target;
-        const formData = new FormData(form);
-
-        fetch("http://localhost/POS-GAS/api/pump/update.php", {
-                method: "POST",
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log("Server Response:", data);
-
-
-                if (data.status === "success") {
-                    showAlert(
-                        "success",
-                        "Category Added",
-                        data.message,
-                        "OK",
-                        function() {
-                            window.location.reload();
-                        }
-                    );
-                } else {
-                    showAlert("error", "Failed", data.message);
-                }
-
-
-
-            })
-            .catch(err => {
-                console.error("Error:", err);
-                alert("An error occurred while adding the category.");
-            })
-    })
-</script>
-
-<script>
-    document.addEventListener("click", function(e) {
-        if (e.target.classList.contains("delete-btn")) {
-
-            const code = e.target.getAttribute("data-id"); // ✅ FIXED
-
-            if (!confirm("Are you sure you want to delete this pump?")) return;
-
-            const formData = new FormData();
-            formData.append("pump_code", code);
-
-            fetch("http://localhost/POS-GAS/api/pump/delete.php", {
-                    method: "POST",
-                    body: formData
-                })
-                .then(res => res.json())
-                .then(data => {
-                    console.log("Server Response:", data);
-                    alert(data.message);
-
-                    if (data.status === "success") {
-                        location.reload();
-                    }
-                })
-                .catch(err => {
-                    console.error(err);
-                    alert("Something went wrong!");
-                });
-        }
-    });
-</script>

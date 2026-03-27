@@ -4,33 +4,29 @@ let previousRowsPerPage = null;
 let previousPage = null;
 
 window.addEventListener("beforeprint", () => {
+  previousRowsPerPage = rowsPerPage;
+  previousPage = currentPage;
 
-previousRowsPerPage = rowsPerPage;
-previousPage = currentPage;
+  // show ALL rows
+  rowsPerPage = tableData.length;
+  currentPage = 1;
 
-// show ALL rows
-rowsPerPage = tableData.length;
-currentPage = 1;
+  renderTable();
 
-renderTable();
-
-// insert print date
-const dateElement = document.getElementById("printDate");
-if(dateElement){
-dateElement.innerText = "Printed: " + new Date().toLocaleString();
-}
-
+  // insert print date
+  const dateElement = document.getElementById("printDate");
+  if (dateElement) {
+    dateElement.innerText = "Printed: " + new Date().toLocaleString();
+  }
 });
 
 window.addEventListener("afterprint", () => {
+  rowsPerPage = previousRowsPerPage;
+  currentPage = previousPage;
 
-rowsPerPage = previousRowsPerPage;
-currentPage = previousPage;
-
-renderTable();
-
+  renderTable();
 });
 
-function printReceipt(){
-window.print();
+function printReceipt() {
+  window.print();
 }
