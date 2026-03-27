@@ -14,10 +14,21 @@ $sql = "SELECT
     f.fuel_code,
     f.name,
     f.price_per_liter,
-    f.created_at,
-    IFNULL(m.remaining_liters, 0) AS remaining_liters
+    IFNULL(m.remaining_liters, 0) AS remaining_liters,
+
+    (
+        SELECT s.supplier_name
+        FROM fuel_inventory_logs fil
+        LEFT JOIN suppliers s ON s.supplier_id = fil.supplier_id
+        WHERE fil.fuel_id = f.id AND fil.is_deleted = 0
+        ORDER BY fil.created_at DESC
+        LIMIT 1
+    ) AS supplier_name
+
 FROM fuels f
+
 LEFT JOIN fuel_monitoring m ON m.fuel_id = f.id
+
 WHERE f.is_deleted = 0";
 
 $result = $conn->query($sql);
@@ -26,12 +37,9 @@ while ($row = $result->fetch_assoc()) {
     $fuels[] = $row;
 }
 
-
-
 $supplier = [];
 
-$sql = "SELECT * FROM suppliers  WHERE is_deleted = 0";
-
+$sql = "SELECT * FROM suppliers WHERE is_deleted = 0";
 $resultsupp = $conn->query($sql);
 
 while ($row = $resultsupp->fetch_assoc()) {
@@ -39,8 +47,8 @@ while ($row = $resultsupp->fetch_assoc()) {
 }
 
 $conn->close();
-
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -54,7 +62,7 @@ $conn->close();
     <link rel="stylesheet" href="/POS-GAS/frontend/css/fuel.css">
     <link rel="stylesheet" href="/POS-GAS/frontend/css/alert.css">
     <link rel="stylesheet" href="/POS-GAS/frontend/css/print.css">
-    
+
 
 </head>
 
@@ -173,7 +181,7 @@ $conn->close();
                             <th>Name</th>
                             <th>Price/Liter</th>
                             <th>Stock (Liters)</th>
-                            <th>Created At</th>
+                            <th>Supplier</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -240,6 +248,17 @@ $conn->close();
                                 <input type="number" step="0.01" name="price_per_liter" required>
                             </div>
 
+                            <div class="input-group">
+                                <label>SUPPLIER</label>
+                                <select name="supplier_id" required>
+                                    <?php foreach ($supplier as $s): ?>
+                                        <option value="<?php echo $s['supplier_id']; ?>">
+                                            <?php echo $s['supplier_name']; ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+
                             <div class="modal-buttons">
                                 <button type="submit" class="save-btn">+ SAVE</button>
                             </div>
@@ -267,7 +286,7 @@ $conn->close();
 
             <form id="editFuelForm">
 
-                <input type="hidden" name="fuel_code" id="edit_fuel_code">
+                <input type="hidden" name="fuel_id" id="edit_fuel_id">
 
                 <div class="modal-content">
                     <div class="form-section" style="width:100%;">
@@ -327,19 +346,6 @@ $conn->close();
                                 </select>
                             </div>
 
-                            <div class="input-group">
-                                <label>SUPPLIER</label>
-                                <select name="supplier_id" required>
-                                    <?php foreach ($supplier as $s): ?>
-                                        <option value="<?php echo $s['supplier_id']; ?>">
-                                            <?php echo $s['supplier_name']; ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
-
-
-
 
                             <div class="input-group">
                                 <label>LITERS TO ADD</label>
@@ -380,7 +386,6 @@ $conn->close();
 
     <!-- FUEL MODAL SCRIPT -->
     <script>
-        // render table
         const tableBody = document.getElementById("tableBody");
 
         function renderTable() {
@@ -392,39 +397,39 @@ $conn->close();
                 <td colspan="6" style="text-align:center; padding:20px;">
                     No fuel found
                 </td>
-            </tr>
-        `;
+            </tr>`;
                 return;
             }
 
             fuels.forEach(f => {
                 tableBody.innerHTML += `
-        <tr>
-            <td>${f.fuel_code}</td>
-            <td>${f.name}</td>
-            <td>${f.price_per_liter}</td>
-            <td>${f.remaining_liters} L</td>
-            <td>${f.created_at}</td>
-            <td class="action-buttons">
-                <button class="icon-btn edit-btn"
-                    onclick="editFuel('${f.fuel_code}')">
-                    <img src="/POS-GAS/frontend/assets/icons/edit.png">
-                    <span>EDIT</span>
-                </button>
+            <tr>
+                <td>${f.fuel_code}</td>
+                <td>${f.name}</td>
+                <td>${f.price_per_liter}</td>
+                <td>${f.remaining_liters} L</td>
+                <td>${f.supplier_name ?? 'N/A'}</td>
+                <td class="action-buttons">
 
-                <button class="icon-btn delete-btn"
-                    onclick="deleteFuel('${f.fuel_code}')">
-                    <img src="/POS-GAS/frontend/assets/icons/delete.png">
-                    <span>DELETE</span>
-                </button>
-            </td>
-        </tr>`;
+                    <button class="icon-btn edit-btn"
+                        onclick="editFuel('${f.id}')">
+                        <img src="/POS-GAS/frontend/assets/icons/edit.png">
+                        <span>EDIT</span>
+                    </button>
+
+                    <button class="icon-btn delete-btn"
+                        onclick="deleteFuel('${f.id}')">
+                        <img src="/POS-GAS/frontend/assets/icons/delete.png">
+                        <span>DELETE</span>
+                    </button>
+
+                </td>
+            </tr>`;
             });
         }
 
         renderTable();
     </script>
-
 </body>
 
 </html>

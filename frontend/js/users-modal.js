@@ -34,6 +34,21 @@ document.getElementById("imageInput").addEventListener("change", function () {
   }
 });
 
+// Get all phone inputs
+const phoneInputs = document.querySelectorAll('input[name="phone"]');
+
+phoneInputs.forEach((input) => {
+  input.addEventListener("input", function () {
+    // Remove any non-digit character
+    this.value = this.value.replace(/\D/g, "");
+
+    // Limit to 11 digits
+    if (this.value.length > 11) {
+      this.value = this.value.slice(0, 11);
+    }
+  });
+});
+
 document.getElementById("editImageInput").addEventListener("change", function () {
   const file = this.files[0];
 

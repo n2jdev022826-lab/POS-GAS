@@ -50,4 +50,15 @@ class FuelController
 
         echo json_encode($result);
     }
+
+    // ================= REFILL =================
+    public function refill()
+    {
+        $data = $_POST;
+
+        $result = $this->fuel->refillFuel($data);
+
+        echo json_encode($result);
+
+    }
 }
