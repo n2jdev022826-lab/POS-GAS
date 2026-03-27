@@ -70,7 +70,7 @@ table {
 
 thead {
   position: sticky;
-  background: #9A0303;
+  background: #9a0303;
   color: white;
 }
 
@@ -78,7 +78,7 @@ thead th {
   position: sticky;
   top: 0;
   z-index: 10;
-  background: #9A0303;
+  background: #9a0303;
 }
 
 th,
@@ -89,7 +89,7 @@ td {
 }
 
 #thfullname {
-   width: 300px !important;
+  width: 300px !important;
 }
 
 #tdfullname {
@@ -109,8 +109,8 @@ tfoot td {
 }
 
 .supplier-img {
-    width: 40px;
-    height: 40px;
-    object-fit: cover;
-    border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 50%;
 }

@@ -1,54 +1,49 @@
 <?php
 
-
-
 require_once "../../config/database.php";
 require_once "../../backend/middleware/route.php";
 require_once "../../backend/middleware/auth.php";
 
-
-
-
 $db = new Database();
 $conn = $db->connect();
 
+$categories = [];
 
-$users =  [];
-
-$sql = "SELECT * FROM categories WHERE is_deleted = 0";
+$sql = "SELECT category_code, category_name, description, created_at 
+        FROM categories WHERE is_deleted = 0";
 
 $result = $conn->query($sql);
 
 while ($row = $result->fetch_assoc()) {
-    $users[] = $row;
+    $categories[] = $row;
 }
 
 $conn->close();
 
-
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/POS-GAS/frontend/css/alert.css">
-    <link rel="stylesheet" href="/POS-GAS/frontend/css/global.css">
-    <link rel="stylesheet" href="/POS-GAS/frontend/css/alert.css" />
     <title>GAS STATION</title>
+
+    <link rel="stylesheet" href="/POS-GAS/frontend/css/global.css">
+    <link rel="stylesheet" href="/POS-GAS/frontend/css/supplier.css"> <!-- reuse -->
+    <link rel="stylesheet" href="/POS-GAS/frontend/css/print.css">
+    <link rel="stylesheet" href="/POS-GAS/frontend/css/alert.css">
+
 </head>
 
 <body>
 
-    <!-- ========================================================================================================================== -->
-    <!--                                                        SIDEBAR                                                             -->
-    <!-- ========================================================================================================================== -->
-
+    <!-- ================= SIDEBAR ================= -->
     <div class="sidebar">
         <div>
-
             <ul class="menu">
+
                 <li onclick="window.location.href='dashboard';">
                     <img src="/POS-GAS/frontend/assets/icons/dashboard-icon.png" class="menu-icon">
                     <span>Dashboard</span>
@@ -101,16 +96,12 @@ $conn->close();
 
             </ul>
         </div>
-
     </div>
-
 
     <!-- ================= MAIN ================= -->
     <div class="main">
 
-        <!-- ========================================================================================================================== -->
-        <!--                                                        TOPBAR                                                             -->
-        <!-- ========================================================================================================================== -->
+        <!-- ================= TOPBAR ================= -->
         <div class="topbar">
             <div id="datetime"></div>
 
@@ -118,9 +109,11 @@ $conn->close();
                 <div class="employee-name">
                     <?php echo htmlspecialchars($_SESSION['lname'] . ", " . $_SESSION['fname']); ?>
                 </div>
-                <div id="employee-profile"><img src="/POS-GAS/frontend/assets/uploads/users/<?php echo htmlspecialchars(!empty($_SESSION['image']) ? $_SESSION['image'] : 'default.jpg'); ?>" class="employee-img"></div>
 
-                <!-- DROPDOWN -->
+                <div id="employee-profile">
+                    <img src="/POS-GAS/frontend/assets/uploads/users/<?php echo htmlspecialchars(!empty($_SESSION['image']) ? $_SESSION['image'] : 'default.jpg'); ?>" class="employee-img">
+                </div>
+
                 <div class="employee-dropdown" id="employeeDropdown">
                     <div class="dropdown-item" onclick="goToAccount()">Account Settings</div>
                     <div class="dropdown-item" onclick="logout()">Logout</div>
@@ -128,146 +121,158 @@ $conn->close();
             </div>
         </div>
 
-        <form id="addCategoryForm">
-            <div class="modal-grid">
+        <!-- ================= CONTENT ================= -->
+        <div class="supplier-container">
 
-                <div class="input-group">
-                    <label>CATEGORY NAME</label>
-                    <input type="text" name="category_name" required>
+            <!-- CONTROLS -->
+            <div class="supplier-controls">
+
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="Search category..." />
                 </div>
 
-                <div class="input-group">
-                    <label>CATEGORY DESCRIPTION</label>
-                    <input type="text" name="category_description" required>
-                </div>
+                <button class="btn add-btn" onclick="addCategory()">+ Add</button>
 
-
-                <div class="modal-buttons">
-                    <button type="submit" class="save-btn">+ SAVE</button>
-                </div>
+                <button class="btn print-btn" onclick="printReceipt()">🖨 Print</button>
 
             </div>
 
-            <div class="modal-buttons">
-                <button type="button" class="cancel-btn" onclick="closeUserModal()">Cancel</button>
-                <button type="submit" class="save-btn">Save User</button>
-            </div>
-        </form>
+            <!-- TABLE -->
+            <div class="table-wrapper">
+                <table id="categoryTable">
 
-
-
-        <h2>User List</h2>
-
-        <table border="1" cellpadding="10">
-            <thead>
-                <tr>
-                    <th>Category Code</th>
-                    <th>Category Name</th>
-                    <th>Description</th>
-                    <th>Created At</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php if (!empty($users)): ?>
-                    <?php foreach ($users as $user): ?>
+                    <thead>
                         <tr>
-                            <td><?= htmlspecialchars($user['category_code']) ?></td>
-                            <td><?= htmlspecialchars($user['category_name']) ?></td>
-                            <td><?= htmlspecialchars($user['description']) ?></td>
-                            <td> <?= date("F d, Y h:i A", strtotime($user['created_at'])) ?></td>
-                            <td>
-                                <button
-                                    class="delete-btn"
-                                    data-code="<?= htmlspecialchars($user['category_code']) ?>">
-                                    Delete
-                                </button>
-                            </td>
+                            <th>Code</th>
+                            <th>Category</th>
+                            <th>Description</th>
+                            <th>Created At</th>
+                            <th>Action</th>
                         </tr>
-                    <?php endforeach; ?>
-                <?php else: ?>
-                    <tr>
-                        <td colspan="8">No Category found</td>
-                    </tr>
-                <?php endif; ?>
-            </tbody>
-        </table>
+                    </thead>
 
+                    <tbody id="tableBody"></tbody>
+
+                    <tfoot>
+                        <tr>
+                            <td colspan="5"></td>
+                        </tr>
+                    </tfoot>
+
+                </table>
+            </div>
+
+            <!-- PAGINATION -->
+            <div class="pagination-container">
+
+                <div class="limit-box">
+                    Show
+                    <select id="rowsPerPage">
+                        <option value="5">5</option>
+                        <option value="10" selected>10</option>
+                        <option value="20">20</option>
+                    </select>
+                    entries
+                </div>
+
+                <div class="pagination">
+                    <button onclick="prevPage()">Prev</button>
+                    <span id="pageInfo">Page 1</span>
+                    <button onclick="nextPage()">Next</button>
+                </div>
+
+            </div>
+
+        </div>
     </div>
+
+    <!-- ================= ADD CATEGORY MODAL ================= -->
+    <div id="addCategoryModal" class="modal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h2>ADD CATEGORY</h2>
+                <span class="close-modal" onclick="closeCategoryModal()">&times;</span>
+            </div>
+
+            <form id="addCategoryForm">
+                <div class="modal-content">
+                    <div class="form-grid">
+
+                        <div class="input-group">
+                            <label>CATEGORY NAME</label>
+                            <input type="text" name="category_name" required>
+                        </div>
+
+                        <div class="input-group">
+                            <label>DESCRIPTION</label>
+                            <input type="text" name="category_description" required>
+                        </div>
+
+                        <div class="modal-buttons">
+                            <button type="submit" class="save-btn">+ SAVE</button>
+                        </div>
+
+                        <div class="modal-buttons">
+                            <button type="button" class="editcancel-btn" onclick="closeCategoryModal()">Cancel</button>
+                        </div>
+
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ================= EDIT CATEGORY MODAL ================= -->
+    <div id="editCategoryModal" class="modal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h2>EDIT CATEGORY</h2>
+                <span class="close-modal" onclick="closeEditCategoryModal()">&times;</span>
+            </div>
+
+            <form id="editCategoryForm">
+                <input type="hidden" name="category_code" id="edit_category_code">
+
+                <div class="modal-content">
+                    <div class="form-grid">
+
+                        <div class="input-group">
+                            <label>CATEGORY NAME</label>
+                            <input type="text" name="category_name" id="edit_category_name" required>
+                        </div>
+
+                        <div class="input-group">
+                            <label>DESCRIPTION</label>
+                            <input type="text" name="category_description" id="edit_category_description" required>
+                        </div>
+
+                        <div class="modal-buttons">
+                            <button type="submit" class="save-btn">UPDATE</button>
+                        </div>
+
+                        <div class="modal-buttons">
+                            <button type="button" class="editcancel-btn" onclick="closeEditCategoryModal()">Cancel</button>
+                        </div>
+
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ================= GLOBAL DATA ================= -->
+    <script>
+        const categories = <?php echo json_encode($categories); ?>;
+    </script>
+
+    <!-- ================= JS FILES ================= -->
+    <script src="/POS-GAS/frontend/js/date-time.js"></script>
+    <script src="/POS-GAS/frontend/js/print.js"></script>
+    <script src="/POS-GAS/frontend/js/search.js"></script>
+    <script src="/POS-GAS/frontend/js/category-modal.js"></script>
+    <script src="/POS-GAS/frontend/js/category-page.js"></script>
+    <script src="/POS-GAS/frontend/js/alert.js"></script>
+    <script src="/POS-GAS/frontend/js/dropdown.js"></script>
 </body>
 
 </html>
-
-<script src="/POS-GAS/frontend/js/alert.js"></script>
-
-<script>
-    document.getElementById("addCategoryForm").addEventListener("submit", function(e) {
-        e.preventDefault();
-
-        const form = e.target;
-        const formData = new FormData(form);
-
-        fetch("http://localhost/POS-GAS/api/categories/create.php", {
-                method: "POST",
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log("Server Response:", data);
-
-
-                if (data.status === "success") {
-                    showAlert(
-                        "success",
-                        "Category Added",
-                        data.message,
-                        "OK",
-                        function() {
-                            window.location.reload();
-                        }
-                    );
-                } else {
-                    showAlert("error", "Failed", data.message);
-                }
-
-
-
-            })
-            .catch(err => {
-                console.error("Error:", err);
-                alert("An error occurred while adding the category.");
-            })
-    })
-</script>
-
-<script>
-    document.addEventListener("click", function(e) {
-        if (e.target.classList.contains("delete-btn")) {
-
-            const code = e.target.getAttribute("data-code");
-
-            if (!confirm("Are you sure you want to delete this category?")) return;
-
-            const formData = new FormData();
-            formData.append("category_code", code); // ✅ FIXED
-
-            fetch("http://localhost/POS-GAS/api/categories/delete.php", {
-                    method: "POST",
-                    body: formData
-                })
-                .then(res => res.json())
-                .then(data => {
-                    console.log("Server Response:", data);
-                    alert(data.message);
-
-                    if (data.status === "success") {
-                        location.reload();
-                    }
-                })
-                .catch(err => {
-                    console.error(err);
-                    alert("Something went wrong!");
-                });
-        }
-    });
-</script>
