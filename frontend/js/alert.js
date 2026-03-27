@@ -90,7 +90,7 @@ function showAlert(type, title, message, buttonText = "OK", callback = null) {
   alertBox.classList.remove("shake");
 
   // Animation
-  if (type === "error" || type === "warning") {
+  if (type === "error" || type === "warning" || type === "confirm") {
     setTimeout(() => {
       alertBox.classList.add("shake");
     }, 50);
@@ -140,3 +140,4 @@ function showAlert(type, title, message, buttonText = "OK", callback = null) {
     }, 2000);
   }
 }
+

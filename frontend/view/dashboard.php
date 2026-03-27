@@ -16,8 +16,8 @@ $todaySales = 0;
 
 $sqlToday = "
 SELECT 
-    (SELECT IFNULL(SUM(total_amount),0) FROM transactions WHERE DATE(created_at) = CURDATE()) +
-    (SELECT IFNULL(SUM(total_amount),0) FROM product_sales WHERE DATE(created_at) = CURDATE())
+    (SELECT IFNULL(SUM(total_amount),0) FROM product_transactions WHERE DATE(created_at) = CURDATE()) +
+    (SELECT IFNULL(SUM(total_amount),0) FROM fuel_transactions WHERE DATE(created_at) = CURDATE())
     AS total
 ";
 
@@ -32,8 +32,8 @@ $monthlySales = 0;
 
 $sqlMonth = "
 SELECT 
-    (SELECT IFNULL(SUM(total_amount),0) FROM transactions WHERE MONTH(created_at) = MONTH(CURDATE())) +
-    (SELECT IFNULL(SUM(total_amount),0) FROM product_sales WHERE MONTH(created_at) = MONTH(CURDATE()))
+    (SELECT IFNULL(SUM(total_amount),0) FROM product_transactions WHERE MONTH(created_at) = MONTH(CURDATE())) +
+    (SELECT IFNULL(SUM(total_amount),0) FROM fuel_transactions WHERE MONTH(created_at) = MONTH(CURDATE()))
     AS total
 ";
 
@@ -104,8 +104,8 @@ $totalSales = 0;
 
 $sqlSales = "
 SELECT 
-    (SELECT IFNULL(SUM(total_amount),0) FROM transactions WHERE is_deleted = 0) +
-    (SELECT IFNULL(SUM(total_amount),0) FROM product_sales WHERE is_deleted = 0)
+    (SELECT IFNULL(SUM(total_amount),0) FROM product_transactions WHERE is_deleted = 0) +
+    (SELECT IFNULL(SUM(total_amount),0) FROM fuel_transactions WHERE is_deleted = 0)
     AS total
 ";
 
@@ -142,9 +142,9 @@ $weeklySales = [0, 0, 0, 0, 0, 0, 0];
 $sqlWeekly = "
 SELECT DAYOFWEEK(created_at) as day, SUM(total_amount) as total 
 FROM (
-    SELECT created_at, total_amount FROM transactions WHERE is_deleted = 0
+    SELECT created_at, total_amount FROM product_transactions WHERE is_deleted = 0
     UNION ALL
-    SELECT created_at, total_amount FROM product_sales WHERE is_deleted = 0
+    SELECT created_at, total_amount FROM fuel_transactions WHERE is_deleted = 0
 ) AS combined_sales
 GROUP BY DAYOFWEEK(created_at)
 ";
@@ -210,71 +210,77 @@ $conn->close();
           <span>Dashboard</span>
         </li>
 
-        <li onclick="window.location.href='sales.php';">
+        <li onclick="window.location.href='sales';">
           <img src="/POS-GAS/frontend/assets/icons/sales-icon.png" class="menu-icon">
           <span>Sales</span>
         </li>
 
-        <li onclick="window.location.href='productspage.php';">
+        <li onclick="window.location.href='productspage';">
           <img src="/POS-GAS/frontend/assets/icons/products-icon.png" class="menu-icon">
           <span>Products</span>
         </li>
 
-        <li onclick="window.location.href='customer.php';">
+        <li onclick="window.location.href='customer';">
           <img src="/POS-GAS/frontend/assets/icons/customer-icon.png" class="menu-icon">
           <span>Customers</span>
         </li>
 
-        <li onclick="window.location.href='supplier.php';">
+        <li onclick="window.location.href='supplier';">
           <img src="/POS-GAS/frontend/assets/icons/supplier-icon.png" class="menu-icon">
           <span>Suppliers</span>
         </li>
 
-        <li onclick="window.location.href='report.php';">
+        <li onclick="window.location.href='report';">
           <img src="/POS-GAS/frontend/assets/icons/report-icon.png" class="menu-icon">
-          <span>Report</span>
+          <span>Reports</span>
         </li>
 
-        <li onclick="window.location.href='debt.php';">
-          <img src="/POS-GAS/frontend/assets/icons/debt-icon.png" class="menu-icon">
-          <span>Manage Debts</span>
-        </li>
-
-
-        <li onclick="window.location.href='users.php';">
+        <li onclick="window.location.href='users';">
           <img src="/POS-GAS/frontend/assets/icons/user-icon.png" class="menu-icon">
           <span>Users</span>
         </li>
 
-        <li onclick="window.location.href='tracker.php';">
-          <img src="/POS-GAS/frontend/assets/icons/tracker-icon.png" class="menu-icon">
-          <span>Track Supplies</span>
+        <li onclick="window.location.href='category';">
+          <img src="/POS-GAS/frontend/assets/icons/category-icon.png" class="menu-icon">
+          <span>Categories</span>
+        </li>
+
+        <li onclick="window.location.href='pump';">
+          <img src="/POS-GAS/frontend/assets/icons/pumps-icon.png" class="menu-icon">
+          <span>Pumps</span>
+        </li>
+
+        <li onclick="window.location.href='others';">
+          <img src="/POS-GAS/frontend/assets/icons/settings-icon.png" class="menu-icon">
+          <span>Others</span>
         </li>
 
       </ul>
     </div>
-    <div class="logout" onclick="window.location.href='session';">
-      <img src="/POS-GAS/frontend/assets/icons/logout-icon.png" class="menu-icon">
-      LOG OUT
-    </div>
+
   </div>
 
-  <!--==========================================================================================================================-->
-  <!--                                                   MAIN CONTENT                                                             -->
-  <!-- ========================================================================================================================== -->
 
+  <!-- ================= MAIN ================= -->
   <div class="main">
 
-
     <!-- ========================================================================================================================== -->
-    <!--                                                         TOPBAR                                                             -->
+    <!--                                                        TOPBAR                                                             -->
     <!-- ========================================================================================================================== -->
     <div class="topbar">
       <div id="datetime"></div>
 
-      <div class="employee-info">
-        <div class="employee-name"><?php echo htmlspecialchars($_SESSION['lname'] . ", " . $_SESSION['fname']); ?></div>
+      <div class="employee-info" id="employeeMenu">
+        <div class="employee-name">
+          <?php echo htmlspecialchars($_SESSION['lname'] . ", " . $_SESSION['fname']); ?>
+        </div>
         <div id="employee-profile"><img src="/POS-GAS/frontend/assets/uploads/users/<?php echo htmlspecialchars(!empty($_SESSION['image']) ? $_SESSION['image'] : 'default.jpg'); ?>" class="employee-img"></div>
+
+        <!-- DROPDOWN -->
+        <div class="employee-dropdown" id="employeeDropdown">
+          <div class="dropdown-item" onclick="goToAccount()">Account Settings</div>
+          <div class="dropdown-item" onclick="logout()">Logout</div>
+        </div>
       </div>
     </div>
 
@@ -373,6 +379,7 @@ $conn->close();
 
     <script src="/POS-GAS/frontend/js/dashboard.js"></script>
     <script src="/POS-GAS/frontend/js/date-time.js"></script>
+    <script src="/POS-GAS/frontend/js/dropdown.js"></script>
     <script src="/POS-GAS/frontend/js/alert.js"></script>
 
     <script>

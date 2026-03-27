@@ -1,46 +1,47 @@
 // WAIT UNTIL PAGE FULLY LOADS
 window.addEventListener("load", function () {
-
   // ✅ SAFE FALLBACKS FOR LINE CHART
-  const weeklySalesData = typeof weeklySales !== "undefined"
-    ? weeklySales
-    : [0,0,0,0,0,0,0];
+  const weeklySalesData =
+    typeof weeklySales !== "undefined" ? weeklySales : [0, 0, 0, 0, 0, 0, 0];
 
   /* ================= LINE CHART ================= */
-  const lineCtx = document.getElementById('lineChart');
-  if (lineCtx) { // ✅ ensure element exists
+  const lineCtx = document.getElementById("lineChart");
+  if (lineCtx) {
+    // ✅ ensure element exists
     const lineChart = new Chart(lineCtx, {
-      type: 'line',
+      type: "line",
       data: {
-        labels: ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],
-        datasets: [{
-          label: 'Sales',
-          data: weeklySalesData,
-          borderColor: '#00a8c6',
-          backgroundColor: 'rgba(0,168,198,0.1)',
-          tension: 0.4,
-          fill: true,
-          pointBackgroundColor:'#94c1ff'
-        }]
+        labels: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+        datasets: [
+          {
+            label: "Sales",
+            data: weeklySalesData,
+            borderColor: "#00a8c6",
+            backgroundColor: "rgba(0,168,198,0.1)",
+            tension: 0.4,
+            fill: true,
+            pointBackgroundColor: "#94c1ff",
+          },
+        ],
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
         resizeDelay: 200,
         plugins: {
-          legend: { display: false }
-        }
-      }
+          legend: { display: false },
+        },
+      },
     });
 
     /* ================= RESIZE FIX ================= */
-    window.addEventListener('resize', function () {
+    window.addEventListener("resize", function () {
       lineChart.resize();
     });
   }
 
   /* ================= FUEL TANK LEVELS ================= */
-  document.querySelectorAll(".fuel").forEach(fuel => {
+  document.querySelectorAll(".fuel").forEach((fuel) => {
     const tankCard = fuel.closest(".tank-card");
     const liters = parseFloat(fuel.dataset.liters) || 0;
     const maxCapacity = parseFloat(fuel.dataset.maxLiters) || 10000;
@@ -52,16 +53,25 @@ window.addEventListener("load", function () {
     const percentText = tankCard.querySelector(".percent");
     if (percentText) percentText.innerText = percent.toFixed(1) + "%";
 
-    if (percent < 20) {
+   
+    if (percent <= 29) {
+  
       fuel.classList.add("low");
+      fuel.classList.remove("medium");
       tankCard.classList.add("alert");
-    } else {
+    } else if (percent <= 49) {
+
+      fuel.classList.add("medium");
       fuel.classList.remove("low");
+      tankCard.classList.remove("alert");
+    } else {
+
+      fuel.classList.remove("low", "medium");
       tankCard.classList.remove("alert");
     }
 
     const wave = fuel.querySelector(".wave");
-    if (wave) wave.style.animationDuration = `${Math.max(0.5, percent / 50 + 1)}s`;
+    if (wave)
+      wave.style.animationDuration = `${Math.max(0.5, percent / 50 + 1)}s`;
   });
-
 });

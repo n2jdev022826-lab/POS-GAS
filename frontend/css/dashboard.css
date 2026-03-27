@@ -257,6 +257,11 @@
   font-weight: bold;
 }
 
+/* MEDIUM fuel */
+.fuel.medium {
+  background: linear-gradient(180deg, #ff9a00, #ff6a00);
+}
+
 /* LOW fuel */
 .fuel.low {
   background: linear-gradient(180deg, #ff4b2b, #ff0000);

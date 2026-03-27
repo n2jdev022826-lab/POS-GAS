@@ -9,13 +9,12 @@ require_once "../../backend/middleware/auth.php";
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GAS STATION</title>
-  <link rel="stylesheet" href="/POS-GAS/frontend/css/productpage.css">
-  <link rel="stylesheet" href="/POS-GAS/frontend/css/global.css">
-  <link rel="stylesheet" href="/POS-GAS/frontend/css/alert.css" />
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GAS STATION</title>
+    <link rel="stylesheet" href="/POS-GAS/frontend/css/global.css">
+    <link rel="stylesheet" href="/POS-GAS/frontend/css/others.css">
+    <link rel="stylesheet" href="/POS-GAS/frontend/css/alert.css">
 </head>
 
 <body>
@@ -37,7 +36,7 @@ require_once "../../backend/middleware/auth.php";
           <span>Sales</span>
         </li>
 
-        <li class="active" onclick="window.location.href='productspage';">
+        <li onclick="window.location.href='productspage';">
           <img src="/POS-GAS/frontend/assets/icons/products-icon.png" class="menu-icon">
           <span>Products</span>
         </li>
@@ -72,7 +71,7 @@ require_once "../../backend/middleware/auth.php";
           <span>Pumps</span>
         </li>
 
-        <li onclick="window.location.href='others';">
+        <li class="active">
           <img src="/POS-GAS/frontend/assets/icons/settings-icon.png" class="menu-icon">
           <span>Others</span>
         </li>
@@ -106,25 +105,36 @@ require_once "../../backend/middleware/auth.php";
       </div>
     </div>
 
-    <!-- Cards -->
-    <div class="cards">
-      <div id="salescard" class="card" data-bg="FUEL"
-        onclick="window.location.href='fuel';">
-        <h3>FUEL PRODUCTS</h3>
-        <h1>Desiel, Gasoline, Kerosin</h1>
-      </div>
 
-      <div id="receivablescard" class="card" data-bg="MARK"
-        onclick="window.location.href='products';">
-        <h3>OTHER PRODUCTS</h3>
-        <h1>Other Available Products</h1>
-      </div>
+
+        <!-- Cards -->
+        <div class="cards">
+            <div id="debtcard" class="card" data-bg="DEBTS"
+                onclick="window.location.href='debt';">
+                <h3>Liabilities</h3>
+                <h1>Customer Debts</h1>
+            </div>
+
+            <div id="trackcard" class="card" data-bg="TRACK"
+                onclick="window.location.href='tracker';">
+                <h3>Tracking</h3>
+                <h1>Track Supplies</h1>
+            </div>
+
+            <div id="ledgercard" class="card" data-bg="LEDGE"
+                onclick="window.location.href='#';">
+                <h3>Ledger</h3>
+                <h1>Customer Ledger</h1>
+            </div>
+        </div>
+
     </div>
 
-  </div>
-  <script src="/POS-GAS/frontend/js/date-time.js"></script>
-  <script src="/POS-GAS/frontend/js/alert.js"></script>
-  <script src="/POS-GAS/frontend/js/dropdown.js"></script>
+
+    </div>
+    <script src="/POS-GAS/frontend/js/date-time.js"></script>
+    <script src="/POS-GAS/frontend/js/dropdown.js"></script>
+    <script src="/POS-GAS/frontend/js/alert.js"></script>
 </body>
 
 </html>

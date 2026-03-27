@@ -1,0 +1,129 @@
+.cards {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+/* Card base */
+.card {
+  position: relative;
+  z-index: 1;
+
+  width: 320px;
+  height: 180px;
+  border-radius: 12px;
+  padding: 20px;
+  cursor: pointer;
+  overflow: hidden;
+  color: #fff;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+/* Hover */
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+}
+
+/* Background gradients */
+#debtcard {
+  background: linear-gradient(135deg, #ff6a6a, #e53935);
+}
+
+#trackcard {
+  background: linear-gradient(135deg, #36d1dc, #5b86e5);
+}
+
+#categoriescard {
+  background: linear-gradient(135deg, #11998e, #38ef7d);
+}
+
+#pumpcard {
+  background: linear-gradient(135deg, #f7971e, #ffd200);
+}
+
+#ledgercard {
+  background: linear-gradient(135deg, #f71ef0, #ff24a4);
+}
+
+/* 🔥 VERTICAL BACKGROUND TEXT */
+.card::before {
+  content: attr(data-bg);
+  position: absolute;
+
+  font-size: 80px;
+  font-weight: 900;
+  font-family: 'Arial Black', sans-serif;
+
+  color: rgba(255,255,255,0.10);
+
+  top: 50%;
+  right: 20px;
+  transform: translateY(-50%) rotate(90deg);
+
+  letter-spacing: 6px;
+  pointer-events: none;
+
+  z-index: 0;
+}
+
+/* 🔥 WATERMARK IMAGE */
+.card::after {
+  content: "";
+  position: absolute;
+
+  width: 110px;
+  height: 110px;
+
+  top: 50%;
+  right: 25px;
+  transform: translateY(-50%);
+
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+
+  opacity: 0.5;
+  pointer-events: none;
+
+  z-index: 1; /* above text, below content */
+}
+
+/* ✅ Different image per card */
+#debtcard::after {
+  background-image: url('/POS-GAS/frontend/assets/icons/debt-icon.png');
+}
+
+#trackcard::after {
+  background-image: url('/POS-GAS/frontend/assets/icons/tracker-icon.png');
+}
+
+#ledgercard::after {
+  background-image: url('/POS-GAS/frontend/assets/icons/ledger-icon.png');
+}
+
+/* Ensure text stays on top */
+.card h1,
+.card h3 {
+  position: relative;
+  z-index: 2;
+}
+
+/* Typography */
+.card h3 {
+  margin: 0 0 6px;
+  font-size: 15px;
+  font-weight: 400;
+  opacity: 0.9;
+}
+
+.card h1 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 600;
+}

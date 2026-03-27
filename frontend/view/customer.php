@@ -37,13 +37,14 @@ while ($row = $result->fetch_assoc()) {
 
 <body>
 
-    <!-- ================= SIDEBAR ================= -->
+    <!-- ========================================================================================================================== -->
+    <!--                                                        SIDEBAR                                                             -->
+    <!-- ========================================================================================================================== -->
 
     <div class="sidebar">
         <div>
 
             <ul class="menu">
-
                 <li onclick="window.location.href='dashboard';">
                     <img src="/POS-GAS/frontend/assets/icons/dashboard-icon.png" class="menu-icon">
                     <span>Dashboard</span>
@@ -59,7 +60,7 @@ while ($row = $result->fetch_assoc()) {
                     <span>Products</span>
                 </li>
 
-                <li class="active">
+                <li class="active" onclick="window.location.href='customer';">
                     <img src="/POS-GAS/frontend/assets/icons/customer-icon.png" class="menu-icon">
                     <span>Customers</span>
                 </li>
@@ -71,12 +72,7 @@ while ($row = $result->fetch_assoc()) {
 
                 <li onclick="window.location.href='report';">
                     <img src="/POS-GAS/frontend/assets/icons/report-icon.png" class="menu-icon">
-                    <span>Report</span>
-                </li>
-
-                <li onclick="window.location.href='debt';">
-                    <img src="/POS-GAS/frontend/assets/icons/debt-icon.png" class="menu-icon">
-                    <span>Manage Debts</span>
+                    <span>Reports</span>
                 </li>
 
                 <li onclick="window.location.href='users';">
@@ -84,35 +80,49 @@ while ($row = $result->fetch_assoc()) {
                     <span>Users</span>
                 </li>
 
-                <li onclick="window.location.href='tracker';">
-                    <img src="/POS-GAS/frontend/assets/icons/tracker-icon.png" class="menu-icon">
-                    <span>Track Supplies</span>
+                <li onclick="window.location.href='category';">
+                    <img src="/POS-GAS/frontend/assets/icons/category-icon.png" class="menu-icon">
+                    <span>Categories</span>
+                </li>
+
+                <li onclick="window.location.href='pump';">
+                    <img src="/POS-GAS/frontend/assets/icons/pumps-icon.png" class="menu-icon">
+                    <span>Pumps</span>
+                </li>
+
+                <li onclick="window.location.href='others';">
+                    <img src="/POS-GAS/frontend/assets/icons/settings-icon.png" class="menu-icon">
+                    <span>Others</span>
                 </li>
 
             </ul>
         </div>
 
-        <div class="logout" onclick="window.location.href='index.php';">
-            <img src="/POS-GAS/frontend/assets/icons/logout-icon.png" class="menu-icon">
-            LOG OUT
-        </div>
     </div>
 
-    <!-- ================= MAIN ================= -->
 
+    <!-- ================= MAIN ================= -->
     <div class="main">
 
-
-        <!-- ================= TOP BAR ================= -->
+        <!-- ========================================================================================================================== -->
+        <!--                                                        TOPBAR                                                             -->
+        <!-- ========================================================================================================================== -->
         <div class="topbar">
             <div id="datetime"></div>
 
-            <div class="employee-info">
-                <div class="employee-name"><?php echo htmlspecialchars($_SESSION['lname'] . ", " . $_SESSION['fname']); ?></div>
+            <div class="employee-info" id="employeeMenu">
+                <div class="employee-name">
+                    <?php echo htmlspecialchars($_SESSION['lname'] . ", " . $_SESSION['fname']); ?>
+                </div>
                 <div id="employee-profile"><img src="/POS-GAS/frontend/assets/uploads/users/<?php echo htmlspecialchars(!empty($_SESSION['image']) ? $_SESSION['image'] : 'default.jpg'); ?>" class="employee-img"></div>
+
+                <!-- DROPDOWN -->
+                <div class="employee-dropdown" id="employeeDropdown">
+                    <div class="dropdown-item" onclick="goToAccount()">Account Settings</div>
+                    <div class="dropdown-item" onclick="logout()">Logout</div>
+                </div>
             </div>
         </div>
-
 
         <!-- ================= CONTENTS ================= -->
         <div class="customer-container">
@@ -145,7 +155,7 @@ while ($row = $result->fetch_assoc()) {
                     </thead>
 
                     <tbody id="tableBody"></tbody>
-                     <tfoot>
+                    <tfoot>
                         <tr>
                             <td colspan="7"></td>
                         </tr>
@@ -272,7 +282,7 @@ while ($row = $result->fetch_assoc()) {
                 </div>
 
                 <div class="modal-buttons">
-                    
+
                     <button type="submit" class="btn save-btn">Update Customer</button>
                     <button type="button" class="btn editcancel-btn" onclick="closeEditModal()">Cancel</button>
                 </div>
@@ -283,9 +293,9 @@ while ($row = $result->fetch_assoc()) {
 
     </div>
 
-    
+
     <script>
-       const customers = <?php echo json_encode($customers); ?>;
+        const customers = <?php echo json_encode($customers); ?>;
     </script>
 
     <script src="/POS-GAS/frontend/js/date-time.js"></script>
@@ -293,6 +303,7 @@ while ($row = $result->fetch_assoc()) {
     <script src="/POS-GAS/frontend/js/alert.js"></script>
     <script src="/POS-GAS/frontend/js/customer-modal.js"></script>
     <script src="/POS-GAS/frontend/js/customer-page.js"></script>
+    <script src="/POS-GAS/frontend/js/dropdown.js"></script>
 
 </body>
 

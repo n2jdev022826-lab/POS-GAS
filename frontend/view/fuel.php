@@ -34,7 +34,7 @@ $sql = "SELECT * FROM suppliers  WHERE is_deleted = 0";
 
 $resultsupp = $conn->query($sql);
 
-while($row = $resultsupp->fetch_assoc()){
+while ($row = $resultsupp->fetch_assoc()) {
     $supplier[] = $row;
 }
 
@@ -48,93 +48,104 @@ $conn->close();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GAS STATION - FUELS</title>
+    <title>GAS STATION</title>
 
     <link rel="stylesheet" href="/POS-GAS/frontend/css/global.css">
     <link rel="stylesheet" href="/POS-GAS/frontend/css/fuel.css">
     <link rel="stylesheet" href="/POS-GAS/frontend/css/alert.css">
     <link rel="stylesheet" href="/POS-GAS/frontend/css/print.css">
+    
 
 </head>
 
 <body>
 
-     <!-- ================= SIDEBAR ================= -->
+    <!-- ========================================================================================================================== -->
+    <!--                                                        SIDEBAR                                                             -->
+    <!-- ========================================================================================================================== -->
 
     <div class="sidebar">
         <div>
 
             <ul class="menu">
-
-                <li onclick="window.location.href='dashboard.php';">
+                <li onclick="window.location.href='dashboard';">
                     <img src="/POS-GAS/frontend/assets/icons/dashboard-icon.png" class="menu-icon">
                     <span>Dashboard</span>
                 </li>
 
-                <li onclick="window.location.href='sales.php';">
+                <li onclick="window.location.href='sales';">
                     <img src="/POS-GAS/frontend/assets/icons/sales-icon.png" class="menu-icon">
                     <span>Sales</span>
                 </li>
 
                 <li class="active">
                     <img src="/POS-GAS/frontend/assets/icons/products-icon.png" class="menu-icon">
-                    <span>Fuels</span>
+                    <span>Fuel</span>
                 </li>
 
-                <li onclick="window.location.href='customer.php';">
+                <li onclick="window.location.href='customer';">
                     <img src="/POS-GAS/frontend/assets/icons/customer-icon.png" class="menu-icon">
                     <span>Customers</span>
                 </li>
 
-                <li onclick="window.location.href='supplier.php';">
+                <li onclick="window.location.href='supplier';">
                     <img src="/POS-GAS/frontend/assets/icons/supplier-icon.png" class="menu-icon">
                     <span>Suppliers</span>
                 </li>
 
-                <li onclick="window.location.href='report.php';">
+                <li onclick="window.location.href='report';">
                     <img src="/POS-GAS/frontend/assets/icons/report-icon.png" class="menu-icon">
-                    <span>Report</span>
+                    <span>Reports</span>
                 </li>
 
-                <li onclick="window.location.href='debt.php';">
-                    <img src="/POS-GAS/frontend/assets/icons/debt-icon.png" class="menu-icon">
-                    <span>Manage Debts</span>
-                </li>
-
-                <li onclick="window.location.href='users.php';">
+                <li onclick="window.location.href='users';">
                     <img src="/POS-GAS/frontend/assets/icons/user-icon.png" class="menu-icon">
                     <span>Users</span>
                 </li>
 
-                <li onclick="window.location.href='tracker.php';">
-                    <img src="/POS-GAS/frontend/assets/icons/tracker-icon.png" class="menu-icon">
-                    <span>Track Supplies</span>
+                <li onclick="window.location.href='category';">
+                    <img src="/POS-GAS/frontend/assets/icons/category-icon.png" class="menu-icon">
+                    <span>Categories</span>
+                </li>
+
+                <li onclick="window.location.href='pump';">
+                    <img src="/POS-GAS/frontend/assets/icons/pumps-icon.png" class="menu-icon">
+                    <span>Pumps</span>
+                </li>
+
+                <li onclick="window.location.href='others';">
+                    <img src="/POS-GAS/frontend/assets/icons/settings-icon.png" class="menu-icon">
+                    <span>Others</span>
                 </li>
 
             </ul>
-
-        </div>
-
-        <div class="logout" onclick="window.location.href='session';">
-            <img src="/POS-GAS/frontend/assets/icons/logout-icon.png" class="menu-icon">
-            LOG OUT
         </div>
 
     </div>
 
-    <!-- ================= MAIN ================= -->
 
+    <!-- ================= MAIN ================= -->
     <div class="main">
 
-     <!-- TOP BAR -->
-    <div class="topbar">
-      <div id="datetime"></div>
+        <!-- ========================================================================================================================== -->
+        <!--                                                        TOPBAR                                                             -->
+        <!-- ========================================================================================================================== -->
+        <div class="topbar">
+            <div id="datetime"></div>
 
-      <div class="employee-info">
-        <div class="employee-name"><?php echo htmlspecialchars($_SESSION['lname'] . ", " . $_SESSION['fname']); ?></div>
-        <div id="employee-profile"><img src="/POS-GAS/frontend/assets/uploads/users/<?php echo htmlspecialchars(!empty($_SESSION['image']) ? $_SESSION['image'] : 'default.jpg'); ?>" class="employee-img"></div>
+            <div class="employee-info" id="employeeMenu">
+                <div class="employee-name">
+                    <?php echo htmlspecialchars($_SESSION['lname'] . ", " . $_SESSION['fname']); ?>
+                </div>
+                <div id="employee-profile"><img src="/POS-GAS/frontend/assets/uploads/users/<?php echo htmlspecialchars(!empty($_SESSION['image']) ? $_SESSION['image'] : 'default.jpg'); ?>" class="employee-img"></div>
+
+                <!-- DROPDOWN -->
+                <div class="employee-dropdown" id="employeeDropdown">
+                    <div class="dropdown-item" onclick="goToAccount()">Account Settings</div>
+                    <div class="dropdown-item" onclick="logout()">Logout</div>
+                </div>
+            </div>
         </div>
-      </div>
 
         <!-- TABLE -->
         <div class="user-container">
@@ -234,7 +245,7 @@ $conn->close();
                             </div>
 
                             <div class="modal-buttons">
-                                <button type="button" class="addcancel-btn"onclick="closeFuelModal()">Cancel</button>
+                                <button type="button" class="addcancel-btn" onclick="closeFuelModal()">Cancel</button>
                             </div>
 
                         </div>
@@ -290,68 +301,68 @@ $conn->close();
     </div>
 
     <!-- ================= REFILL FUEL MODAL ================= -->
-<div id="refillModal" class="modal">
-  <div class="modal-box large">
+    <div id="refillModal" class="modal">
+        <div class="modal-box large">
 
-    <div class="modal-header">
-      <h2>REFILL FUEL</h2>
-      <span class="close-modal" onclick="closeRefillModal()">&times;</span>
-    </div>
-
-    <form id="refillForm">
-
-      <div class="modal-content">
-        <div class="form-section" style="width:100%;">
-
-          <div class="form-grid">
-
-          <div class="input-group">
-              <label>FUEL</label>
-              <select name="fuel_id" required>
-                <?php foreach ($fuels as $f): ?>
-                  <option value="<?php echo $f['id']; ?>">
-                    <?php echo $f['name']; ?>
-                  </option>
-                <?php endforeach; ?>
-              </select>
+            <div class="modal-header">
+                <h2>REFILL FUEL</h2>
+                <span class="close-modal" onclick="closeRefillModal()">&times;</span>
             </div>
 
-            <div class="input-group">
-              <label>SUPPLIER</label>
-              <select name="supplier_id" required>
-                <?php foreach ($supplier as $s): ?>
-                  <option value="<?php echo $s['supplier_id']; ?>">
-                    <?php echo $s['supplier_name']; ?>
-                  </option>
-                <?php endforeach; ?>
-              </select>
-            </div>
+            <form id="refillForm">
 
-            
+                <div class="modal-content">
+                    <div class="form-section" style="width:100%;">
+
+                        <div class="form-grid">
+
+                            <div class="input-group">
+                                <label>FUEL</label>
+                                <select name="fuel_id" required>
+                                    <?php foreach ($fuels as $f): ?>
+                                        <option value="<?php echo $f['id']; ?>">
+                                            <?php echo $f['name']; ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+
+                            <div class="input-group">
+                                <label>SUPPLIER</label>
+                                <select name="supplier_id" required>
+                                    <?php foreach ($supplier as $s): ?>
+                                        <option value="<?php echo $s['supplier_id']; ?>">
+                                            <?php echo $s['supplier_name']; ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
 
 
-            <div class="input-group">
-              <label>LITERS TO ADD</label>
-              <input type="number" name="liters_added" required>
-            </div>
 
-            <div class="modal-buttons">
-              <button type="submit" class="save-btn">REFILL</button>
-            </div>
 
-            <div class="modal-buttons">
-              <button type="button" class="addcancel-btn" onclick="closeRefillModal()">Cancel</button>
-            </div>
+                            <div class="input-group">
+                                <label>LITERS TO ADD</label>
+                                <input type="number" name="liters_added" required>
+                            </div>
 
-          </div>
+                            <div class="modal-buttons">
+                                <button type="submit" class="save-btn">REFILL</button>
+                            </div>
+
+                            <div class="modal-buttons">
+                                <button type="button" class="addcancel-btn" onclick="closeRefillModal()">Cancel</button>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+
+            </form>
 
         </div>
-      </div>
-
-    </form>
-
-  </div>
-</div>
+    </div>
 
     <!-- ================= SCRIPTS ================= -->
 
@@ -364,7 +375,8 @@ $conn->close();
     <script src="/POS-GAS/frontend/js/alert.js"></script>
     <script src="/POS-GAS/frontend/js/fuel-modal.js"></script>
     <script src="/POS-GAS/frontend/js/print.js"></script>
-   
+    <script src="/POS-GAS/frontend/js/dropdown.js"></script>
+
 
     <!-- FUEL MODAL SCRIPT -->
     <script>
@@ -372,21 +384,21 @@ $conn->close();
         const tableBody = document.getElementById("tableBody");
 
         function renderTable() {
-    tableBody.innerHTML = "";
+            tableBody.innerHTML = "";
 
-    if (fuels.length === 0) {
-        tableBody.innerHTML = `
+            if (fuels.length === 0) {
+                tableBody.innerHTML = `
             <tr>
                 <td colspan="6" style="text-align:center; padding:20px;">
                     No fuel found
                 </td>
             </tr>
         `;
-        return;
-    }
+                return;
+            }
 
-    fuels.forEach(f => {
-        tableBody.innerHTML += `
+            fuels.forEach(f => {
+                tableBody.innerHTML += `
         <tr>
             <td>${f.fuel_code}</td>
             <td>${f.name}</td>
@@ -407,8 +419,8 @@ $conn->close();
                 </button>
             </td>
         </tr>`;
-    });
-}
+            });
+        }
 
         renderTable();
     </script>
