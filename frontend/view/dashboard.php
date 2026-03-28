@@ -178,6 +178,14 @@ while ($row = $resultPie->fetch_assoc()) {
   $categoryData[] = (float)$row['total_cost'];
 }
 
+
+
+$userPermissions = $_SESSION['user_permissions'] ?? [];
+
+function hasPermission($perm) {
+    return !empty($_SESSION['user_permissions'][$perm]);
+}
+
 $conn->close();
 
 ?>
@@ -209,51 +217,69 @@ $conn->close();
           <img src="/POS-GAS/frontend/assets/icons/dashboard-icon.png" class="menu-icon">
           <span>Dashboard</span>
         </li>
-
+          <?php if (hasPermission('sales')): ?>
         <li onclick="window.location.href='sales';">
           <img src="/POS-GAS/frontend/assets/icons/sales-icon.png" class="menu-icon">
           <span>Sales</span>
         </li>
-
+      <?php endif; ?>
+          
+      <?php if (hasPermission('products')): ?>
         <li onclick="window.location.href='productspage';">
           <img src="/POS-GAS/frontend/assets/icons/products-icon.png" class="menu-icon">
           <span>Products</span>
         </li>
+        <?php endif; ?>
 
+        <?php if (hasPermission('customers')): ?>
         <li onclick="window.location.href='customer';">
           <img src="/POS-GAS/frontend/assets/icons/customer-icon.png" class="menu-icon">
           <span>Customers</span>
         </li>
-
+         <?php endif; ?>
+        
+          <?php if (hasPermission('suppliers')): ?>
         <li onclick="window.location.href='supplier';">
           <img src="/POS-GAS/frontend/assets/icons/supplier-icon.png" class="menu-icon">
           <span>Suppliers</span>
         </li>
+        <?php endif; ?>
 
+        <?php if (hasPermission('reports')): ?>
         <li onclick="window.location.href='report';">
           <img src="/POS-GAS/frontend/assets/icons/report-icon.png" class="menu-icon">
           <span>Reports</span>
         </li>
+        <?php endif; ?>
 
+        <?php if (hasPermission('users')): ?>
         <li onclick="window.location.href='users';">
           <img src="/POS-GAS/frontend/assets/icons/user-icon.png" class="menu-icon">
           <span>Users</span>
         </li>
+        <?php endif; ?>
 
+
+          <?php if (hasPermission('categories')): ?>
         <li onclick="window.location.href='category';">
           <img src="/POS-GAS/frontend/assets/icons/category-icon.png" class="menu-icon">
           <span>Categories</span>
         </li>
+        <?php endif; ?>
 
+        <?php if (hasPermission('pumps')): ?>
         <li onclick="window.location.href='pump';">
           <img src="/POS-GAS/frontend/assets/icons/pumps-icon.png" class="menu-icon">
           <span>Pumps</span>
         </li>
+        <?php endif; ?>
 
+           <?php if (hasPermission('others')): ?>
         <li onclick="window.location.href='others';">
           <img src="/POS-GAS/frontend/assets/icons/settings-icon.png" class="menu-icon">
           <span>Others</span>
         </li>
+         <?php endif; ?>
 
       </ul>
     </div>
